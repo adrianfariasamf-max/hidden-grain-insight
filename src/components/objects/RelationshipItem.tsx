@@ -28,7 +28,8 @@ export function RelationshipItem({ edge, direction, currentId }: RelationshipIte
   const relatedId = direction === "outgoing" ? edge.target : edge.source;
   const DirectionIcon = direction === "outgoing" ? ArrowRight : ArrowLeft;
   const directionLabel = direction === "outgoing" ? "to" : "from";
-  const isNavigable = edge.resolved && relatedId && relatedId !== currentId;
+  const isSelfReference = edge.resolved && Boolean(relatedId) && relatedId === currentId;
+  const isNavigable = edge.resolved && Boolean(relatedId) && relatedId !== currentId;
 
   const relatedNode = (
     <span className="inline-flex min-w-0 items-center gap-1">
@@ -65,7 +66,9 @@ export function RelationshipItem({ edge, direction, currentId }: RelationshipIte
             <span className="min-w-0 break-all font-mono text-xs text-foreground">
               {relatedId}
             </span>
-            {!edge.resolved ? (
+            {isSelfReference ? (
+              <span className="text-[11px] text-muted-foreground">Current object</span>
+            ) : !edge.resolved ? (
               <span className="text-[11px] text-warning">Unresolved target</span>
             ) : null}
           </span>
