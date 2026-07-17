@@ -1,24 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState } from "@/components/state/EmptyState";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Overview — Hidden Grain" },
+      {
+        name: "description",
+        content: "Read-only knowledge OS: browse objects, relationships and system health.",
+      },
+    ],
+  }),
+  component: OverviewRoute,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function OverviewRoute() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <AppShell>
+      <PageHeader
+        eyebrow="Overview"
+        title="Hidden Grain"
+        description="Read-only knowledge OS. Objects, relationships and system state flow from the API — nothing is authored in the UI."
       />
-    </div>
+      <section className="px-8 py-6">
+        <EmptyState
+          title="Overview widgets land in Phase 5"
+          description="Phase 1 ships the shell only: routes, navigation, design tokens, typed API client and shared state components."
+        />
+      </section>
+    </AppShell>
   );
 }
