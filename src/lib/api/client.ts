@@ -7,12 +7,9 @@ import { ApiError, ApiNetworkError, ApiNotFoundError } from "./errors";
 import type {
   GraphResponse,
   HealthResponse,
-  IndexResponse,
-  KnowledgeObject,
-  KnowledgeObjectSummary,
+  ObjectDetailResponse,
+  ObjectsListResponse,
   ObjectsQueryParams,
-  Paginated,
-  Relationship,
 } from "./types";
 
 const RAW_BASE = (import.meta.env.VITE_HG_API_BASE ?? "").toString().trim();
@@ -76,20 +73,15 @@ export const api = {
   health: (signal?: AbortSignal) => request<HealthResponse>("/health", { signal }),
 
   listObjects: (params: ObjectsQueryParams = {}, signal?: AbortSignal) =>
-    request<Paginated<KnowledgeObjectSummary>>("/objects", {
+    request<ObjectsListResponse>("/objects", {
       query: params as Record<string, unknown>,
       signal,
     }),
 
   getObject: (id: string, signal?: AbortSignal) =>
-    request<KnowledgeObject>(`/objects/${encodeURIComponent(id)}`, { signal }),
+    request<ObjectDetailResponse>(`/objects/${encodeURIComponent(id)}`, { signal }),
 
   graph: (signal?: AbortSignal) => request<GraphResponse>("/graph", { signal }),
-
-  relationship: (id: string, signal?: AbortSignal) =>
-    request<Relationship>(`/relationships/${encodeURIComponent(id)}`, { signal }),
-
-  index: (signal?: AbortSignal) => request<IndexResponse>("/index", { signal }),
 };
 
 export type Api = typeof api;

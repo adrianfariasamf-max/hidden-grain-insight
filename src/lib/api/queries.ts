@@ -15,8 +15,6 @@ export const hgKeys = {
   objectList: (params: ObjectsQueryParams) => [...hgKeys.objects(), "list", params] as const,
   object: (id: string) => [...hgKeys.objects(), "detail", id] as const,
   graph: () => [...hgKeys.all, "graph"] as const,
-  relationship: (id: string) => [...hgKeys.all, "relationships", id] as const,
-  index: () => [...hgKeys.all, "index"] as const,
 };
 
 const RETRY_LIMIT = 2;
@@ -52,19 +50,5 @@ export const graphQuery = () =>
   queryOptions({
     queryKey: hgKeys.graph(),
     queryFn: ({ signal }) => api.graph(signal),
-    retry,
-  });
-
-export const relationshipQuery = (id: string) =>
-  queryOptions({
-    queryKey: hgKeys.relationship(id),
-    queryFn: ({ signal }) => api.relationship(id, signal),
-    retry,
-  });
-
-export const indexQuery = () =>
-  queryOptions({
-    queryKey: hgKeys.index(),
-    queryFn: ({ signal }) => api.index(signal),
     retry,
   });

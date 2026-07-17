@@ -17,7 +17,11 @@ const NAV_ITEMS: NavItem[] = [
   { label: "System", to: "/system", icon: Activity },
 ];
 
-export function SideNavigation() {
+interface SideNavigationProps {
+  onNavigate?: () => void;
+}
+
+export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -45,6 +49,7 @@ export function SideNavigation() {
             <li key={item.to}>
               <Link
                 to={item.to}
+                onClick={onNavigate}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                   active
