@@ -13,7 +13,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { label: "Overview", to: "/", icon: LayoutDashboard, exact: true },
   { label: "Explorer", to: "/explorer", icon: Compass },
-  { label: "Graph", to: "/graph", icon: Network },
+  { label: "Knowledge Graph", to: "/graph", icon: Network },
   { label: "System", to: "/system", icon: Activity },
 ];
 
