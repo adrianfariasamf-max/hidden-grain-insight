@@ -57,7 +57,7 @@ function buildParams(input: {
 
 function ExplorerRoute() {
   const search = Route.useSearch();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = Route.useNavigate();
 
   // Local text state for the input so typing feels immediate; the URL only
   // updates after debounce settles.
