@@ -27,6 +27,8 @@ const searchSchema = z.object({
   limit: fallback(z.number().int(), DEFAULT_LIMIT).default(DEFAULT_LIMIT),
 });
 
+type ExplorerSearch = z.infer<typeof searchSchema>;
+
 export const Route = createFileRoute("/explorer")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
@@ -69,7 +71,7 @@ function ExplorerRoute() {
     if (debouncedQ === search.q) return;
     navigate({
       to: ".",
-      search: (prev) => ({ ...prev, q: debouncedQ, offset: 0 }),
+      search: (prev: ExplorerSearch) => ({ ...prev, q: debouncedQ, offset: 0 }),
       replace: true,
     });
   }, [debouncedQ, search.q, navigate]);
@@ -95,7 +97,10 @@ function ExplorerRoute() {
   }, [query.data]);
 
   const updateFilters = (patch: Partial<{ type: string; category: string; status: string }>) => {
-    navigate({ to: ".", search: (prev) => ({ ...prev, ...patch, offset: 0 }) });
+    navigate({
+      to: ".",
+      search: (prev: ExplorerSearch) => ({ ...prev, ...patch, offset: 0 }),
+    });
   };
 
   const clearAll = () => {
@@ -114,7 +119,10 @@ function ExplorerRoute() {
   };
 
   const setOffset = (offset: number) => {
-    navigate({ to: ".", search: (prev) => ({ ...prev, offset }) });
+    navigate({
+      to: ".",
+      search: (prev: ExplorerSearch) => ({ ...prev, offset }),
+    });
   };
 
   const isInitialLoading = query.isLoading;
