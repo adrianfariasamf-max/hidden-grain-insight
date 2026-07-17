@@ -76,7 +76,10 @@ export const api = {
   health: (signal?: AbortSignal) => request<HealthResponse>("/health", { signal }),
 
   listObjects: (params: ObjectsQueryParams = {}, signal?: AbortSignal) =>
-    request<Paginated<KnowledgeObjectSummary>>("/objects", { query: params, signal }),
+    request<Paginated<KnowledgeObjectSummary>>("/objects", {
+      query: params as Record<string, unknown>,
+      signal,
+    }),
 
   getObject: (id: string, signal?: AbortSignal) =>
     request<KnowledgeObject>(`/objects/${encodeURIComponent(id)}`, { signal }),
