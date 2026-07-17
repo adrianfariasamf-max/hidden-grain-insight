@@ -2,7 +2,6 @@ import { useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { SideNavigation } from "./SideNavigation";
 
@@ -32,9 +31,7 @@ export function AppShell({ children }: AppShellProps) {
                 <Menu className="h-4 w-4" aria-hidden />
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
-                <VisuallyHidden>
-                  <SheetTitle>Navigation</SheetTitle>
-                </VisuallyHidden>
+                <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <SideNavigation onNavigate={() => setOpen(false)} />
               </SheetContent>
             </Sheet>
