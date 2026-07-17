@@ -1,9 +1,10 @@
-// Canonical API types — mirror the Hidden Grain read-only contract.
-// Fields here are the immutable canonical set from the handoff package.
-// Do NOT add derived, hardcoded, or UI-only fields.
+// Canonical API types — mirror the Hidden Grain read-only contract exactly.
+// Only fields confirmed by the handoff API contract are declared here.
+// Do NOT add derived, hardcoded, inferred, or UI-only fields.
 
 export type KnowledgeObjectId = string;
 
+// Canonical summary fields (locked by handoff — do not rename).
 export interface KnowledgeObjectSummary {
   id: KnowledgeObjectId;
   title: string;
@@ -19,34 +20,6 @@ export interface KnowledgeObjectSummary {
   relationshipCount: number;
 }
 
-export interface Relationship {
-  id: string;
-  source: KnowledgeObjectId;
-  target: KnowledgeObjectId;
-  resolved: boolean;
-}
-
-export interface KnowledgeObject extends KnowledgeObjectSummary {
-  relationships: Relationship[];
-}
-
-export interface ObjectsQueryParams {
-  q?: string;
-  type?: string;
-  category?: string;
-  status?: string;
-  tag?: string;
-  page?: number;
-  pageSize?: number;
-}
-
-export interface Paginated<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
 export interface GraphNode {
   id: KnowledgeObjectId;
   title: string;
@@ -58,40 +31,58 @@ export interface GraphEdge {
   id: string;
   source: KnowledgeObjectId;
   target: KnowledgeObjectId;
+  type: string;
+  description?: string;
   resolved: boolean;
 }
 
-export interface GraphMetrics {
+// GET /objects — offset/limit pagination (NOT page/pageSize).
+export interface ObjectsQueryParams {
+  q?: string;
+  type?: string;
+  category?: string;
+  status?: string;
+  tag?: string;
+  offset?: number;
+  limit?: number;
+}
+
+export interface ObjectsListResponse {
+  total: number;
+  offset: number;
+  limit: number;
+  items: KnowledgeObjectSummary[];
+}
+
+// GET /objects/:id — object + optional graph node + split relationships.
+export interface ObjectDetailResponse {
+  object: KnowledgeObjectSummary;
+  node?: GraphNode;
+  relationships: {
+    outgoing: GraphEdge[];
+    incoming: GraphEdge[];
+  };
+}
+
+// GET /graph — flat metrics, no nested `metrics` object.
+export interface GraphResponse {
+  generatedAt: string;
+  schemaVersion: string;
   nodeCount: number;
   edgeCount: number;
-  resolvedEdges: number;
-  unresolvedEdges: number;
-}
-
-export interface GraphResponse {
+  unresolvedEdgeCount: number;
   nodes: GraphNode[];
   edges: GraphEdge[];
-  metrics: GraphMetrics;
 }
 
+// GET /health — no `readOnly` field; read-only is a product invariant,
+// declared in the UI, not read from the API.
 export interface HealthResponse {
-  status: "ok" | "degraded" | "down";
-  version?: string;
-  uptimeSeconds?: number;
-  readOnly: boolean;
-}
-
-export interface IndexEntry {
-  id: KnowledgeObjectId;
-  title: string;
-  type: string;
-  category: string;
-  path: string;
-  checksum: string;
-}
-
-export interface IndexResponse {
-  entries: IndexEntry[];
-  total: number;
+  status: string;
+  service: string;
+  schemaVersion: string;
+  objects: number;
+  nodes: number;
+  edges: number;
   generatedAt: string;
 }
