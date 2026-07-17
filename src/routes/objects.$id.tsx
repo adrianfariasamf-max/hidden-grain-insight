@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { RelationshipList } from "@/components/objects/RelationshipList";
@@ -77,7 +78,7 @@ function NotFoundView({ id }: { id: string }) {
 
 interface MetaRowProps {
   label: string;
-  value: React.ReactNode;
+  value: ReactNode;
   mono?: boolean;
 }
 
