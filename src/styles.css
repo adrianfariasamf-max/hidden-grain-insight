@@ -68,7 +68,6 @@
 }
 
 :root {
-:root {
   /* Hidden Grain — dark-first knowledge OS. Light values kept as fallback,
      the app forces .dark on <html> so the dark palette below is canonical. */
   --radius: 0.5rem;
