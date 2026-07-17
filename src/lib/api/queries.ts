@@ -46,6 +46,9 @@ export const objectQuery = (id: string) =>
     retry,
   });
 
+// Alias — the Phase 3 brief refers to this as `objectDetailQuery`.
+export const objectDetailQuery = objectQuery;
+
 export const graphQuery = () =>
   queryOptions({
     queryKey: hgKeys.graph(),

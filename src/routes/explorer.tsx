@@ -61,14 +61,18 @@ function ExplorerRoute() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
-  // Local text state for the input so typing feels immediate; the URL only
-  // updates after debounce settles.
-  const [rawQ, setRawQ] = useState(search.q);
-  useEffect(() => setRawQ(search.q), [search.q]);
+  // URL search.q is the source of truth. Mirror it into local input state so
+  // Back/Forward, direct links (?q=…), and external param resets are reflected
+  // in the field. The URL is only rewritten (with replace: true) once the
+  // debounced input differs from the current URL value — this breaks the cycle.
+  const [rawQ, setRawQ] = useState(search.q ?? "");
+  useEffect(() => {
+    setRawQ(search.q ?? "");
+  }, [search.q]);
   const debouncedQ = useDebouncedValue(rawQ, 300);
 
   useEffect(() => {
-    if (debouncedQ === search.q) return;
+    if (debouncedQ === (search.q ?? "")) return;
     navigate({
       to: ".",
       search: (prev: ExplorerSearch) => ({ ...prev, q: debouncedQ, offset: 0 }),
