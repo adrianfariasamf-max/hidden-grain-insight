@@ -25,6 +25,7 @@ function SystemRoute() {
   const query = useQuery(healthQuery());
   const isInitialLoading = query.isPending && !query.data;
   const isRefreshing = query.isFetching && !query.isPending;
+  const hasStaleAfterError = query.isError && Boolean(query.data);
 
   return (
     <>
@@ -36,10 +37,18 @@ function SystemRoute() {
       <div className="flex flex-col gap-8 px-4 py-6 sm:px-8">
         {isInitialLoading ? (
           <LoadingState label="Loading system health…" />
-        ) : query.isError ? (
+        ) : query.isError && !query.data ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
         ) : query.data ? (
           <>
+            {hasStaleAfterError ? (
+              <div
+                role="status"
+                className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning"
+              >
+                Showing last known health — refresh failed. Retrying automatically.
+              </div>
+            ) : null}
             <section
               aria-labelledby="health-heading"
               className="flex flex-col gap-3"
