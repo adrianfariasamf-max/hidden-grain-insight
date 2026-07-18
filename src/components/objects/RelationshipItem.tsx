@@ -63,9 +63,7 @@ export function RelationshipItem({ edge, direction, currentId }: RelationshipIte
           </Link>
         ) : (
           <span className="flex flex-col gap-1">
-            <span className="min-w-0 break-all font-mono text-xs text-foreground">
-              {relatedId}
-            </span>
+            <span className="min-w-0 break-all font-mono text-xs text-foreground">{relatedId}</span>
             {isSelfReference ? (
               <span className="text-[11px] text-muted-foreground">Current object</span>
             ) : !edge.resolved ? (

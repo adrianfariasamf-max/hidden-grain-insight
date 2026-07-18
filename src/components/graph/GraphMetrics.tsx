@@ -2,10 +2,7 @@ import { MetricCard } from "@/components/shared/MetricCard";
 import type { GraphResponse } from "@/lib/api/types";
 
 interface GraphMetricsProps {
-  graph: Pick<
-    GraphResponse,
-    "nodeCount" | "edgeCount" | "unresolvedEdgeCount" | "schemaVersion"
-  >;
+  graph: Pick<GraphResponse, "nodeCount" | "edgeCount" | "unresolvedEdgeCount" | "schemaVersion">;
 }
 
 /**

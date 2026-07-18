@@ -24,9 +24,7 @@ export function GraphNodeItem({ node }: GraphNodeItemProps) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-0.5">
             {node.title ? (
-              <span className="truncate text-sm font-medium text-foreground">
-                {node.title}
-              </span>
+              <span className="truncate text-sm font-medium text-foreground">{node.title}</span>
             ) : null}
             <span className="min-w-0 break-all font-mono text-[11px] text-muted-foreground">
               {node.id}

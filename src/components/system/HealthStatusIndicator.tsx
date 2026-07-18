@@ -1,9 +1,5 @@
 import { cn } from "@/lib/utils";
-import {
-  HEALTH_DOT_CLASSES,
-  HEALTH_TONE_CLASSES,
-  classifyHealth,
-} from "@/lib/health/status";
+import { HEALTH_DOT_CLASSES, HEALTH_TONE_CLASSES, classifyHealth } from "@/lib/health/status";
 
 interface HealthStatusIndicatorProps {
   status: string;
@@ -24,10 +20,7 @@ export function HealthStatusIndicator({ status, className }: HealthStatusIndicat
         className,
       )}
     >
-      <span
-        aria-hidden
-        className={cn("h-1.5 w-1.5 rounded-full", HEALTH_DOT_CLASSES[tone])}
-      />
+      <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", HEALTH_DOT_CLASSES[tone])} />
       <span>{status || "unknown"}</span>
     </span>
   );

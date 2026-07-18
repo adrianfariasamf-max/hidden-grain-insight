@@ -66,9 +66,7 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
       </ul>
 
       <div className="px-4 py-3 text-[11px] text-muted-foreground">
-        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono">
-          read-only
-        </span>
+        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono">read-only</span>
       </div>
     </nav>
   );

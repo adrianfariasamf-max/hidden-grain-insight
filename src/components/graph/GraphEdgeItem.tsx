@@ -75,9 +75,7 @@ export function GraphEdgeItem({ edge, knownNodeIds }: GraphEdgeItemProps) {
         />
       </div>
 
-      {!edge.resolved ? (
-        <p className="text-[11px] text-warning">Unresolved target</p>
-      ) : null}
+      {!edge.resolved ? <p className="text-[11px] text-warning">Unresolved target</p> : null}
 
       {edge.description ? (
         <p className="text-xs text-muted-foreground">{edge.description}</p>
