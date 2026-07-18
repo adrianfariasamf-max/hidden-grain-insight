@@ -176,15 +176,11 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
       </section>
 
       {/* Tags & keywords */}
-      {(hasTags || hasKeywords) ? (
+      {hasTags || hasKeywords ? (
         <section className="flex flex-col gap-4">
           <h2 className="text-lg font-semibold text-foreground">Tags &amp; keywords</h2>
-          {hasTags ? (
-            <TagCloud label="Tags" items={object.tags} />
-          ) : null}
-          {hasKeywords ? (
-            <TagCloud label="Keywords" items={object.keywords} />
-          ) : null}
+          {hasTags ? <TagCloud label="Tags" items={object.tags} /> : null}
+          {hasKeywords ? <TagCloud label="Keywords" items={object.keywords} /> : null}
         </section>
       ) : null}
 
@@ -206,9 +202,7 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
 function TagCloud({ label, items }: { label: string; items: string[] }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+      <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
       <ul className="flex flex-wrap gap-1.5">
         {items.map((t) => (
           <li

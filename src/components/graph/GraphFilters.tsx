@@ -37,10 +37,7 @@ export function GraphFilters({
   visibleNodes,
   visibleEdges,
 }: GraphFiltersProps) {
-  const hasAny =
-    values.nodeType !== "" ||
-    values.edgeType !== "" ||
-    values.resolution !== "all";
+  const hasAny = values.nodeType !== "" || values.edgeType !== "" || values.resolution !== "all";
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card/40 p-3 sm:p-4">

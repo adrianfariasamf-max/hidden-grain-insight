@@ -6,10 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { GraphMetrics } from "@/components/graph/GraphMetrics";
-import {
-  GraphFilters,
-  type GraphFilterValues,
-} from "@/components/graph/GraphFilters";
+import { GraphFilters, type GraphFilterValues } from "@/components/graph/GraphFilters";
 import { GraphNodeList } from "@/components/graph/GraphNodeList";
 import { GraphEdgeList } from "@/components/graph/GraphEdgeList";
 import { graphQuery } from "@/lib/api/queries";
@@ -47,7 +44,10 @@ function formatGeneratedAt(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   // Deterministic UTC formatting — safe for SSR/hydration.
-  return d.toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC");
+  return d
+    .toISOString()
+    .replace("T", " ")
+    .replace(/\.\d+Z$/, " UTC");
 }
 
 function GraphRoute() {
@@ -91,9 +91,7 @@ function GraphRoute() {
   );
 
   const filtersActive =
-    filters.nodeType !== "" ||
-    filters.edgeType !== "" ||
-    filters.resolution !== "all";
+    filters.nodeType !== "" || filters.edgeType !== "" || filters.resolution !== "all";
 
   return (
     <>
@@ -121,23 +119,14 @@ function GraphRoute() {
             />
 
             {query.isFetching ? (
-              <p
-                className="text-[11px] text-muted-foreground"
-                aria-live="polite"
-              >
+              <p className="text-[11px] text-muted-foreground" aria-live="polite">
                 Refreshing…
               </p>
             ) : null}
 
-            <section
-              aria-labelledby="graph-nodes-heading"
-              className="flex flex-col gap-3"
-            >
+            <section aria-labelledby="graph-nodes-heading" className="flex flex-col gap-3">
               <header className="flex items-baseline justify-between gap-3">
-                <h2
-                  id="graph-nodes-heading"
-                  className="text-sm font-semibold text-foreground"
-                >
+                <h2 id="graph-nodes-heading" className="text-sm font-semibold text-foreground">
                   Nodes
                 </h2>
                 <span className="font-mono text-[11px] text-muted-foreground">
@@ -163,15 +152,9 @@ function GraphRoute() {
               />
             </section>
 
-            <section
-              aria-labelledby="graph-edges-heading"
-              className="flex flex-col gap-3"
-            >
+            <section aria-labelledby="graph-edges-heading" className="flex flex-col gap-3">
               <header className="flex items-baseline justify-between gap-3">
-                <h2
-                  id="graph-edges-heading"
-                  className="text-sm font-semibold text-foreground"
-                >
+                <h2 id="graph-edges-heading" className="text-sm font-semibold text-foreground">
                   Relationships
                 </h2>
                 <span className="font-mono text-[11px] text-muted-foreground">

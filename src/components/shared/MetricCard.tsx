@@ -19,12 +19,7 @@ export function MetricCard({ label, value, hint, mono, className }: MetricCardPr
       )}
     >
       <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
-      <span
-        className={cn(
-          "text-xl font-semibold text-foreground",
-          mono && "font-mono text-base",
-        )}
-      >
+      <span className={cn("text-xl font-semibold text-foreground", mono && "font-mono text-base")}>
         {value}
       </span>
       {hint ? <span className="text-[11px] text-muted-foreground">{hint}</span> : null}

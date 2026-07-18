@@ -31,13 +31,7 @@ interface FiltersBarProps {
  * currently selected value is always kept in the option list even when it is
  * not present in the loaded page, so the URL state stays consistent.
  */
-export function FiltersBar({
-  values,
-  options,
-  onChange,
-  onClearAll,
-  disabled,
-}: FiltersBarProps) {
+export function FiltersBar({ values, options, onChange, onClearAll, disabled }: FiltersBarProps) {
   const hasAny = values.type || values.category || values.status;
 
   return (

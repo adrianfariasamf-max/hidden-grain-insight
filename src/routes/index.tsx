@@ -53,9 +53,9 @@ function OverviewRoute() {
               Explore the Hidden Grain repository
             </h2>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Hidden Grain projects a canonical knowledge repository as a
-              queryable read-only surface. Browse objects, follow relationships,
-              and inspect the graph — no authoring, no side effects.
+              Hidden Grain projects a canonical knowledge repository as a queryable read-only
+              surface. Browse objects, follow relationships, and inspect the graph — no authoring,
+              no side effects.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -96,10 +96,7 @@ function OverviewRoute() {
             <ErrorState error={query.error} onRetry={() => query.refetch()} />
           ) : query.data ? (
             <div className="flex flex-col gap-4">
-              <SystemHealthCard
-                health={query.data}
-                isRefreshing={isRefreshing}
-              />
+              <SystemHealthCard health={query.data} isRefreshing={isRefreshing} />
               <RepositoryMetrics health={query.data} includeSchema />
             </div>
           ) : null}

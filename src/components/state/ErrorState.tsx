@@ -15,8 +15,7 @@ function describe(error: unknown): { title: string; message: string } {
   if (error instanceof ApiNetworkError) {
     return {
       title: "Network error",
-      message:
-        "Could not reach the Hidden Grain API. Check your connection and VITE_HG_API_BASE.",
+      message: "Could not reach the Hidden Grain API. Check your connection and VITE_HG_API_BASE.",
     };
   }
   if (error instanceof ApiError) {

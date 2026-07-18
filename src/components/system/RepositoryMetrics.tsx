@@ -16,9 +16,7 @@ export function RepositoryMetrics({ health, includeSchema }: RepositoryMetricsPr
       <MetricCard label="Objects" value={health.objects} />
       <MetricCard label="Nodes" value={health.nodes} />
       <MetricCard label="Edges" value={health.edges} />
-      {includeSchema ? (
-        <MetricCard label="Schema" value={health.schemaVersion} mono />
-      ) : null}
+      {includeSchema ? <MetricCard label="Schema" value={health.schemaVersion} mono /> : null}
     </div>
   );
 }

@@ -21,14 +21,9 @@ export function RuntimeInfo({ health }: RuntimeInfoProps) {
     <dl className="grid gap-3 rounded-lg border border-border/60 bg-card px-4 py-4 sm:grid-cols-3">
       {rows.map((row) => (
         <div key={row.label} className="flex min-w-0 flex-col gap-0.5">
-          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            {row.label}
-          </dt>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">{row.label}</dt>
           <dd
-            className={
-              "min-w-0 break-all text-sm text-foreground" +
-              (row.mono ? " font-mono" : "")
-            }
+            className={"min-w-0 break-all text-sm text-foreground" + (row.mono ? " font-mono" : "")}
           >
             {row.value}
           </dd>

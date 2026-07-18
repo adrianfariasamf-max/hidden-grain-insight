@@ -176,9 +176,8 @@ function ExplorerRoute() {
           />
 
           <p className="text-[11px] text-muted-foreground">
-            Filter options are derived from the loaded page — the API does not
-            expose a facets endpoint yet, so this list is auxiliary and not a
-            canonical catalog.
+            Filter options are derived from the loaded page — the API does not expose a facets
+            endpoint yet, so this list is auxiliary and not a canonical catalog.
           </p>
         </div>
 

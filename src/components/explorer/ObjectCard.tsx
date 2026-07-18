@@ -29,9 +29,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
               {object.type}
             </span>
           ) : null}
-          <h3 className="truncate text-sm font-semibold text-foreground">
-            {object.title}
-          </h3>
+          <h3 className="truncate text-sm font-semibold text-foreground">{object.title}</h3>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {object.status ? <StatusBadge status={object.status} /> : null}
@@ -48,9 +46,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
 
       <footer className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-2 text-[11px] text-muted-foreground">
         <span className="font-mono">{object.id}</span>
-        {object.version ? (
-          <span className="font-mono">v{object.version}</span>
-        ) : null}
+        {object.version ? <span className="font-mono">v{object.version}</span> : null}
         {typeof object.relationshipCount === "number" ? (
           <span className="inline-flex items-center gap-1">
             <Link2 className="h-3 w-3" aria-hidden />
