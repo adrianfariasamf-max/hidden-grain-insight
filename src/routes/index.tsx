@@ -27,6 +27,7 @@ export const Route = createFileRoute("/")({
 function OverviewRoute() {
   const query = useQuery(healthQuery());
   const isInitialLoading = query.isPending && !query.data;
+  const isRefreshing = query.isFetching && !query.isPending;
 
   return (
     <>
@@ -91,13 +92,13 @@ function OverviewRoute() {
 
           {isInitialLoading ? (
             <LoadingState label="Loading system status…" />
-          ) : query.isError ? (
+          ) : query.isError && !query.data ? (
             <ErrorState error={query.error} onRetry={() => query.refetch()} />
           ) : query.data ? (
             <div className="flex flex-col gap-4">
               <SystemHealthCard
                 health={query.data}
-                isRefreshing={query.isFetching && !query.isPending}
+                isRefreshing={isRefreshing}
               />
               <RepositoryMetrics health={query.data} includeSchema />
             </div>
