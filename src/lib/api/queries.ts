@@ -8,8 +8,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { api } from "./client";
-import type { ObjectsQueryParams } from "./types";
-import { normalizeObjectsParams } from "./validation";
+import type { GraphQueryParams, ObjectsQueryParams } from "./types";
+import { normalizeGraphParams, normalizeObjectsParams } from "./validation";
 
 export const hgKeys = {
   all: ["hg"] as const,
@@ -17,7 +17,7 @@ export const hgKeys = {
   objects: () => [...hgKeys.all, "objects"] as const,
   objectList: (params: ObjectsQueryParams) => [...hgKeys.objects(), "list", params] as const,
   object: (id: string) => [...hgKeys.objects(), "detail", id] as const,
-  graph: () => [...hgKeys.all, "graph"] as const,
+  graph: (params: GraphQueryParams = {}) => [...hgKeys.all, "graph", params] as const,
 };
 
 export const healthQuery = () =>
@@ -43,8 +43,10 @@ export const objectQuery = (id: string) =>
 // Alias — the Phase 3 brief refers to this as `objectDetailQuery`.
 export const objectDetailQuery = objectQuery;
 
-export const graphQuery = () =>
-  queryOptions({
-    queryKey: hgKeys.graph(),
-    queryFn: ({ signal }) => api.graph(signal),
+export const graphQuery = (params: GraphQueryParams = {}) => {
+  const normalized = normalizeGraphParams(params);
+  return queryOptions({
+    queryKey: hgKeys.graph(normalized),
+    queryFn: ({ signal }) => api.graph(normalized, signal),
   });
+};
