@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useMemo, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { RelationshipList } from "@/components/objects/RelationshipList";
@@ -18,6 +18,7 @@ import {
   getDisplayVersion,
   toKnowledgeObject,
   toRelationshipFromViewpoint,
+  dedupRelationshipsById,
   type KnowledgeObject,
   type Relationship,
 } from "@/lib/domain";
@@ -161,15 +162,38 @@ function ObjectDetailBody({
   const path = object.metadata.path ?? object.source;
   const relationshipCount = object.metadata.relationshipCount ?? data.object.relationshipCount;
 
-  // Normalize wire edges to canonical Relationships once. Direction is
-  // derived from the current viewpoint (this object) — the outgoing/incoming
-  // split from the projection is passed as a hint so we honour it verbatim.
-  const outgoing: Relationship[] = relationships.outgoing.map((e) =>
-    toRelationshipFromViewpoint(e, object.id, "outgoing"),
-  );
-  const incoming: Relationship[] = relationships.incoming.map((e) =>
-    toRelationshipFromViewpoint(e, object.id, "incoming"),
-  );
+  // Normalize wire edges to canonical Relationships from the viewpoint of
+  // the current object, then stable-dedup exact-id duplicates. Nothing
+  // else is collapsed — two edges sharing (source, target, type) but
+  // with different ids remain distinct.
+  const { outgoing, incoming, summary } = useMemo(() => {
+    const outRaw: Relationship[] = relationships.outgoing.map((e) =>
+      toRelationshipFromViewpoint(e, object.id, "outgoing"),
+    );
+    const inRaw: Relationship[] = relationships.incoming.map((e) =>
+      toRelationshipFromViewpoint(e, object.id, "incoming"),
+    );
+    const out = dedupRelationshipsById(outRaw);
+    const inc = dedupRelationshipsById(inRaw);
+    const unresolved =
+      out.items.filter((r) => r.status === "unresolved").length +
+      inc.items.filter((r) => r.status === "unresolved").length;
+    return {
+      outgoing: out.items,
+      incoming: inc.items,
+      summary: {
+        outgoingCount: out.items.length,
+        backlinksCount: inc.items.length,
+        total: out.items.length + inc.items.length,
+        unresolved,
+        droppedDuplicates: out.removed + inc.removed,
+      },
+    };
+  }, [relationships, object.id]);
+
+  const [filter, setFilter] = useState<"all" | "outgoing" | "backlinks">("all");
+  const showOutgoing = filter !== "backlinks";
+  const showBacklinks = filter !== "outgoing";
 
   return (
     <div className="flex flex-col gap-8">
@@ -209,20 +233,33 @@ function ObjectDetailBody({
             {relationshipCount ?? 0} total
           </span>
         </header>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <RelationshipList
-            title="Outgoing"
-            relationships={outgoing}
-            currentId={object.id}
-            emptyLabel="No outgoing relationships"
+        <RelationshipsSummary summary={summary} />
+        <RelationshipsFilter value={filter} onChange={setFilter} summary={summary} />
+        {summary.total === 0 ? (
+          <EmptyState
+            title="No relationships"
+            description="This object has no outgoing relationships or backlinks."
           />
-          <RelationshipList
-            title="Incoming"
-            relationships={incoming}
-            currentId={object.id}
-            emptyLabel="No incoming relationships"
-          />
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {showOutgoing ? (
+              <RelationshipList
+                title="Outgoing"
+                relationships={outgoing}
+                currentId={object.id}
+                emptyLabel="No outgoing relationships"
+              />
+            ) : null}
+            {showBacklinks ? (
+              <RelationshipList
+                title="Backlinks"
+                relationships={incoming}
+                currentId={object.id}
+                emptyLabel="No backlinks"
+              />
+            ) : null}
+          </div>
+        )}
       </section>
 
       {/* Source metadata */}
