@@ -6,10 +6,7 @@ import { Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
-import {
-  DiscoveryFeed,
-  type DiscoveryFeedGrouping,
-} from "@/components/discovery/DiscoveryFeed";
+import { DiscoveryFeed, type DiscoveryFeedGrouping } from "@/components/discovery/DiscoveryFeed";
 import { graphQuery } from "@/lib/api/queries";
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
 import { toRelationship } from "@/lib/domain";
@@ -83,8 +80,8 @@ function DiscoverRoute() {
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
                 <span className="font-mono">
-                  {summary.total} insight{summary.total === 1 ? "" : "s"} · {summary.distinctObjects}{" "}
-                  object{summary.distinctObjects === 1 ? "" : "s"}
+                  {summary.total} insight{summary.total === 1 ? "" : "s"} ·{" "}
+                  {summary.distinctObjects} object{summary.distinctObjects === 1 ? "" : "s"}
                 </span>
               </div>
               <div

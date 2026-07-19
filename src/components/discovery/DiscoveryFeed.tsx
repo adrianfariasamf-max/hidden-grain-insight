@@ -74,10 +74,7 @@ function DiscoveryFeedImpl({
             <ul className="grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
               {bucket.map((insight) => (
                 <li key={insight.id}>
-                  <DiscoveryCard
-                    insight={toInsightViewModel(insight)}
-                    nodesById={nodesById}
-                  />
+                  <DiscoveryCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
                 </li>
               ))}
             </ul>
