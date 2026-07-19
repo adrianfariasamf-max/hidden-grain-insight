@@ -1,10 +1,10 @@
 import { EmptyState } from "@/components/state/EmptyState";
-import type { GraphNode } from "@/lib/api/types";
+import type { KnowledgeObject } from "@/lib/domain";
 
 import { GraphNodeItem } from "./GraphNodeItem";
 
 interface GraphNodeListProps {
-  nodes: GraphNode[];
+  nodes: KnowledgeObject[];
   emptyLabel: string;
   emptyDescription?: string;
 }
