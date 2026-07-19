@@ -24,7 +24,6 @@ import {
   normalizeSearch,
 } from "@/lib/api/validation";
 import type { ObjectsQueryParams } from "@/lib/api/types";
-import { useEffect as useEffectFacets } from "react";
 
 const DEFAULT_LIMIT = 20;
 
@@ -113,7 +112,7 @@ function ExplorerRoute() {
   // Feed the session-scoped facet accumulator so filter options stay stable
   // across pages and searches, instead of collapsing to only what's visible
   // on the current page.
-  useEffectFacets(() => {
+  useEffect(() => {
     const items = query.data?.items;
     if (!items || items.length === 0) return;
     recordFacets({
