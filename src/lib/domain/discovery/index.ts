@@ -20,3 +20,4 @@ export * from "./metrics";
 export * from "./analyzer";
 export * from "./ranking";
 export * from "./selectors";
+export * from "./actions";

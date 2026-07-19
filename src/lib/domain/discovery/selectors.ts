@@ -9,7 +9,7 @@
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import { getInsightTypeDescriptor, type InsightTypeDescriptor } from "./ontology";
 import type { DiscoveryInsight, InsightCategory, InsightPriority, InsightType } from "./types";
-import { rankInsights } from "./ranking";
+import { compareInsights, rankInsights } from "./ranking";
 
 /** All insights that reference the given object id (as primary or secondary). */
 export function selectInsightsForObject(
@@ -157,4 +157,121 @@ export function toInsightViewModel(insight: DiscoveryInsight): DiscoveryInsightV
  *  Consumers can assert on this in tests; the analyzer guarantees it. */
 export function isExplained(insight: DiscoveryInsight): boolean {
   return insight.why.trim().length > 0 && insight.evidence.length > 0;
+}
+
+// ---------------------------------------------------------------------------
+// Workspace filtering (EPIC-004.3).
+//
+// Every filter dimension is optional. An empty set means "no filter" for
+// that dimension. `query` is a case-insensitive substring match against
+// the fields a human would recognise: type id, descriptor display name,
+// deterministic `why` text, and the involved object ids. All predicates
+// are pure and O(n).
+// ---------------------------------------------------------------------------
+
+export interface DiscoveryFilters {
+  readonly query: string;
+  readonly priorities: ReadonlySet<InsightPriority>;
+  readonly categories: ReadonlySet<InsightCategory>;
+  readonly types: ReadonlySet<InsightType>;
+}
+
+export const EMPTY_DISCOVERY_FILTERS: DiscoveryFilters = {
+  query: "",
+  priorities: new Set(),
+  categories: new Set(),
+  types: new Set(),
+};
+
+/** Count of active filter dimensions — mirrors `ActiveFiltersBar`. */
+export function countActiveDiscoveryFilters(filters: DiscoveryFilters): number {
+  let n = 0;
+  if (filters.query.trim().length > 0) n += 1;
+  if (filters.priorities.size > 0) n += 1;
+  if (filters.categories.size > 0) n += 1;
+  if (filters.types.size > 0) n += 1;
+  return n;
+}
+
+function insightMatchesQuery(insight: DiscoveryInsight, needle: string): boolean {
+  if (!needle) return true;
+  const q = needle.toLowerCase();
+  if (insight.type.toLowerCase().includes(q)) return true;
+  if (insight.why.toLowerCase().includes(q)) return true;
+  const descriptor = getInsightTypeDescriptor(insight.type);
+  if (descriptor.displayName.toLowerCase().includes(q)) return true;
+  if (descriptor.category.toLowerCase().includes(q)) return true;
+  for (const id of insight.objectIds) {
+    if (id.toLowerCase().includes(q)) return true;
+  }
+  return false;
+}
+
+/** Pure predicate — a single insight against the workspace filters. */
+export function matchesDiscoveryFilters(
+  insight: DiscoveryInsight,
+  filters: DiscoveryFilters,
+): boolean {
+  if (filters.priorities.size > 0 && !filters.priorities.has(insight.priority)) return false;
+  if (filters.types.size > 0 && !filters.types.has(insight.type)) return false;
+  if (filters.categories.size > 0) {
+    const cat = getInsightTypeDescriptor(insight.type).category;
+    if (!filters.categories.has(cat)) return false;
+  }
+  const needle = filters.query.trim().toLowerCase();
+  if (needle && !insightMatchesQuery(insight, needle)) return false;
+  return true;
+}
+
+/** Apply the workspace filters. Ordering is delegated to `sortInsights`
+ *  — this selector never sorts. */
+export function selectInsightsByFilters(
+  insights: readonly DiscoveryInsight[],
+  filters: DiscoveryFilters,
+): DiscoveryInsight[] {
+  return insights.filter((i) => matchesDiscoveryFilters(i, filters));
+}
+
+// ---------------------------------------------------------------------------
+// Sorting modes for the workspace list.
+// `ranked` is the canonical order from `rankInsights` (priority → score →
+// type → id). Alternate modes are pure comparators built on the same
+// deterministic tiebreakers so ordering stays stable.
+// ---------------------------------------------------------------------------
+
+export type DiscoverySortMode = "ranked" | "score-desc" | "score-asc" | "type";
+
+function compareByScoreDesc(a: DiscoveryInsight, b: DiscoveryInsight): number {
+  if (a.score !== b.score) return b.score - a.score;
+  return compareInsights(a, b);
+}
+
+function compareByScoreAsc(a: DiscoveryInsight, b: DiscoveryInsight): number {
+  if (a.score !== b.score) return a.score - b.score;
+  return compareInsights(a, b);
+}
+
+function compareByType(a: DiscoveryInsight, b: DiscoveryInsight): number {
+  const da = getInsightTypeDescriptor(a.type);
+  const db = getInsightTypeDescriptor(b.type);
+  if (da.order !== db.order) return da.order - db.order;
+  return compareInsights(a, b);
+}
+
+/** Deterministic sort with a chosen mode. Never mutates input. */
+export function sortInsights(
+  insights: readonly DiscoveryInsight[],
+  mode: DiscoverySortMode,
+): DiscoveryInsight[] {
+  switch (mode) {
+    case "score-desc":
+      return [...insights].sort(compareByScoreDesc);
+    case "score-asc":
+      return [...insights].sort(compareByScoreAsc);
+    case "type":
+      return [...insights].sort(compareByType);
+    case "ranked":
+    default:
+      return rankInsights(insights);
+  }
 }
