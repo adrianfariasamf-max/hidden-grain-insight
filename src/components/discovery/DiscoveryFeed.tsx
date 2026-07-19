@@ -50,9 +50,10 @@ function DiscoveryFeedImpl({
 
   if (grouped) {
     // Selectors already emit buckets in deterministic order — we only iterate.
-    const entries = Array.from(grouped.buckets.entries()) as Array<
-      [InsightPriority | InsightCategory, DiscoveryInsight[]]
-    >;
+    const entries: Array<[InsightPriority | InsightCategory, DiscoveryInsight[]]> = [];
+    grouped.buckets.forEach((bucket, key) => {
+      entries.push([key as InsightPriority | InsightCategory, bucket]);
+    });
     return (
       <div className="flex flex-col gap-6">
         {entries.map(([key, bucket]) => (
