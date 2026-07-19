@@ -2,7 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { Search, X, Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -14,17 +14,30 @@ import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { objectListQuery } from "@/lib/api/queries";
+import { getFacets, recordFacets } from "@/lib/api/facets";
+import {
+  LIMIT_MAX,
+  LIMIT_MIN,
+  normalizeFilter,
+  normalizeLimit,
+  normalizeOffset,
+  normalizeSearch,
+} from "@/lib/api/validation";
 import type { ObjectsQueryParams } from "@/lib/api/types";
 
 const DEFAULT_LIMIT = 20;
 
+// URL search schema mirrors the normalization rules in `lib/api/validation`.
+// `fallback` ensures a malformed URL never crashes the route.
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   type: fallback(z.string(), "").default(""),
   category: fallback(z.string(), "").default(""),
   status: fallback(z.string(), "").default(""),
-  offset: fallback(z.number().int(), 0).default(0),
-  limit: fallback(z.number().int(), DEFAULT_LIMIT).default(DEFAULT_LIMIT),
+  offset: fallback(z.number().int().min(0), 0).default(0),
+  limit: fallback(z.number().int().min(LIMIT_MIN).max(LIMIT_MAX), DEFAULT_LIMIT).default(
+    DEFAULT_LIMIT,
+  ),
 });
 
 type ExplorerSearch = z.infer<typeof searchSchema>;
@@ -49,11 +62,18 @@ function buildParams(input: {
   offset: number;
   limit: number;
 }): ObjectsQueryParams {
-  const p: ObjectsQueryParams = { offset: input.offset, limit: input.limit };
-  if (input.q) p.q = input.q;
-  if (input.type) p.type = input.type;
-  if (input.category) p.category = input.category;
-  if (input.status) p.status = input.status;
+  const p: ObjectsQueryParams = {
+    offset: normalizeOffset(input.offset),
+    limit: normalizeLimit(input.limit),
+  };
+  const q = normalizeSearch(input.q);
+  if (q) p.q = q;
+  const t = normalizeFilter(input.type);
+  if (t) p.type = t;
+  const c = normalizeFilter(input.category);
+  if (c) p.category = c;
+  const s = normalizeFilter(input.status);
+  if (s) p.status = s;
   return p;
 }
 
@@ -89,16 +109,40 @@ function ExplorerRoute() {
     placeholderData: keepPreviousData,
   });
 
-  const options: FilterOptionSet = useMemo(() => {
-    const items = query.data?.items ?? [];
-    const uniq = (arr: string[]) =>
-      Array.from(new Set(arr.filter((v): v is string => Boolean(v)))).sort();
-    return {
-      types: uniq(items.map((i) => i.type)),
-      categories: uniq(items.map((i) => i.category)),
-      statuses: uniq(items.map((i) => i.status)),
-    };
+  // Feed the session-scoped facet accumulator so filter options stay stable
+  // across pages and searches, instead of collapsing to only what's visible
+  // on the current page.
+  useEffect(() => {
+    const items = query.data?.items;
+    if (!items || items.length === 0) return;
+    recordFacets({
+      types: items.map((i) => i.type),
+      categories: items.map((i) => i.category),
+      statuses: items.map((i) => i.status),
+    });
   }, [query.data]);
+
+  // `getFacets()` reads from a module-level Set that is fed by `recordFacets`
+  // in the effect above. Reading on every render is intentional — the Set is
+  // small (session-scoped facet values) and the returned array is used only
+  // to render <select> options.
+  const options: FilterOptionSet = getFacets();
+
+  // If a filter or search shrinks total below the current offset, clamp to
+  // the last valid page instead of showing an empty page.
+  useEffect(() => {
+    if (!query.data) return;
+    const { total, limit } = query.data;
+    if (total === 0) return;
+    if (search.offset < total) return;
+    const lastPageOffset = Math.max(0, Math.floor((total - 1) / limit) * limit);
+    if (lastPageOffset === search.offset) return;
+    navigate({
+      to: ".",
+      search: (prev: ExplorerSearch) => ({ ...prev, offset: lastPageOffset }),
+      replace: true,
+    });
+  }, [query.data, search.offset, navigate]);
 
   const updateFilters = (patch: Partial<{ type: string; category: string; status: string }>) => {
     navigate({

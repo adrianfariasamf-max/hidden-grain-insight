@@ -12,6 +12,7 @@ import { LoadingState } from "@/components/state/LoadingState";
 import { ApiNotFoundError } from "@/lib/api/errors";
 import { objectDetailQuery } from "@/lib/api/queries";
 import type { ObjectDetailResponse } from "@/lib/api/types";
+import { isValidKnowledgeObjectId } from "@/lib/api/validation";
 
 export const Route = createFileRoute("/objects/$id")({
   head: () => ({
@@ -25,7 +26,10 @@ export const Route = createFileRoute("/objects/$id")({
 
 function ObjectDetailRoute() {
   const { id } = Route.useParams();
-  const query = useQuery(objectDetailQuery(id));
+  const idIsValid = isValidKnowledgeObjectId(id);
+  // Skip the network entirely for locally invalid IDs — no HTTP call is made
+  // and the UI renders a dedicated validation state instead of a 404.
+  const query = useQuery({ ...objectDetailQuery(id), enabled: idIsValid });
 
   return (
     <>
@@ -44,7 +48,9 @@ function ObjectDetailRoute() {
         }
       />
       <section className="px-4 py-6 sm:px-8">
-        {query.isLoading ? (
+        {!idIsValid ? (
+          <InvalidIdView id={id} />
+        ) : query.isLoading ? (
           <LoadingState label="Loading object…" />
         ) : query.error instanceof ApiNotFoundError ? (
           <NotFoundView id={id} />
@@ -55,6 +61,24 @@ function ObjectDetailRoute() {
         ) : null}
       </section>
     </>
+  );
+}
+
+function InvalidIdView({ id }: { id: string }) {
+  return (
+    <EmptyState
+      title="Invalid object ID"
+      description={`"${id}" is not a valid Knowledge Object ID. No request was sent to the API.`}
+      action={
+        <Link
+          to="/explorer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground hover:bg-accent/20"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+          Back to Explorer
+        </Link>
+      }
+    />
   );
 }
 
