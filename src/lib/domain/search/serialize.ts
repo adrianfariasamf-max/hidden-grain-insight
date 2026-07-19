@@ -21,9 +21,7 @@ function sortedStringify(value: unknown): string {
   );
   entries.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
   return (
-    "{" +
-    entries.map(([k, v]) => JSON.stringify(k) + ":" + sortedStringify(v)).join(",") +
-    "}"
+    "{" + entries.map(([k, v]) => JSON.stringify(k) + ":" + sortedStringify(v)).join(",") + "}"
   );
 }
 

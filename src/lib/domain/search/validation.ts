@@ -25,7 +25,8 @@ export function validateSearchQuery(input: unknown): SearchQueryValidation {
   if (input && typeof input === "object" && !Array.isArray(input)) {
     const before = serializeSearchQuery(input as SearchQuery);
     const after = serializeSearchQuery(normalized);
-    if (before !== after) warnings.push("Query was normalized: some fragments were coerced or dropped.");
+    if (before !== after)
+      warnings.push("Query was normalized: some fragments were coerced or dropped.");
   } else if (input !== undefined && input !== null) {
     warnings.push("Input was not an object; treated as empty query.");
   }

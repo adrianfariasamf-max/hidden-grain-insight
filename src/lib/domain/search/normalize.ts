@@ -72,8 +72,10 @@ function normDateRanges(v: unknown): SearchDateRanges | undefined {
 function normPagination(v: unknown): SearchPagination | undefined {
   if (!v || typeof v !== "object") return undefined;
   const src = v as Record<string, unknown>;
-  const rawOffset = typeof src.offset === "number" && Number.isFinite(src.offset) ? Math.floor(src.offset) : 0;
-  const rawLimit = typeof src.limit === "number" && Number.isFinite(src.limit) ? Math.floor(src.limit) : NaN;
+  const rawOffset =
+    typeof src.offset === "number" && Number.isFinite(src.offset) ? Math.floor(src.offset) : 0;
+  const rawLimit =
+    typeof src.limit === "number" && Number.isFinite(src.limit) ? Math.floor(src.limit) : NaN;
   if (!Number.isFinite(rawLimit) || rawLimit <= 0) return undefined;
   return {
     offset: rawOffset < 0 ? 0 : rawOffset,

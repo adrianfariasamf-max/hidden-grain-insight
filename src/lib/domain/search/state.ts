@@ -81,7 +81,10 @@ export function diffSearchQuery(
   const keys = new Set<string>([...Object.keys(na), ...Object.keys(nb)]);
   const changed: string[] = [];
   for (const k of keys) {
-    if (serializeSearchQuery({ [k]: na[k] } as SearchQuery) !== serializeSearchQuery({ [k]: nb[k] } as SearchQuery)) {
+    if (
+      serializeSearchQuery({ [k]: na[k] } as SearchQuery) !==
+      serializeSearchQuery({ [k]: nb[k] } as SearchQuery)
+    ) {
       changed.push(k);
     }
   }
