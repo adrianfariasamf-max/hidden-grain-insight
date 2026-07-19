@@ -11,8 +11,13 @@ import { GraphNodeList } from "@/components/graph/GraphNodeList";
 import { GraphEdgeList } from "@/components/graph/GraphEdgeList";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import { graphQuery } from "@/lib/api/queries";
-import type { GraphEdge, KnowledgeObjectId } from "@/lib/api/types";
-import { fromGraphNode, type KnowledgeObject } from "@/lib/domain";
+import type { KnowledgeObjectId } from "@/lib/api/types";
+import {
+  fromGraphNode,
+  toRelationship,
+  type KnowledgeObject,
+  type Relationship,
+} from "@/lib/domain";
 
 export const Route = createFileRoute("/graph")({
   head: () => ({
@@ -97,19 +102,27 @@ function GraphRoute() {
     return canonicalNodes.filter((n) => n.type === filters.nodeType);
   }, [canonicalNodes, filters.nodeType]);
 
-  const filteredEdges = useMemo<GraphEdge[]>(() => {
-    if (!graph) return [];
-    // Skip the walk entirely when no edge filter is active — keep the source
-    // reference so `memo(GraphEdgeItem)` sees the same instances.
-    if (!filters.edgeType && filters.resolution === "all") return graph.edges;
-    const wantResolved =
-      filters.resolution === "resolved" ? true : filters.resolution === "unresolved" ? false : null;
-    return graph.edges.filter((e) => {
-      if (filters.edgeType && e.type !== filters.edgeType) return false;
-      if (wantResolved !== null && e.resolved !== wantResolved) return false;
+  // Normalize wire edges → canonical Relationships once. Identity is stable
+  // across filter changes so `memo(GraphEdgeItem)` stays effective.
+  const canonicalRelationships = useMemo<Relationship[]>(
+    () => (graph ? graph.edges.map(toRelationship) : []),
+    [graph],
+  );
+
+  const filteredRelationships = useMemo<Relationship[]>(() => {
+    if (!filters.edgeType && filters.resolution === "all") return canonicalRelationships;
+    const wantStatus =
+      filters.resolution === "resolved"
+        ? "resolved"
+        : filters.resolution === "unresolved"
+          ? "unresolved"
+          : null;
+    return canonicalRelationships.filter((r) => {
+      if (filters.edgeType && r.type !== filters.edgeType) return false;
+      if (wantStatus !== null && r.status !== wantStatus) return false;
       return true;
     });
-  }, [graph, filters.edgeType, filters.resolution]);
+  }, [canonicalRelationships, filters.edgeType, filters.resolution]);
 
   const knownNodeIds = useMemo<ReadonlySet<KnowledgeObjectId>>(
     () => new Set(canonicalNodes.map((n) => n.id)),
@@ -122,12 +135,15 @@ function GraphRoute() {
     () => (filteredNodes.length > nodeLimit ? filteredNodes.slice(0, nodeLimit) : filteredNodes),
     [filteredNodes, nodeLimit],
   );
-  const visibleEdges = useMemo(
-    () => (filteredEdges.length > edgeLimit ? filteredEdges.slice(0, edgeLimit) : filteredEdges),
-    [filteredEdges, edgeLimit],
+  const visibleRelationships = useMemo(
+    () =>
+      filteredRelationships.length > edgeLimit
+        ? filteredRelationships.slice(0, edgeLimit)
+        : filteredRelationships,
+    [filteredRelationships, edgeLimit],
   );
   const nodesTruncated = filteredNodes.length > visibleNodes.length;
-  const edgesTruncated = filteredEdges.length > visibleEdges.length;
+  const edgesTruncated = filteredRelationships.length > visibleRelationships.length;
 
   const showMoreNodes = useCallback(() => setNodeLimit((n) => n + RENDER_CAP_STEP), []);
   const showMoreEdges = useCallback(() => setEdgeLimit((n) => n + RENDER_CAP_STEP), []);
@@ -157,7 +173,7 @@ function GraphRoute() {
               onChange={patchFilters}
               onClearAll={clearFilters}
               visibleNodes={filteredNodes.length}
-              visibleEdges={filteredEdges.length}
+              visibleEdges={filteredRelationships.length}
             />
 
             {query.isFetching ? (
@@ -208,11 +224,11 @@ function GraphRoute() {
                   Relationships
                 </h2>
                 <span className="font-mono text-[11px] text-muted-foreground">
-                  {filteredEdges.length} / {graph.edgeCount}
+                  {filteredRelationships.length} / {graph.edgeCount}
                 </span>
               </header>
               <GraphEdgeList
-                edges={visibleEdges}
+                relationships={visibleRelationships}
                 knownNodeIds={knownNodeIds}
                 emptyLabel={
                   graph.edgeCount === 0
@@ -231,8 +247,8 @@ function GraphRoute() {
               />
               {edgesTruncated ? (
                 <ShowMore
-                  visible={visibleEdges.length}
-                  total={filteredEdges.length}
+                  visible={visibleRelationships.length}
+                  total={filteredRelationships.length}
                   onClick={showMoreEdges}
                   label="relationships"
                 />

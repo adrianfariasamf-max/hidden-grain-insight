@@ -17,7 +17,9 @@ import {
   fromGraphNode,
   getDisplayVersion,
   toKnowledgeObject,
+  toRelationshipFromViewpoint,
   type KnowledgeObject,
+  type Relationship,
 } from "@/lib/domain";
 
 export const Route = createFileRoute("/objects/$id")({
@@ -159,6 +161,16 @@ function ObjectDetailBody({
   const path = object.metadata.path ?? object.source;
   const relationshipCount = object.metadata.relationshipCount ?? data.object.relationshipCount;
 
+  // Normalize wire edges to canonical Relationships once. Direction is
+  // derived from the current viewpoint (this object) — the outgoing/incoming
+  // split from the projection is passed as a hint so we honour it verbatim.
+  const outgoing: Relationship[] = relationships.outgoing.map((e) =>
+    toRelationshipFromViewpoint(e, object.id, "outgoing"),
+  );
+  const incoming: Relationship[] = relationships.incoming.map((e) =>
+    toRelationshipFromViewpoint(e, object.id, "incoming"),
+  );
+
   return (
     <div className="flex flex-col gap-8">
       {/* Canonical identity + primary metadata */}
@@ -200,15 +212,13 @@ function ObjectDetailBody({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <RelationshipList
             title="Outgoing"
-            direction="outgoing"
-            edges={relationships.outgoing}
+            relationships={outgoing}
             currentId={object.id}
             emptyLabel="No outgoing relationships"
           />
           <RelationshipList
             title="Incoming"
-            direction="incoming"
-            edges={relationships.incoming}
+            relationships={incoming}
             currentId={object.id}
             emptyLabel="No incoming relationships"
           />

@@ -1,28 +1,29 @@
 import { EmptyState } from "@/components/state/EmptyState";
-import type { GraphEdge, KnowledgeObjectId } from "@/lib/api/types";
+import type { KnowledgeObjectId } from "@/lib/api/types";
+import type { Relationship } from "@/lib/domain";
 
 import { GraphEdgeItem } from "./GraphEdgeItem";
 
 interface GraphEdgeListProps {
-  edges: GraphEdge[];
+  relationships: Relationship[];
   knownNodeIds: ReadonlySet<KnowledgeObjectId>;
   emptyLabel: string;
   emptyDescription?: string;
 }
 
 export function GraphEdgeList({
-  edges,
+  relationships,
   knownNodeIds,
   emptyLabel,
   emptyDescription,
 }: GraphEdgeListProps) {
-  if (edges.length === 0) {
+  if (relationships.length === 0) {
     return <EmptyState title={emptyLabel} description={emptyDescription} />;
   }
   return (
     <ul className="flex flex-col gap-2">
-      {edges.map((e) => (
-        <GraphEdgeItem key={e.id} edge={e} knownNodeIds={knownNodeIds} />
+      {relationships.map((r) => (
+        <GraphEdgeItem key={r.id} relationship={r} knownNodeIds={knownNodeIds} />
       ))}
     </ul>
   );
