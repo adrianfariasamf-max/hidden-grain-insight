@@ -2,7 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { Search, X, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -25,7 +25,6 @@ import {
 } from "@/lib/api/validation";
 import type { ObjectsQueryParams } from "@/lib/api/types";
 import { toKnowledgeObject } from "@/lib/domain";
-import { useMemo } from "react";
 
 const DEFAULT_LIMIT = 20;
 
