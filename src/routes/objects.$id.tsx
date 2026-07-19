@@ -318,3 +318,97 @@ function TagCloud({ label, items }: { label: string; items: readonly string[] })
     </div>
   );
 }
+
+interface RelationshipsSummaryData {
+  outgoingCount: number;
+  backlinksCount: number;
+  total: number;
+  unresolved: number;
+  droppedDuplicates: number;
+}
+
+function RelationshipsSummary({ summary }: { summary: RelationshipsSummaryData }) {
+  return (
+    <dl
+      className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground"
+      aria-label="Relationships summary"
+    >
+      <SummaryChip label="Total" value={summary.total} />
+      <SummaryChip label="Outgoing" value={summary.outgoingCount} />
+      <SummaryChip label="Backlinks" value={summary.backlinksCount} />
+      {summary.unresolved > 0 ? (
+        <SummaryChip label="Unresolved" value={summary.unresolved} tone="warning" />
+      ) : null}
+      {summary.droppedDuplicates > 0 ? (
+        <span className="text-[10px] italic text-muted-foreground">
+          {summary.droppedDuplicates} duplicate{summary.droppedDuplicates === 1 ? "" : "s"} hidden
+        </span>
+      ) : null}
+    </dl>
+  );
+}
+
+function SummaryChip({
+  label,
+  value,
+  tone = "neutral",
+}: {
+  label: string;
+  value: number;
+  tone?: "neutral" | "warning";
+}) {
+  const toneClass = tone === "warning" ? "text-warning" : "text-foreground";
+  return (
+    <div className="inline-flex items-baseline gap-1.5">
+      <dt className="uppercase tracking-wide">{label}</dt>
+      <dd className={`font-mono text-xs ${toneClass}`}>{value}</dd>
+    </div>
+  );
+}
+
+type RelationshipsFilterValue = "all" | "outgoing" | "backlinks";
+
+function RelationshipsFilter({
+  value,
+  onChange,
+  summary,
+}: {
+  value: RelationshipsFilterValue;
+  onChange: (next: RelationshipsFilterValue) => void;
+  summary: RelationshipsSummaryData;
+}) {
+  const options: { key: RelationshipsFilterValue; label: string; count: number }[] = [
+    { key: "all", label: "All", count: summary.total },
+    { key: "outgoing", label: "Outgoing", count: summary.outgoingCount },
+    { key: "backlinks", label: "Backlinks", count: summary.backlinksCount },
+  ];
+  return (
+    <div
+      role="tablist"
+      aria-label="Filter relationships"
+      className="inline-flex flex-wrap gap-1 rounded-md border border-border/60 bg-card/40 p-1"
+    >
+      {options.map((opt) => {
+        const active = value === opt.key;
+        return (
+          <button
+            key={opt.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            aria-label={`${opt.label}: ${opt.count}`}
+            onClick={() => onChange(opt.key)}
+            className={
+              active
+                ? "inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-[11px] font-medium bg-accent/30 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                : "inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-[11px] text-muted-foreground hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            }
+          >
+            <span>{opt.label}</span>
+            <span className="font-mono text-[10px] opacity-70">{opt.count}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
