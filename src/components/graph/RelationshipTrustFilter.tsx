@@ -63,12 +63,6 @@ export function RelationshipTrustFilter({
   const showStatus = summary.hasMeaningfulStatus;
   const showConfidence = summary.hasConfidence;
 
-  if (!showProvenance && !showStatus && !showConfidence) return null;
-
-  const thresholdActive = minConfidencePct > 0;
-  const hasSelection =
-    provSet.size > 0 || statusSet.size > 0 || thresholdActive;
-
   const handleProvenance = useCallback(
     (id: ProvenanceFilterValue) => () => onToggleProvenance(id),
     [onToggleProvenance],
@@ -77,6 +71,12 @@ export function RelationshipTrustFilter({
     (id: RelationshipStatus) => () => onToggleStatus(id),
     [onToggleStatus],
   );
+
+  if (!showProvenance && !showStatus && !showConfidence) return null;
+
+  const thresholdActive = minConfidencePct > 0;
+  const hasSelection =
+    provSet.size > 0 || statusSet.size > 0 || thresholdActive;
 
   return (
     <section
