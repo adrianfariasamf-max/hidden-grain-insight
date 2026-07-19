@@ -6,13 +6,11 @@ export type ResolutionFilter = "all" | "resolved" | "unresolved";
 
 export interface GraphFilterValues {
   nodeType: string;
-  edgeType: string;
   resolution: ResolutionFilter;
 }
 
 export interface GraphFilterOptions {
   nodeTypes: string[];
-  edgeTypes: string[];
 }
 
 interface GraphFiltersProps {
@@ -20,6 +18,7 @@ interface GraphFiltersProps {
   options: GraphFilterOptions;
   onChange: (patch: Partial<GraphFilterValues>) => void;
   onClearAll: () => void;
+  hasAnyActiveFilters: boolean;
   visibleNodes: number;
   visibleEdges: number;
 }
@@ -28,17 +27,21 @@ interface GraphFiltersProps {
  * Local, in-memory filters over the projection returned by GET /graph.
  * Options are derived only from observed `nodes` / `edges` values —
  * the contract has no facet endpoint.
+ *
+ * Relationship type + category filtering lives in a dedicated
+ * ontology-driven surface (see RelationshipOntologyFilter). This
+ * component owns the node-type and resolution axes only, plus the
+ * cross-cutting "Clear filters" action.
  */
 export function GraphFilters({
   values,
   options,
   onChange,
   onClearAll,
+  hasAnyActiveFilters,
   visibleNodes,
   visibleEdges,
 }: GraphFiltersProps) {
-  const hasAny = values.nodeType !== "" || values.edgeType !== "" || values.resolution !== "all";
-
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card/40 p-3 sm:p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
@@ -47,12 +50,6 @@ export function GraphFilters({
           value={values.nodeType}
           options={options.nodeTypes}
           onChange={(v) => onChange({ nodeType: v })}
-        />
-        <Select
-          label="Edge type"
-          value={values.edgeType}
-          options={options.edgeTypes}
-          onChange={(v) => onChange({ edgeType: v })}
         />
         <label className="flex min-w-[9rem] flex-col gap-1 text-xs">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -68,11 +65,12 @@ export function GraphFilters({
             <option value="unresolved">Unresolved</option>
           </select>
         </label>
-        {hasAny ? (
+        {hasAnyActiveFilters ? (
           <button
             type="button"
             onClick={onClearAll}
             className="inline-flex h-9 items-center gap-1 self-start rounded-md border border-border/60 bg-background px-3 text-xs text-muted-foreground transition-colors hover:text-foreground sm:self-end"
+            aria-label="Clear all graph filters"
           >
             <X className="h-3 w-3" aria-hidden />
             Clear filters
