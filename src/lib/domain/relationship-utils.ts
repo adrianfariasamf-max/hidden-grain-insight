@@ -111,3 +111,20 @@ export function isRelatedEndpointNavigable(
 export function getRelationshipStatusTone(status: RelationshipStatus): "success" | "warning" {
   return status === "resolved" ? "success" : "warning";
 }
+
+/** Stable dedup by relationship id. Preserves the first occurrence order
+ *  and reports how many duplicates were dropped. Only exact-id duplicates
+ *  are removed — two edges sharing (source, target, type) but with
+ *  different ids are kept as distinct relationships. */
+export function dedupRelationshipsById<T extends { id: string }>(
+  input: readonly T[],
+): { items: T[]; removed: number } {
+  const seen = new Set<string>();
+  const items: T[] = [];
+  for (const rel of input) {
+    if (seen.has(rel.id)) continue;
+    seen.add(rel.id);
+    items.push(rel);
+  }
+  return { items, removed: input.length - items.length };
+}
