@@ -34,12 +34,7 @@ import {
 } from "./metrics";
 import { getInsightTypeDescriptor } from "./ontology";
 import { rankInsights } from "./ranking";
-import type {
-  DiscoveryEvidence,
-  DiscoveryInsight,
-  InsightPriority,
-  InsightType,
-} from "./types";
+import type { DiscoveryEvidence, DiscoveryInsight, InsightPriority, InsightType } from "./types";
 
 // ---------------------------------------------------------------------------
 // Input contract
@@ -128,7 +123,10 @@ export function buildGraphIndex(input: DiscoveryGraphInput): GraphIndex {
     degreeStats: { mean: dMean, stddev: dStd, max: dMax, highThreshold },
     customRatio: customRelationshipRatio(input.relationships),
     typeHistogram: relationshipTypeDistribution(input.relationships),
-    categoryHistogram: relationshipCategoryDistribution(input.relationships) as ReadonlyMap<string, number>,
+    categoryHistogram: relationshipCategoryDistribution(input.relationships) as ReadonlyMap<
+      string,
+      number
+    >,
   };
 }
 
@@ -202,11 +200,7 @@ function detectIsolated(index: GraphIndex, out: DiscoveryInsight[]) {
   }
 }
 
-function detectDegree(
-  index: GraphIndex,
-  opts: DiscoveryOptions,
-  out: DiscoveryInsight[],
-) {
+function detectDegree(index: GraphIndex, opts: DiscoveryOptions, out: DiscoveryInsight[]) {
   const { highThreshold, max } = index.degreeStats;
   for (const id of index.nodeIds) {
     const d = index.degrees.get(id);

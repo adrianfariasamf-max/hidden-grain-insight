@@ -8,12 +8,7 @@
 
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import { getInsightTypeDescriptor, type InsightTypeDescriptor } from "./ontology";
-import type {
-  DiscoveryInsight,
-  InsightCategory,
-  InsightPriority,
-  InsightType,
-} from "./types";
+import type { DiscoveryInsight, InsightCategory, InsightPriority, InsightType } from "./types";
 import { rankInsights } from "./ranking";
 
 /** All insights that reference the given object id (as primary or secondary). */

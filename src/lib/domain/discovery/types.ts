@@ -37,12 +37,7 @@ export type InsightType =
 export type InsightPriority = "critical" | "high" | "medium" | "low" | "info";
 
 /** Coarse category for UI grouping. Kept small on purpose. */
-export type InsightCategory =
-  | "connectivity"
-  | "structural"
-  | "quality"
-  | "topology"
-  | "custom";
+export type InsightCategory = "connectivity" | "structural" | "quality" | "topology" | "custom";
 
 /** A single piece of supporting evidence for an insight. Values are
  *  string-or-number so they render trivially in a UI table. */
@@ -59,10 +54,10 @@ export interface DiscoveryEvidence {
  *  probabilistic fields. */
 export interface DiscoveryInsightMetadata {
   /** True when the insight was produced by an experimental / non-canonical
- *    analyzer. Reserved — the deterministic core sets `false`. */
+   *    analyzer. Reserved — the deterministic core sets `false`. */
   experimental?: boolean;
   /** Reserved: origin of the analyzer that produced the insight
- *    ("deterministic", "heuristic", "semantic", "ai"). */
+   *    ("deterministic", "heuristic", "semantic", "ai"). */
   origin?: "deterministic" | "heuristic" | "semantic" | "ai";
   /** Reserved: personalization / user-feedback signals. */
   userSignals?: Readonly<Record<string, unknown>>;

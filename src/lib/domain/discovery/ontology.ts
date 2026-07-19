@@ -28,7 +28,7 @@ export interface InsightTypeDescriptor {
   icon: LucideIcon;
   category: InsightCategory;
   /** Suggested priority for this type — the analyzer may override on a
- *    per-insight basis, but this drives defaults and legends. */
+   *    per-insight basis, but this drives defaults and legends. */
   suggestedPriority: InsightPriority;
   /** Deterministic sort weight — lower renders first in menus/legends. */
   order: number;
@@ -156,7 +156,9 @@ const CUSTOM_FALLBACK: InsightTypeDescriptor = {
 };
 
 /** Canonical accessor. Never throws, never returns undefined. */
-export function getInsightTypeDescriptor(type: InsightType | undefined | null): InsightTypeDescriptor {
+export function getInsightTypeDescriptor(
+  type: InsightType | undefined | null,
+): InsightTypeDescriptor {
   if (!type) return CUSTOM_FALLBACK;
   return LOOKUP.get(type) ?? CUSTOM_FALLBACK;
 }
