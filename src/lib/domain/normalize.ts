@@ -3,13 +3,12 @@
 // `undefined` — we NEVER fabricate values (no synthetic titles, no
 // synthetic dates, no synthetic owners).
 
-import type { GraphEdge, GraphNode, KnowledgeObjectSummary } from "@/lib/api/types";
+import type { GraphNode, KnowledgeObjectSummary } from "@/lib/api/types";
 
 import type {
   KnowledgeObject,
   KnowledgeObjectMetadata,
   KnowledgeObjectVersionRef,
-  KnowledgeRelationship,
 } from "./knowledge-object";
 
 function nonEmpty(value: string | undefined | null): string | undefined {
@@ -66,18 +65,5 @@ export function fromGraphNode(node: GraphNode): KnowledgeObject {
       category: nonEmpty(node.category),
       keywords: [],
     },
-  };
-}
-
-/** Edge → canonical relationship. Currently 1:1 with the wire shape, but
- *  goes through the domain layer so feature code depends only on it. */
-export function toKnowledgeRelationship(edge: GraphEdge): KnowledgeRelationship {
-  return {
-    id: edge.id,
-    source: edge.source,
-    target: edge.target,
-    type: edge.type,
-    description: nonEmpty(edge.description),
-    resolved: edge.resolved,
   };
 }
