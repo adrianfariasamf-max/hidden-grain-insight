@@ -1,12 +1,15 @@
 // TanStack Query key factory + queryOptions helpers.
 // Every read from the UI must go through these — never call `api.*` directly
-// from a component so caching, retries, and keys stay consistent.
+// from a component so caching, retries and keys stay consistent.
+//
+// Retry / staleTime / gcTime are set globally by `queryPolicy`
+// (see `src/router.tsx`). Do not duplicate them here.
 
 import { queryOptions } from "@tanstack/react-query";
 
 import { api } from "./client";
-import { ApiNotFoundError, isTransient } from "./errors";
 import type { ObjectsQueryParams } from "./types";
+import { normalizeObjectsParams } from "./validation";
 
 export const hgKeys = {
   all: ["hg"] as const,
@@ -17,33 +20,24 @@ export const hgKeys = {
   graph: () => [...hgKeys.all, "graph"] as const,
 };
 
-const RETRY_LIMIT = 2;
-function retry(failureCount: number, error: unknown) {
-  if (error instanceof ApiNotFoundError) return false;
-  if (!isTransient(error)) return false;
-  return failureCount < RETRY_LIMIT;
-}
-
 export const healthQuery = () =>
   queryOptions({
     queryKey: hgKeys.health(),
     queryFn: ({ signal }) => api.health(signal),
-    retry,
-    refetchInterval: 15_000,
   });
 
-export const objectListQuery = (params: ObjectsQueryParams) =>
-  queryOptions({
-    queryKey: hgKeys.objectList(params),
-    queryFn: ({ signal }) => api.listObjects(params, signal),
-    retry,
+export const objectListQuery = (params: ObjectsQueryParams) => {
+  const normalized = normalizeObjectsParams(params);
+  return queryOptions({
+    queryKey: hgKeys.objectList(normalized),
+    queryFn: ({ signal }) => api.listObjects(normalized, signal),
   });
+};
 
 export const objectQuery = (id: string) =>
   queryOptions({
     queryKey: hgKeys.object(id),
     queryFn: ({ signal }) => api.getObject(id, signal),
-    retry,
   });
 
 // Alias — the Phase 3 brief refers to this as `objectDetailQuery`.
@@ -53,5 +47,4 @@ export const graphQuery = () =>
   queryOptions({
     queryKey: hgKeys.graph(),
     queryFn: ({ signal }) => api.graph(signal),
-    retry,
   });
