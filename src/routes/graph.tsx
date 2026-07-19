@@ -95,11 +95,7 @@ function GraphRoute() {
     // reference so `memo(GraphEdgeItem)` sees the same instances.
     if (!filters.edgeType && filters.resolution === "all") return graph.edges;
     const wantResolved =
-      filters.resolution === "resolved"
-        ? true
-        : filters.resolution === "unresolved"
-          ? false
-          : null;
+      filters.resolution === "resolved" ? true : filters.resolution === "unresolved" ? false : null;
     return graph.edges.filter((e) => {
       if (filters.edgeType && e.type !== filters.edgeType) return false;
       if (wantResolved !== null && e.resolved !== wantResolved) return false;
@@ -125,14 +121,8 @@ function GraphRoute() {
   const nodesTruncated = filteredNodes.length > visibleNodes.length;
   const edgesTruncated = filteredEdges.length > visibleEdges.length;
 
-  const showMoreNodes = useCallback(
-    () => setNodeLimit((n) => n + RENDER_CAP_STEP),
-    [],
-  );
-  const showMoreEdges = useCallback(
-    () => setEdgeLimit((n) => n + RENDER_CAP_STEP),
-    [],
-  );
+  const showMoreNodes = useCallback(() => setNodeLimit((n) => n + RENDER_CAP_STEP), []);
+  const showMoreEdges = useCallback(() => setEdgeLimit((n) => n + RENDER_CAP_STEP), []);
 
   const filtersActive =
     filters.nodeType !== "" || filters.edgeType !== "" || filters.resolution !== "all";
