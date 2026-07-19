@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { RelationshipList } from "@/components/objects/RelationshipList";
@@ -13,6 +13,12 @@ import { ApiNotFoundError } from "@/lib/api/errors";
 import { objectDetailQuery } from "@/lib/api/queries";
 import type { ObjectDetailResponse } from "@/lib/api/types";
 import { isValidKnowledgeObjectId } from "@/lib/api/validation";
+import {
+  fromGraphNode,
+  getDisplayVersion,
+  toKnowledgeObject,
+  type KnowledgeObject,
+} from "@/lib/domain";
 
 export const Route = createFileRoute("/objects/$id")({
   head: () => ({
@@ -31,11 +37,20 @@ function ObjectDetailRoute() {
   // and the UI renders a dedicated validation state instead of a 404.
   const query = useQuery({ ...objectDetailQuery(id), enabled: idIsValid });
 
+  const canonical = useMemo(
+    () => (query.data ? toKnowledgeObject(query.data.object) : undefined),
+    [query.data],
+  );
+  const graphView = useMemo(
+    () => (query.data?.node ? fromGraphNode(query.data.node) : undefined),
+    [query.data],
+  );
+
   return (
     <>
       <PageHeader
         eyebrow="Object"
-        title={query.data?.object.title ?? "Object detail"}
+        title={canonical?.title ?? "Object detail"}
         description={<span className="break-all font-mono text-xs">{id}</span>}
         actions={
           <Link
@@ -56,8 +71,8 @@ function ObjectDetailRoute() {
           <NotFoundView id={id} />
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
-        ) : query.data ? (
-          <ObjectDetailBody data={query.data} />
+        ) : query.data && canonical ? (
+          <ObjectDetailBody data={query.data} object={canonical} graphView={graphView} />
         ) : null}
       </section>
     </>
@@ -123,10 +138,26 @@ function MetaRow({ label, value, mono }: MetaRowProps) {
   );
 }
 
-function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
-  const { object, node, relationships } = data;
-  const hasTags = object.tags && object.tags.length > 0;
-  const hasKeywords = object.keywords && object.keywords.length > 0;
+function ObjectDetailBody({
+  data,
+  object,
+  graphView,
+}: {
+  data: ObjectDetailResponse;
+  object: KnowledgeObject;
+  graphView?: KnowledgeObject;
+}) {
+  const { relationships } = data;
+  const hasTags = object.tags.length > 0;
+  const keywords = object.metadata.keywords;
+  const hasKeywords = keywords.length > 0;
+  const version = getDisplayVersion(object);
+  const category = object.metadata.category;
+  const graphCategory = graphView?.metadata.category;
+  const graphType = graphView?.type;
+  const checksum = object.metadata.checksum;
+  const path = object.metadata.path ?? object.source;
+  const relationshipCount = object.metadata.relationshipCount ?? data.object.relationshipCount;
 
   return (
     <div className="flex flex-col gap-8">
@@ -138,22 +169,22 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
               {object.type}
             </span>
           ) : null}
-          {object.category ? (
+          {category ? (
             <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              {object.category}
+              {category}
             </span>
           ) : null}
           {object.status ? <StatusBadge status={object.status} /> : null}
-          {object.version ? (
-            <span className="font-mono text-[11px] text-muted-foreground">v{object.version}</span>
+          {version ? (
+            <span className="font-mono text-[11px] text-muted-foreground">{version}</span>
           ) : null}
         </div>
 
         <h2 className="text-2xl font-semibold text-foreground">{object.title}</h2>
 
-        {object.summary ? (
+        {object.description ? (
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {object.summary}
+            {object.description}
           </p>
         ) : null}
       </section>
@@ -163,7 +194,7 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
         <header className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-semibold text-foreground">Relationships</h2>
           <span className="font-mono text-[11px] text-muted-foreground">
-            {object.relationshipCount} total
+            {relationshipCount ?? 0} total
           </span>
         </header>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -189,11 +220,13 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
         <h2 className="text-lg font-semibold text-foreground">Source</h2>
         <dl className="rounded-md border border-border/60 bg-card/40 px-4 py-2">
           <MetaRow label="ID" value={object.id} mono />
-          {object.path ? <MetaRow label="Path" value={object.path} mono /> : null}
-          {node ? (
+          {path ? <MetaRow label="Path" value={path} mono /> : null}
+          {graphView ? (
             <>
-              <MetaRow label="Graph type" value={node.type} mono />
-              <MetaRow label="Graph category" value={node.category} mono />
+              {graphType ? <MetaRow label="Graph type" value={graphType} mono /> : null}
+              {graphCategory ? (
+                <MetaRow label="Graph category" value={graphCategory} mono />
+              ) : null}
             </>
           ) : null}
         </dl>
@@ -204,18 +237,18 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
         <section className="flex flex-col gap-4">
           <h2 className="text-lg font-semibold text-foreground">Tags &amp; keywords</h2>
           {hasTags ? <TagCloud label="Tags" items={object.tags} /> : null}
-          {hasKeywords ? <TagCloud label="Keywords" items={object.keywords} /> : null}
+          {hasKeywords ? <TagCloud label="Keywords" items={keywords} /> : null}
         </section>
       ) : null}
 
       {/* Checksum — technical, de-emphasized */}
-      {object.checksum ? (
+      {checksum ? (
         <section className="flex flex-col gap-1 border-t border-border/40 pt-4">
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
             Checksum
           </span>
           <code className="min-w-0 break-all font-mono text-[11px] text-muted-foreground">
-            {object.checksum}
+            {checksum}
           </code>
         </section>
       ) : null}
@@ -223,7 +256,7 @@ function ObjectDetailBody({ data }: { data: ObjectDetailResponse }) {
   );
 }
 
-function TagCloud({ label, items }: { label: string; items: string[] }) {
+function TagCloud({ label, items }: { label: string; items: readonly string[] }) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
