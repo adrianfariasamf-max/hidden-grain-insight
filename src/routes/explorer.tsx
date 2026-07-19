@@ -24,6 +24,8 @@ import {
   normalizeSearch,
 } from "@/lib/api/validation";
 import type { ObjectsQueryParams } from "@/lib/api/types";
+import { toKnowledgeObject } from "@/lib/domain";
+import { useMemo } from "react";
 
 const DEFAULT_LIMIT = 20;
 
@@ -178,6 +180,11 @@ function ExplorerRoute() {
   const items = query.data?.items ?? [];
   const total = query.data?.total ?? 0;
 
+  // Canonical normalization — components consume the domain model, not the
+  // wire dialect. Memoized on the item array reference so identity is
+  // preserved across re-renders that do not touch the API payload.
+  const normalizedItems = useMemo(() => items.map(toKnowledgeObject), [items]);
+
   return (
     <>
       <PageHeader
@@ -244,7 +251,7 @@ function ExplorerRoute() {
             ) : null}
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {items.map((obj) => (
+              {normalizedItems.map((obj) => (
                 <ObjectCard key={obj.id} object={obj} />
               ))}
             </div>
