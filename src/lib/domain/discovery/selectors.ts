@@ -68,6 +68,22 @@ export function groupInsightsByType(
   return out;
 }
 
+/** Group insights by priority bucket. Deterministic ordering — buckets
+ *  are emitted in canonical priority order (critical → info) and members
+ *  keep the `rankInsights` order. Empty buckets are omitted. */
+export function groupInsightsByPriority(
+  insights: readonly DiscoveryInsight[],
+): Map<InsightPriority, DiscoveryInsight[]> {
+  const ordered = rankInsights(insights);
+  const out = new Map<InsightPriority, DiscoveryInsight[]>();
+  const canonical: InsightPriority[] = ["critical", "high", "medium", "low", "info"];
+  for (const p of canonical) {
+    const bucket = ordered.filter((i) => i.priority === p);
+    if (bucket.length > 0) out.set(p, bucket);
+  }
+  return out;
+}
+
 /** Compact numeric summary — the shape a future dashboard card will render. */
 export interface DiscoverySummary {
   total: number;
