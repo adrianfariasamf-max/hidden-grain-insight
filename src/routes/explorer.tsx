@@ -183,10 +183,7 @@ function ExplorerRoute() {
   // Canonical normalization — components consume the domain model, not the
   // wire dialect. Memoized on the raw items reference so identity is
   // preserved across re-renders that do not touch the API payload.
-  const normalizedItems = useMemo(
-    () => (items ? items.map(toKnowledgeObject) : []),
-    [items],
-  );
+  const normalizedItems = useMemo(() => (items ? items.map(toKnowledgeObject) : []), [items]);
 
   return (
     <>
