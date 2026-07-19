@@ -176,13 +176,17 @@ function ExplorerRoute() {
 
   const isInitialLoading = query.isLoading;
   const isRefreshing = query.isFetching && !isInitialLoading;
-  const items = query.data?.items ?? [];
   const total = query.data?.total ?? 0;
+  const items = query.data?.items;
+  const hasItems = (items?.length ?? 0) > 0;
 
   // Canonical normalization — components consume the domain model, not the
-  // wire dialect. Memoized on the item array reference so identity is
+  // wire dialect. Memoized on the raw items reference so identity is
   // preserved across re-renders that do not touch the API payload.
-  const normalizedItems = useMemo(() => items.map(toKnowledgeObject), [items]);
+  const normalizedItems = useMemo(
+    () => (items ? items.map(toKnowledgeObject) : []),
+    [items],
+  );
 
   return (
     <>
@@ -235,7 +239,7 @@ function ExplorerRoute() {
           <LoadingState label="Loading objects…" />
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
-        ) : items.length === 0 ? (
+        ) : !hasItems ? (
           <EmptyState
             title="No objects match the current filters"
             description="Try clearing filters or adjusting the search term."
