@@ -3,10 +3,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
-import type { GraphEdge, KnowledgeObjectId } from "@/lib/api/types";
+import type { KnowledgeObjectId } from "@/lib/api/types";
+import type { Relationship } from "@/lib/domain";
 
 interface GraphEdgeItemProps {
-  edge: GraphEdge;
+  relationship: Relationship;
   /**
    * Set of node ids present in the projection. Used to decide which endpoint
    * is navigable when the edge is unresolved — the contract does not tell us
@@ -49,38 +50,38 @@ function Endpoint({
  * an endpoint into a link when its id is present in the projection's node
  * set (i.e. we can prove it exists). No extra fetch is issued.
  */
-function GraphEdgeItemImpl({ edge, knownNodeIds }: GraphEdgeItemProps) {
-  const sourceNavigable = edge.resolved || knownNodeIds.has(edge.source);
-  const targetNavigable = edge.resolved || knownNodeIds.has(edge.target);
+function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
+  const resolved = relationship.status === "resolved";
+  const sourceNavigable = resolved || knownNodeIds.has(relationship.sourceId);
+  const targetNavigable = resolved || knownNodeIds.has(relationship.targetId);
+  const description = relationship.metadata.description;
 
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border/60 bg-card/60 p-3">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
         <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono uppercase tracking-wide">
-          {edge.type}
+          {relationship.type}
         </span>
-        <ResolutionBadge resolved={edge.resolved} />
+        <ResolutionBadge resolved={resolved} />
       </div>
 
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm">
         <Endpoint
-          id={edge.source}
+          id={relationship.sourceId}
           navigable={sourceNavigable}
-          ariaLabel={`Open source object ${edge.source}`}
+          ariaLabel={`Open source object ${relationship.sourceId}`}
         />
         <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" aria-hidden />
         <Endpoint
-          id={edge.target}
+          id={relationship.targetId}
           navigable={targetNavigable}
-          ariaLabel={`Open target object ${edge.target}`}
+          ariaLabel={`Open target object ${relationship.targetId}`}
         />
       </div>
 
-      {!edge.resolved ? <p className="text-[11px] text-warning">Unresolved target</p> : null}
+      {!resolved ? <p className="text-[11px] text-warning">Unresolved target</p> : null}
 
-      {edge.description ? (
-        <p className="text-xs text-muted-foreground">{edge.description}</p>
-      ) : null}
+      {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
     </li>
   );
 }
