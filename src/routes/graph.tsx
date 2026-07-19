@@ -13,6 +13,7 @@ import { RelationshipLegend } from "@/components/graph/RelationshipLegend";
 import { RelationshipOntologyFilter } from "@/components/graph/RelationshipOntologyFilter";
 import { RelationshipTrustFilter } from "@/components/graph/RelationshipTrustFilter";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
+import { ActiveFiltersBar } from "@/components/search/ActiveFiltersBar";
 import { graphQuery } from "@/lib/api/queries";
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import {
@@ -29,6 +30,7 @@ import {
   type RelationshipCategory,
   type RelationshipStatus,
 } from "@/lib/domain";
+import { countActiveFilters, toGraphQueryParams, type SearchQuery } from "@/lib/domain/search";
 
 export const Route = createFileRoute("/graph")({
   head: () => ({
@@ -66,17 +68,18 @@ function uniqueSorted(values: (string | undefined | null)[]): string[] {
 }
 
 function GraphRoute() {
-  // NOTE (server-side filtering, HG-PATCH-003 phase 4 / EPIC-002.4):
-  // The query key already accepts `GraphQueryParams` so we can forward
-  // filters to the backend as soon as `/graph` supports them. Today the
-  // contract still returns the full projection, so we pass no params here
-  // and keep local, in-memory filtering below. Migration path:
-  //   - `filters.nodeType`                → `GraphQueryParams.nodeType`
-  //   - `filters.resolution`              → `GraphQueryParams.resolution`
-  //   - `selectedTypeIds` (first entry)   → `GraphQueryParams.edgeType`
-  //     until the API supports multi-select; until then keep client-side.
-  //   - `selectedCategories`              → NOT SENT (no backend field yet).
-  // We intentionally do not send params the backend does not advertise.
+  // NOTE (server-side filtering — EPIC-003.2):
+  // The full local filter state is projected into a canonical `SearchQuery`
+  // (see `derivedSearchQuery` below). `toGraphQueryParams(query)` is the
+  // pure adapter that will be forwarded to `graphQuery(...)` once the
+  // backend advertises support. Today the contract still returns the full
+  // projection so we intentionally call `graphQuery()` without params and
+  // keep local, in-memory filtering. The mapping is:
+  //   objectTypes[0]        → nodeType
+  //   relationshipTypes[0]  → edgeType
+  //   status ({r}|{u} only) → resolution
+  //   categories, provenance, multi-select, min-confidence, unknown policy
+  //     → NOT SENT (not part of the current wire contract; applied locally).
   const query = useQuery(graphQuery());
   const [filters, setFilters] = useState<GraphFilterValues>(INITIAL_FILTERS);
   const [selectedTypeIds, setSelectedTypeIds] = useState<string[]>([]);
@@ -299,6 +302,44 @@ function GraphRoute() {
     selectedStatuses.length +
     (minConfidencePct > 0 ? 1 : 0);
 
+  // Canonical projection: every mapped Graph filter dimension is exposed
+  // as a single, normalized `SearchQuery`. This is the SAME model used by
+  // Explorer — Graph does not maintain a parallel search abstraction, it
+  // just projects its per-filter UI state into the canonical shape.
+  // `minConfidencePct` and `unknownConfidencePolicy` are trust-panel
+  // ancillary controls and are intentionally NOT part of SearchQuery: they
+  // are not declared search dimensions in the current domain model.
+  const derivedSearchQuery = useMemo<SearchQuery>(() => {
+    const q: SearchQuery = {};
+    if (filters.nodeType) q.objectTypes = [filters.nodeType];
+    if (selectedTypeIds.length > 0) q.relationshipTypes = selectedTypeIds;
+    if (selectedCategories.length > 0) q.categories = selectedCategories;
+    if (selectedProvenances.length > 0) {
+      q.provenance = selectedProvenances.filter((p) => p !== PROVENANCE_NOT_SPECIFIED);
+      if (q.provenance.length === 0) delete q.provenance;
+    }
+    const statusList: string[] = [...selectedStatuses];
+    if (filters.resolution !== "all") statusList.push(filters.resolution);
+    if (statusList.length > 0) q.status = statusList;
+    return q;
+  }, [
+    filters.nodeType,
+    filters.resolution,
+    selectedTypeIds,
+    selectedCategories,
+    selectedProvenances,
+    selectedStatuses,
+  ]);
+
+  // Prepared for the day `/graph` accepts filters. Computed but not sent.
+  void useMemo(() => toGraphQueryParams(derivedSearchQuery), [derivedSearchQuery]);
+
+  // Active-filter tally sourced from the canonical Search domain. The
+  // legacy per-dimension tally (`activeFilterCount` above) is kept only
+  // for the existing `GraphRelationshipSummary` line; the top-level
+  // ActiveFiltersBar uses the domain count + the confidence extras.
+  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minConfidencePct > 0 ? 1 : 0);
+
   return (
     <>
       <PageHeader
@@ -324,6 +365,8 @@ function GraphRoute() {
               visibleNodes={filteredNodes.length}
               visibleEdges={filteredRelationships.length}
             />
+
+            <ActiveFiltersBar count={searchActiveCount} onClear={clearAllFilters} />
 
             <RelationshipLegend summary={summary} />
 
