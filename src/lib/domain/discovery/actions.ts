@@ -31,7 +31,12 @@ export interface DiscoveryActionDescriptor {
 }
 
 export const DISCOVERY_ACTION_CATALOG: readonly DiscoveryActionDescriptor[] = [
-  { id: "pin", label: "Pin", description: "Keep this insight visible at the top.", mutating: false },
+  {
+    id: "pin",
+    label: "Pin",
+    description: "Keep this insight visible at the top.",
+    mutating: false,
+  },
   {
     id: "bookmark",
     label: "Bookmark",

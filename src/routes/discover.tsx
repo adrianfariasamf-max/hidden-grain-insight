@@ -46,10 +46,7 @@ function DiscoverRoute() {
   // Run the deterministic analyzer once per graph payload. Every downstream
   // memo depends on this reference — same input → same identity → no
   // unnecessary child re-renders.
-  const relationships = useMemo(
-    () => (graph ? graph.edges.map(toRelationship) : []),
-    [graph],
-  );
+  const relationships = useMemo(() => (graph ? graph.edges.map(toRelationship) : []), [graph]);
   const insights = useMemo(() => {
     if (!graph) return [];
     return analyzeGraph({ nodes: graph.nodes, relationships });
@@ -63,10 +60,7 @@ function DiscoverRoute() {
 
   // Filter then sort. Selectors own both operations; the route never
   // reorders. Filters are preserved when selection changes.
-  const filtered = useMemo(
-    () => selectInsightsByFilters(insights, filters),
-    [insights, filters],
-  );
+  const filtered = useMemo(() => selectInsightsByFilters(insights, filters), [insights, filters]);
   const displayed = useMemo(() => sortInsights(filtered, sort), [filtered, sort]);
 
   // Auto-select the first insight when the current selection is not in

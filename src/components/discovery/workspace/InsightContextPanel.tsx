@@ -2,10 +2,7 @@ import { memo, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
-import {
-  getInsightTypeDescriptor,
-  type DiscoveryInsight,
-} from "@/lib/domain/discovery";
+import { getInsightTypeDescriptor, type DiscoveryInsight } from "@/lib/domain/discovery";
 import type { Relationship } from "@/lib/domain";
 import { getRelationshipTypeDescriptor } from "@/lib/domain";
 
@@ -16,11 +13,7 @@ export interface InsightContextPanelProps {
   relationships: readonly Relationship[];
 }
 
-function InsightContextPanelImpl({
-  insight,
-  nodesById,
-  relationships,
-}: InsightContextPanelProps) {
+function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightContextPanelProps) {
   const derived = useMemo(() => {
     if (!insight) return null;
     const relIds = new Set(insight.relationshipIds);
@@ -163,9 +156,7 @@ function InsightContextPanelImpl({
                     <li key={t}>
                       <Tag title={td.description || td.displayName}>
                         {td.displayName}
-                        <span className="ml-1 font-mono text-[9px] text-muted-foreground">
-                          {n}
-                        </span>
+                        <span className="ml-1 font-mono text-[9px] text-muted-foreground">{n}</span>
                       </Tag>
                     </li>
                   );
@@ -188,7 +179,9 @@ function InsightContextPanelImpl({
                       >
                         {r.sourceId}
                       </Link>
-                      <span className="text-muted-foreground" aria-hidden>→</span>
+                      <span className="text-muted-foreground" aria-hidden>
+                        →
+                      </span>
                       <Link
                         to="/objects/$id"
                         params={{ id: r.targetId }}

@@ -3,10 +3,7 @@ import { memo } from "react";
 import type { DiscoveryInsight } from "@/lib/domain/discovery";
 
 import { InsightListItem } from "./InsightListItem";
-import {
-  WorkspaceFilters,
-  type WorkspaceFiltersProps,
-} from "./WorkspaceFilters";
+import { WorkspaceFilters, type WorkspaceFiltersProps } from "./WorkspaceFilters";
 
 export interface InsightListPanelProps extends WorkspaceFiltersProps {
   /** Already filtered AND sorted — the panel never reorders. */
