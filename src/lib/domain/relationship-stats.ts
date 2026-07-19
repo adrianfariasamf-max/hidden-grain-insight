@@ -57,10 +57,7 @@ export function summarizeRelationships(
   relationships: readonly Relationship[],
 ): RelationshipSummary {
   const typeCounts = new Map<string, RelationshipTypeStat>();
-  const categoryCounts = new Map<
-    RelationshipCategory,
-    { count: number; types: Set<string> }
-  >();
+  const categoryCounts = new Map<RelationshipCategory, { count: number; types: Set<string> }>();
 
   for (const rel of relationships) {
     const descriptor = getRelationshipTypeDescriptor(rel.type);
@@ -86,17 +83,14 @@ export function summarizeRelationships(
     compareRelationshipTypes(a.descriptor, b.descriptor),
   );
 
-  const categories: RelationshipCategoryStat[] = CATEGORY_ORDER
-    .filter((c) => categoryCounts.has(c))
-    .map((c) => {
-      const entry = categoryCounts.get(c)!;
-      return { category: c, count: entry.count, typeCount: entry.types.size };
-    });
+  const categories: RelationshipCategoryStat[] = CATEGORY_ORDER.filter((c) =>
+    categoryCounts.has(c),
+  ).map((c) => {
+    const entry = categoryCounts.get(c)!;
+    return { category: c, count: entry.count, typeCount: entry.types.size };
+  });
 
-  const customTypeCount = types.reduce(
-    (acc, t) => acc + (t.descriptor.isCustom ? 1 : 0),
-    0,
-  );
+  const customTypeCount = types.reduce((acc, t) => acc + (t.descriptor.isCustom ? 1 : 0), 0);
 
   return { total: relationships.length, types, categories, customTypeCount };
 }

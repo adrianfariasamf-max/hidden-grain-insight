@@ -21,10 +21,7 @@ interface RelationshipLegendProps {
  * for catalog types that are not observed. Icons + labels + a category
  * chip ensure information is not conveyed by color alone.
  */
-export function RelationshipLegend({
-  summary,
-  collapseThreshold = 8,
-}: RelationshipLegendProps) {
+export function RelationshipLegend({ summary, collapseThreshold = 8 }: RelationshipLegendProps) {
   const [expanded, setExpanded] = useState(false);
   const isLong = summary.types.length > collapseThreshold;
   const visibleTypes = useMemo(
@@ -109,7 +106,10 @@ function LegendItem({ stat }: { stat: RelationshipTypeStat }) {
           Custom
         </span>
       ) : null}
-      <span className="font-mono text-[10px] text-muted-foreground" aria-label={`${count} relationships`}>
+      <span
+        className="font-mono text-[10px] text-muted-foreground"
+        aria-label={`${count} relationships`}
+      >
         {count}
       </span>
     </li>

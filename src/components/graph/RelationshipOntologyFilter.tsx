@@ -40,10 +40,7 @@ export function RelationshipOntologyFilter({
   const categorySet = new Set(selectedCategories);
   const hasSelection = typeSet.size > 0 || categorySet.size > 0;
 
-  const handleTypeClick = useCallback(
-    (id: string) => () => onToggleType(id),
-    [onToggleType],
-  );
+  const handleTypeClick = useCallback((id: string) => () => onToggleType(id), [onToggleType]);
   const handleCategoryClick = useCallback(
     (c: RelationshipCategory) => () => onToggleCategory(c),
     [onToggleCategory],
@@ -116,7 +113,11 @@ export function RelationshipOntologyFilter({
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Types · OR within group · AND with categories
           </legend>
-          <ul className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by relationship type">
+          <ul
+            className="flex flex-wrap gap-1.5"
+            role="group"
+            aria-label="Filter by relationship type"
+          >
             {summary.types.map((stat) => {
               const selected = typeSet.has(stat.descriptor.id);
               const Icon = stat.descriptor.icon;

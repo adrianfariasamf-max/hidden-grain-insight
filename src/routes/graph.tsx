@@ -210,8 +210,7 @@ function GraphRoute() {
   const showMoreEdges = useCallback(() => setEdgeLimit((n) => n + RENDER_CAP_STEP), []);
 
   const ontologyActive = selectedTypeIds.length > 0 || selectedCategories.length > 0;
-  const filtersActive =
-    filters.nodeType !== "" || filters.resolution !== "all" || ontologyActive;
+  const filtersActive = filters.nodeType !== "" || filters.resolution !== "all" || ontologyActive;
   const activeFilterCount =
     (filters.nodeType !== "" ? 1 : 0) +
     (filters.resolution !== "all" ? 1 : 0) +
@@ -415,11 +414,7 @@ function GraphRelationshipSummary({
   activeFilters,
 }: GraphRelationshipSummaryProps) {
   return (
-    <p
-      className="text-[11px] text-muted-foreground"
-      aria-live="polite"
-      role="status"
-    >
+    <p className="text-[11px] text-muted-foreground" aria-live="polite" role="status">
       <span className="font-mono text-foreground">{visible}</span> of{" "}
       <span className="font-mono text-foreground">{total}</span> relationships visible ·{" "}
       <span className="font-mono text-foreground">{visibleTypes}</span> of{" "}
