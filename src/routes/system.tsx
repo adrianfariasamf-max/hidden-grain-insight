@@ -22,7 +22,9 @@ export const Route = createFileRoute("/system")({
 });
 
 function SystemRoute() {
-  const query = useQuery(healthQuery());
+  // Health polling is scoped to the System route. Overview and other routes
+  // read the same query key from cache without triggering their own polling.
+  const query = useQuery({ ...healthQuery(), refetchInterval: 30_000 });
   const isInitialLoading = query.isPending && !query.data;
   const isRefreshing = query.isFetching && !query.isPending;
   const hasStaleAfterError = query.isError && Boolean(query.data);
@@ -32,7 +34,7 @@ function SystemRoute() {
       <PageHeader
         eyebrow="System"
         title="Health & metrics"
-        description="Live API health, runtime information and repository counters. Refreshes automatically every 15 seconds."
+        description="Live API health, runtime information and repository counters. Refreshes automatically every 30 seconds."
       />
       <div className="flex flex-col gap-8 px-4 py-6 sm:px-8">
         {isInitialLoading ? (
