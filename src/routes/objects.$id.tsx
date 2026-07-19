@@ -224,9 +224,7 @@ function ObjectDetailBody({
           {graphView ? (
             <>
               {graphType ? <MetaRow label="Graph type" value={graphType} mono /> : null}
-              {graphCategory ? (
-                <MetaRow label="Graph category" value={graphCategory} mono />
-              ) : null}
+              {graphCategory ? <MetaRow label="Graph category" value={graphCategory} mono /> : null}
             </>
           ) : null}
         </dl>
