@@ -77,18 +77,6 @@ export interface KnowledgeObject {
   metadata: KnowledgeObjectMetadata;
 }
 
-/** Relationship between two Knowledge Objects. Mirrors the on-the-wire
- *  `GraphEdge` today; kept in the domain layer so feature code depends on
- *  the domain, not on the API dialect. */
-export interface KnowledgeRelationship {
-  id: string;
-  source: KnowledgeObjectId;
-  target: KnowledgeObjectId;
-  type: string;
-  description?: string;
-  resolved: boolean;
-}
-
 // ---------------------------------------------------------------------------
 // Zod schemas — these validate the *canonical* shape, not the wire shape.
 // They exist so downstream code (tests, future persistence, or a devtool)
@@ -129,13 +117,4 @@ export const KnowledgeObjectSchema: z.ZodType<KnowledgeObject> = z.object({
   version: z.string().optional(),
   versionRef: KnowledgeObjectVersionRefSchema.optional(),
   metadata: KnowledgeObjectMetadataSchema,
-});
-
-export const KnowledgeRelationshipSchema: z.ZodType<KnowledgeRelationship> = z.object({
-  id: z.string().min(1),
-  source: z.string().min(1),
-  target: z.string().min(1),
-  type: z.string(),
-  description: z.string().optional(),
-  resolved: z.boolean(),
 });
