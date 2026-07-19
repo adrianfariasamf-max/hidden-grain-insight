@@ -395,3 +395,37 @@ function ShowMore({ visible, total, onClick, label }: ShowMoreProps) {
     </div>
   );
 }
+
+interface GraphRelationshipSummaryProps {
+  visible: number;
+  total: number;
+  visibleTypes: number;
+  totalTypes: number;
+  activeFilters: number;
+}
+
+/** Compact summary panel that reports how the current filter state
+ *  reduces the full dataset. Numbers come from the same summarizer used
+ *  by the legend, so counts are always consistent. */
+function GraphRelationshipSummary({
+  visible,
+  total,
+  visibleTypes,
+  totalTypes,
+  activeFilters,
+}: GraphRelationshipSummaryProps) {
+  return (
+    <p
+      className="text-[11px] text-muted-foreground"
+      aria-live="polite"
+      role="status"
+    >
+      <span className="font-mono text-foreground">{visible}</span> of{" "}
+      <span className="font-mono text-foreground">{total}</span> relationships visible ·{" "}
+      <span className="font-mono text-foreground">{visibleTypes}</span> of{" "}
+      <span className="font-mono text-foreground">{totalTypes}</span> types ·{" "}
+      <span className="font-mono text-foreground">{activeFilters}</span> filter
+      {activeFilters === 1 ? "" : "s"} active
+    </p>
+  );
+}
