@@ -283,8 +283,7 @@ export function buildRelationshipTrustPredicate(
   const hasStatus = statusSet.size > 0;
   const threshold = normalizeConfidence(options.minConfidence) ?? 0;
   const hasThreshold = threshold > 0;
-  const excludeUnknownConfidence =
-    hasThreshold && options.unknownConfidencePolicy === "exclude";
+  const excludeUnknownConfidence = hasThreshold && options.unknownConfidencePolicy === "exclude";
 
   if (!hasProv && !hasStatus && !hasThreshold) return () => true;
 

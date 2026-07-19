@@ -75,8 +75,7 @@ export function RelationshipTrustFilter({
   if (!showProvenance && !showStatus && !showConfidence) return null;
 
   const thresholdActive = minConfidencePct > 0;
-  const hasSelection =
-    provSet.size > 0 || statusSet.size > 0 || thresholdActive;
+  const hasSelection = provSet.size > 0 || statusSet.size > 0 || thresholdActive;
 
   return (
     <section
@@ -227,9 +226,7 @@ export function RelationshipTrustFilter({
               aria-valuenow={minConfidencePct}
               aria-valuetext={`${minConfidencePct}% minimum confidence`}
             />
-            <span className="font-mono text-xs text-foreground">
-              ≥ {minConfidencePct}%
-            </span>
+            <span className="font-mono text-xs text-foreground">≥ {minConfidencePct}%</span>
             {minConfidencePct > 0 ? (
               <span className="font-mono text-[10px] text-muted-foreground">
                 {getConfidenceClassLabel(
@@ -246,9 +243,7 @@ export function RelationshipTrustFilter({
               className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
               aria-label="How to treat relationships without confidence"
             >
-              <legend className="sr-only">
-                How to treat relationships without confidence
-              </legend>
+              <legend className="sr-only">How to treat relationships without confidence</legend>
               <span>
                 {summary.withoutConfidence} relationship
                 {summary.withoutConfidence === 1 ? "" : "s"} without confidence:

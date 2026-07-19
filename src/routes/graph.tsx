@@ -287,9 +287,7 @@ function GraphRoute() {
 
   const ontologyActive = selectedTypeIds.length > 0 || selectedCategories.length > 0;
   const trustActive =
-    selectedProvenances.length > 0 ||
-    selectedStatuses.length > 0 ||
-    minConfidencePct > 0;
+    selectedProvenances.length > 0 || selectedStatuses.length > 0 || minConfidencePct > 0;
   const filtersActive =
     filters.nodeType !== "" || filters.resolution !== "all" || ontologyActive || trustActive;
   const activeFilterCount =
@@ -531,8 +529,7 @@ function GraphRelationshipSummary({
  * these fields, the panel lights up automatically.
  */
 function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipTrustSummary }) {
-  if (!summary.hasProvenance && !summary.hasConfidence && !summary.hasMeaningfulStatus)
-    return null;
+  if (!summary.hasProvenance && !summary.hasConfidence && !summary.hasMeaningfulStatus) return null;
   return (
     <section
       aria-labelledby="graph-trust-panel-heading"
