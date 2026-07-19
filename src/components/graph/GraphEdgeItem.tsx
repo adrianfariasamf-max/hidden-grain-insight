@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
@@ -48,7 +49,7 @@ function Endpoint({
  * an endpoint into a link when its id is present in the projection's node
  * set (i.e. we can prove it exists). No extra fetch is issued.
  */
-export function GraphEdgeItem({ edge, knownNodeIds }: GraphEdgeItemProps) {
+function GraphEdgeItemImpl({ edge, knownNodeIds }: GraphEdgeItemProps) {
   const sourceNavigable = edge.resolved || knownNodeIds.has(edge.source);
   const targetNavigable = edge.resolved || knownNodeIds.has(edge.target);
 
@@ -83,3 +84,8 @@ export function GraphEdgeItem({ edge, knownNodeIds }: GraphEdgeItemProps) {
     </li>
   );
 }
+
+// Memoized: `edge` references are stable across filter changes because they
+// come straight from the immutable query cache. `knownNodeIds` is the same
+// Set instance for the whole render pass, so reference equality is enough.
+export const GraphEdgeItem = memo(GraphEdgeItemImpl);

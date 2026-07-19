@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 
@@ -12,7 +13,7 @@ interface GraphNodeItemProps {
  * navigable to /objects/:id — the contract guarantees `id` is a Knowledge
  * Object id. No extra fetch is issued to enrich the node.
  */
-export function GraphNodeItem({ node }: GraphNodeItemProps) {
+function GraphNodeItemImpl({ node }: GraphNodeItemProps) {
   return (
     <li>
       <Link
@@ -51,3 +52,8 @@ export function GraphNodeItem({ node }: GraphNodeItemProps) {
     </li>
   );
 }
+
+// Memoized by identity of the node object. Because we render sliced views
+// of the immutable API response, node references are stable across filter
+// changes and only the truly changed items re-render.
+export const GraphNodeItem = memo(GraphNodeItemImpl);

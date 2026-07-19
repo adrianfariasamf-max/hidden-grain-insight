@@ -75,6 +75,17 @@ export interface GraphResponse {
   edges: GraphEdge[];
 }
 
+// Optional query params for GET /graph. NONE of these are guaranteed by the
+// current backend contract — they are declared here so the UI can already
+// keep server-side filters in the query key and forward them once (or if)
+// the API adopts them. Sending an unknown param today is inert.
+export interface GraphQueryParams {
+  nodeType?: string;
+  edgeType?: string;
+  resolution?: "all" | "resolved" | "unresolved";
+  limit?: number;
+}
+
 // GET /health — no `readOnly` field; read-only is a product invariant,
 // declared in the UI, not read from the API.
 export interface HealthResponse {

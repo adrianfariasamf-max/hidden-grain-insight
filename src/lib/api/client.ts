@@ -26,6 +26,7 @@ import type {
   ObjectsListResponse,
   ObjectsQueryParams,
 } from "./types";
+import type { GraphQueryParams } from "./types";
 
 const RAW_BASE = (import.meta.env.VITE_HG_API_BASE ?? "").toString().trim();
 const RAW_TIMEOUT = (import.meta.env.VITE_HG_REQUEST_TIMEOUT_MS ?? "").toString().trim();
@@ -186,12 +187,16 @@ export const api = {
   getObject: (id: string, signal?: AbortSignal) =>
     request(`/objects/${encodeURIComponent(id)}`, ObjectDetailResponseSchema, { signal }),
 
-  graph: (signal?: AbortSignal) => request("/graph", GraphResponseSchema, { signal }),
+  graph: (params: GraphQueryParams = {}, signal?: AbortSignal) =>
+    request("/graph", GraphResponseSchema, {
+      query: params as Record<string, unknown>,
+      signal,
+    }),
 } satisfies {
   health: (signal?: AbortSignal) => Promise<HealthResponse>;
   listObjects: (params?: ObjectsQueryParams, signal?: AbortSignal) => Promise<ObjectsListResponse>;
   getObject: (id: string, signal?: AbortSignal) => Promise<ObjectDetailResponse>;
-  graph: (signal?: AbortSignal) => Promise<GraphResponse>;
+  graph: (params?: GraphQueryParams, signal?: AbortSignal) => Promise<GraphResponse>;
 };
 
 export type Api = typeof api;

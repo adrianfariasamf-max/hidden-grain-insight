@@ -4,6 +4,7 @@
 // the same normalized shape.
 
 import type { ObjectsQueryParams } from "./types";
+import type { GraphQueryParams } from "./types";
 
 export const SEARCH_MAX_LENGTH = 200;
 export const LIMIT_MIN = 1;
@@ -66,4 +67,23 @@ export function isValidKnowledgeObjectId(id: string | undefined | null): boolean
   if (!id) return false;
   if (id.length === 0 || id.length > ID_MAX_LENGTH) return false;
   return ID_PATTERN.test(id);
+}
+
+// Graph query params — same normalization rules, kept separate so we never
+// pollute /objects params with graph-only fields.
+export const GRAPH_LIMIT_MAX = 10_000;
+
+export function normalizeGraphParams(input: GraphQueryParams | undefined): GraphQueryParams {
+  if (!input) return {};
+  const out: GraphQueryParams = {};
+  const nt = normalizeFilter(input.nodeType);
+  if (nt) out.nodeType = nt;
+  const et = normalizeFilter(input.edgeType);
+  if (et) out.edgeType = et;
+  if (input.resolution && input.resolution !== "all") out.resolution = input.resolution;
+  if (typeof input.limit === "number" && Number.isFinite(input.limit)) {
+    const n = Math.floor(input.limit);
+    if (n > 0) out.limit = Math.min(n, GRAPH_LIMIT_MAX);
+  }
+  return out;
 }
