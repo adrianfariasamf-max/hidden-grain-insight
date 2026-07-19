@@ -17,11 +17,7 @@ import {
 
 import type { KnowledgeObjectId } from "@/lib/api/types";
 
-import type {
-  Relationship,
-  RelationshipDirection,
-  RelationshipStatus,
-} from "./relationship";
+import type { Relationship, RelationshipDirection, RelationshipStatus } from "./relationship";
 
 /** Human-readable label for a relationship type. Never fabricates a label
  *  — falls back to the raw type string when no override exists. */
@@ -112,8 +108,6 @@ export function isRelatedEndpointNavigable(
 }
 
 /** Status tone helper — mirrors the ResolutionBadge tokens. */
-export function getRelationshipStatusTone(
-  status: RelationshipStatus,
-): "success" | "warning" {
+export function getRelationshipStatusTone(status: RelationshipStatus): "success" | "warning" {
   return status === "resolved" ? "success" : "warning";
 }

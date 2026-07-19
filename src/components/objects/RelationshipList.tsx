@@ -21,9 +21,7 @@ export function RelationshipList({
     <section className="flex flex-col gap-3">
       <header className="flex items-center justify-between gap-3">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        <span className="font-mono text-[11px] text-muted-foreground">
-          {relationships.length}
-        </span>
+        <span className="font-mono text-[11px] text-muted-foreground">{relationships.length}</span>
       </header>
       {relationships.length === 0 ? (
         <EmptyState title={emptyLabel} />

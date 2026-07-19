@@ -84,9 +84,7 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
         )}
       </div>
 
-      {description ? (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
 
       <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 pt-1 text-[10px] text-muted-foreground">
         <span className="uppercase tracking-wide">source</span>
