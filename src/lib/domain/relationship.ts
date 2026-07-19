@@ -108,7 +108,6 @@ export function toRelationship(edge: GraphEdge): Relationship {
     type: edge.type,
     direction: "unspecified",
     status: edge.resolved ? "resolved" : "unresolved",
-    provenance: "projection",
     metadata: {
       description: nonEmpty(edge.description),
     },

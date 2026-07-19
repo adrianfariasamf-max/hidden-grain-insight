@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
+import { ConfidenceBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import { getRelationshipTypeDescriptor, type Relationship } from "@/lib/domain";
 
@@ -69,6 +70,8 @@ function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
           {typeDescriptor.displayName}
         </span>
         <ResolutionBadge resolved={resolved} />
+        <ProvenanceBadge relationship={relationship} />
+        <ConfidenceBadge relationship={relationship} />
       </div>
 
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm">

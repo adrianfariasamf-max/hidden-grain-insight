@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
+import { ConfidenceBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import {
   getRelatedEndpointId,
@@ -67,6 +68,8 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
         <DirectionIcon className="h-3 w-3" aria-hidden />
         {directionLabel ? <span>{directionLabel}</span> : null}
         <ResolutionBadge resolved={resolved} />
+        <ProvenanceBadge relationship={rel} />
+        <ConfidenceBadge relationship={rel} />
       </div>
 
       <div className="min-w-0 text-sm">
