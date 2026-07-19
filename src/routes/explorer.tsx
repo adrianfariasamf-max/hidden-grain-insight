@@ -2,7 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { Search, X, Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -122,7 +122,11 @@ function ExplorerRoute() {
     });
   }, [query.data]);
 
-  const options: FilterOptionSet = useMemo(() => getFacets(), [query.data]);
+  // `getFacets()` reads from a module-level Set that is fed by `recordFacets`
+  // in the effect above. Reading on every render is intentional — the Set is
+  // small (session-scoped facet values) and the returned array is used only
+  // to render <select> options.
+  const options: FilterOptionSet = getFacets();
 
   // If a filter or search shrinks total below the current offset, clamp to
   // the last valid page instead of showing an empty page.
