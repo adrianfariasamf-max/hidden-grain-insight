@@ -2,10 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Link2 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import type { KnowledgeObjectSummary } from "@/lib/api/types";
+import type { KnowledgeObject } from "@/lib/domain";
+import { getDisplayVersion, getRelationshipCount } from "@/lib/domain";
 
 interface ObjectCardProps {
-  object: KnowledgeObjectSummary;
+  object: KnowledgeObject;
 }
 
 /**
@@ -14,7 +15,9 @@ interface ObjectCardProps {
  * The whole card links to /objects/:id.
  */
 export function ObjectCard({ object }: ObjectCardProps) {
-  const hasTags = Array.isArray(object.tags) && object.tags.length > 0;
+  const hasTags = object.tags.length > 0;
+  const version = getDisplayVersion(object);
+  const relCount = getRelationshipCount(object);
 
   return (
     <Link
@@ -40,17 +43,17 @@ export function ObjectCard({ object }: ObjectCardProps) {
         </div>
       </header>
 
-      {object.summary ? (
-        <p className="line-clamp-3 text-xs text-muted-foreground">{object.summary}</p>
+      {object.description ? (
+        <p className="line-clamp-3 text-xs text-muted-foreground">{object.description}</p>
       ) : null}
 
       <footer className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-2 text-[11px] text-muted-foreground">
         <span className="font-mono">{object.id}</span>
-        {object.version ? <span className="font-mono">v{object.version}</span> : null}
-        {typeof object.relationshipCount === "number" ? (
+        {version ? <span className="font-mono">{version}</span> : null}
+        {typeof relCount === "number" ? (
           <span className="inline-flex items-center gap-1">
             <Link2 className="h-3 w-3" aria-hidden />
-            {object.relationshipCount}
+            {relCount}
           </span>
         ) : null}
         {hasTags ? (
