@@ -31,8 +31,7 @@ export function normalizeOffset(input: number | undefined | null): number {
 }
 
 export function normalizeLimit(input: number | undefined | null): number {
-  const n =
-    typeof input === "number" && Number.isFinite(input) ? Math.floor(input) : DEFAULT_LIMIT;
+  const n = typeof input === "number" && Number.isFinite(input) ? Math.floor(input) : DEFAULT_LIMIT;
   if (n < LIMIT_MIN) return LIMIT_MIN;
   if (n > LIMIT_MAX) return LIMIT_MAX;
   return n;

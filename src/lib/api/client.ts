@@ -72,9 +72,7 @@ const etagCache = new Map<string, ETagEntry>();
 
 function extractErrorMeta(response: Response, body: unknown): ApiErrorMeta {
   const requestId =
-    response.headers.get("x-request-id") ??
-    response.headers.get("x-hg-request-id") ??
-    undefined;
+    response.headers.get("x-request-id") ?? response.headers.get("x-hg-request-id") ?? undefined;
   const meta: ApiErrorMeta = { requestId: requestId ?? undefined };
   if (body && typeof body === "object") {
     const b = body as Record<string, unknown>;
