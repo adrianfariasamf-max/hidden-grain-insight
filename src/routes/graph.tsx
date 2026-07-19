@@ -523,3 +523,63 @@ function GraphRelationshipSummary({
     </p>
   );
 }
+
+/**
+ * Compact trust panel. Renders `null` when the dataset carries no trust
+ * signals so the graph page looks exactly as before on projections that
+ * do not declare provenance/confidence. When the backend starts emitting
+ * these fields, the panel lights up automatically.
+ */
+function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipTrustSummary }) {
+  if (!summary.hasProvenance && !summary.hasConfidence && !summary.hasMeaningfulStatus)
+    return null;
+  return (
+    <section
+      aria-labelledby="graph-trust-panel-heading"
+      className="flex flex-col gap-2 rounded-lg border border-border/60 bg-card/40 p-3 sm:p-4"
+    >
+      <h3
+        id="graph-trust-panel-heading"
+        className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+      >
+        Trust summary
+      </h3>
+      <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+        {summary.hasConfidence ? (
+          <>
+            <div className="inline-flex items-baseline gap-1.5">
+              <dt className="uppercase tracking-wide">With confidence</dt>
+              <dd className="font-mono text-xs text-foreground">{summary.withConfidence}</dd>
+            </div>
+            <div className="inline-flex items-baseline gap-1.5">
+              <dt className="uppercase tracking-wide">Without</dt>
+              <dd className="font-mono text-xs text-foreground">{summary.withoutConfidence}</dd>
+            </div>
+          </>
+        ) : null}
+        {summary.hasProvenance
+          ? summary.provenances.map((p) => (
+              <div key={p.descriptor.id} className="inline-flex items-baseline gap-1.5">
+                <dt className="uppercase tracking-wide">{p.descriptor.displayName}</dt>
+                <dd className="font-mono text-xs text-foreground">{p.count}</dd>
+              </div>
+            ))
+          : null}
+        {summary.hasProvenance && summary.withoutProvenance > 0 ? (
+          <div className="inline-flex items-baseline gap-1.5">
+            <dt className="uppercase tracking-wide">Not specified</dt>
+            <dd className="font-mono text-xs text-foreground">{summary.withoutProvenance}</dd>
+          </div>
+        ) : null}
+        {summary.hasMeaningfulStatus
+          ? summary.statuses.map((s) => (
+              <div key={s.descriptor.id} className="inline-flex items-baseline gap-1.5">
+                <dt className="uppercase tracking-wide">{s.descriptor.displayName}</dt>
+                <dd className="font-mono text-xs text-foreground">{s.count}</dd>
+              </div>
+            ))
+          : null}
+      </dl>
+    </section>
+  );
+}
