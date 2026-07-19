@@ -30,11 +30,7 @@ import {
   type RelationshipCategory,
   type RelationshipStatus,
 } from "@/lib/domain";
-import {
-  countActiveFilters,
-  toGraphQueryParams,
-  type SearchQuery,
-} from "@/lib/domain/search";
+import { countActiveFilters, toGraphQueryParams, type SearchQuery } from "@/lib/domain/search";
 
 export const Route = createFileRoute("/graph")({
   head: () => ({
@@ -342,8 +338,7 @@ function GraphRoute() {
   // legacy per-dimension tally (`activeFilterCount` above) is kept only
   // for the existing `GraphRelationshipSummary` line; the top-level
   // ActiveFiltersBar uses the domain count + the confidence extras.
-  const searchActiveCount =
-    countActiveFilters(derivedSearchQuery) + (minConfidencePct > 0 ? 1 : 0);
+  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minConfidencePct > 0 ? 1 : 0);
 
   return (
     <>
