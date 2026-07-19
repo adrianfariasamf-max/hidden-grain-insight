@@ -2,10 +2,10 @@ import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 
-import type { GraphNode } from "@/lib/api/types";
+import type { KnowledgeObject } from "@/lib/domain";
 
 interface GraphNodeItemProps {
-  node: GraphNode;
+  node: KnowledgeObject;
 }
 
 /**
@@ -14,6 +14,7 @@ interface GraphNodeItemProps {
  * Object id. No extra fetch is issued to enrich the node.
  */
 function GraphNodeItemImpl({ node }: GraphNodeItemProps) {
+  const category = node.metadata.category;
   return (
     <li>
       <Link
@@ -42,9 +43,9 @@ function GraphNodeItemImpl({ node }: GraphNodeItemProps) {
               {node.type}
             </span>
           ) : null}
-          {node.category ? (
+          {category ? (
             <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-              {node.category}
+              {category}
             </span>
           ) : null}
         </div>

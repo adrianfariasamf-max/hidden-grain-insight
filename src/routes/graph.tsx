@@ -11,7 +11,8 @@ import { GraphNodeList } from "@/components/graph/GraphNodeList";
 import { GraphEdgeList } from "@/components/graph/GraphEdgeList";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import { graphQuery } from "@/lib/api/queries";
-import type { GraphEdge, GraphNode, KnowledgeObjectId } from "@/lib/api/types";
+import type { GraphEdge, KnowledgeObjectId } from "@/lib/api/types";
+import { fromGraphNode, type KnowledgeObject } from "@/lib/domain";
 
 export const Route = createFileRoute("/graph")({
   head: () => ({
@@ -83,11 +84,18 @@ function GraphRoute() {
     [graph?.edges],
   );
 
-  const filteredNodes = useMemo<GraphNode[]>(() => {
-    if (!graph) return [];
-    if (!filters.nodeType) return graph.nodes;
-    return graph.nodes.filter((n) => n.type === filters.nodeType);
-  }, [graph, filters.nodeType]);
+  // Normalize once. The identity of each canonical node is stable across
+  // filter changes (memo key = raw nodes array), so `React.memo` on the item
+  // component stays effective.
+  const canonicalNodes = useMemo<KnowledgeObject[]>(
+    () => (graph ? graph.nodes.map(fromGraphNode) : []),
+    [graph],
+  );
+
+  const filteredNodes = useMemo<KnowledgeObject[]>(() => {
+    if (!filters.nodeType) return canonicalNodes;
+    return canonicalNodes.filter((n) => n.type === filters.nodeType);
+  }, [canonicalNodes, filters.nodeType]);
 
   const filteredEdges = useMemo<GraphEdge[]>(() => {
     if (!graph) return [];
@@ -104,8 +112,8 @@ function GraphRoute() {
   }, [graph, filters.edgeType, filters.resolution]);
 
   const knownNodeIds = useMemo<ReadonlySet<KnowledgeObjectId>>(
-    () => new Set((graph?.nodes ?? []).map((n) => n.id)),
-    [graph?.nodes],
+    () => new Set(canonicalNodes.map((n) => n.id)),
+    [canonicalNodes],
   );
 
   // Slice AFTER filtering. Both slices reuse identity when possible so that
