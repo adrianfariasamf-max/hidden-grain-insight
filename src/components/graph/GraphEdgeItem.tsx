@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
 import type { KnowledgeObjectId } from "@/lib/api/types";
-import type { Relationship } from "@/lib/domain";
+import { getRelationshipTypeDescriptor, type Relationship } from "@/lib/domain";
 
 interface GraphEdgeItemProps {
   relationship: Relationship;
@@ -55,12 +55,18 @@ function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
   const sourceNavigable = resolved || knownNodeIds.has(relationship.sourceId);
   const targetNavigable = resolved || knownNodeIds.has(relationship.targetId);
   const description = relationship.metadata.description;
+  const typeDescriptor = getRelationshipTypeDescriptor(relationship.type);
 
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border/60 bg-card/60 p-3">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono uppercase tracking-wide">
-          {relationship.type}
+        <span
+          className="rounded border border-border/60 px-1.5 py-0.5 font-mono uppercase tracking-wide"
+          title={typeDescriptor.description || typeDescriptor.displayName}
+          data-relationship-type={typeDescriptor.id}
+          data-relationship-category={typeDescriptor.category}
+        >
+          {typeDescriptor.displayName}
         </span>
         <ResolutionBadge resolved={resolved} />
       </div>

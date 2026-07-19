@@ -6,61 +6,35 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowLeftRight,
-  GitBranch,
-  Link2,
-  Network,
-  Package,
-  Puzzle,
-  Share2,
   type LucideIcon,
 } from "lucide-react";
 
 import type { KnowledgeObjectId } from "@/lib/api/types";
 
 import type { Relationship, RelationshipDirection, RelationshipStatus } from "./relationship";
+import {
+  getRelationshipTypeDescriptor,
+  type RelationshipTone,
+} from "./relationship-ontology";
 
-/** Human-readable label for a relationship type. Never fabricates a label
- *  — falls back to the raw type string when no override exists. */
+/** Re-export the tone token so existing callers keep a single import site. */
+export type { RelationshipTone } from "./relationship-ontology";
+
+/** Human-readable label for a relationship type. Delegates to the
+ *  ontology — never fabricates a label. */
 export function getRelationshipTypeLabel(type: string | undefined | null): string {
-  const t = type?.trim();
-  return t && t.length > 0 ? t : "related";
+  return getRelationshipTypeDescriptor(type).displayName;
 }
 
-/** Icon suggestion by relationship `type`. Purely presentational. */
-const TYPE_ICON: Record<string, LucideIcon> = {
-  depends_on: GitBranch,
-  depends: GitBranch,
-  references: Link2,
-  reference: Link2,
-  contains: Package,
-  part_of: Puzzle,
-  related: Share2,
-  linked: Link2,
-  connects: Network,
-};
-
+/** Icon suggestion by relationship `type`. Delegates to the ontology. */
 export function getRelationshipTypeIcon(type: string | undefined | null): LucideIcon {
-  if (!type) return Link2;
-  return TYPE_ICON[type.toLowerCase()] ?? Link2;
+  return getRelationshipTypeDescriptor(type).icon;
 }
 
-/** Tone tag paired with a text label at the call site. Kept in sync with
- *  the design tokens (`success`, `warning`, `neutral`, `primary`). */
-export type RelationshipTone = "primary" | "success" | "warning" | "neutral";
-
-const TYPE_TONE: Record<string, RelationshipTone> = {
-  depends_on: "warning",
-  depends: "warning",
-  contains: "primary",
-  part_of: "primary",
-  references: "neutral",
-  reference: "neutral",
-  related: "neutral",
-};
-
+/** Tone tag paired with a text label at the call site. Delegates to the
+ *  ontology so tokens stay consistent across the app. */
 export function getRelationshipTypeTone(type: string | undefined | null): RelationshipTone {
-  if (!type) return "neutral";
-  return TYPE_TONE[type.toLowerCase()] ?? "neutral";
+  return getRelationshipTypeDescriptor(type).tone;
 }
 
 /** Directional icon. Uses a bidirectional glyph for "unspecified". */

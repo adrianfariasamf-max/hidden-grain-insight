@@ -7,6 +7,7 @@ import {
   getRelatedEndpointId,
   getRelationshipDirectionIcon,
   getRelationshipDirectionLabel,
+  getRelationshipTypeDescriptor,
   isRelatedEndpointNavigable,
   type Relationship,
 } from "@/lib/domain";
@@ -41,6 +42,7 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
   const isSelfReference = resolved && Boolean(relatedId) && relatedId === currentId;
   const isNavigable = isRelatedEndpointNavigable(rel, currentId);
   const description = rel.metadata.description;
+  const typeDescriptor = getRelationshipTypeDescriptor(rel.type);
 
   const relatedNode = (
     <span className="inline-flex min-w-0 items-center gap-1">
@@ -54,8 +56,13 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border/60 bg-card/60 p-3">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono uppercase tracking-wide">
-          {rel.type}
+        <span
+          className="rounded border border-border/60 px-1.5 py-0.5 font-mono uppercase tracking-wide"
+          title={typeDescriptor.description || typeDescriptor.displayName}
+          data-relationship-type={typeDescriptor.id}
+          data-relationship-category={typeDescriptor.category}
+        >
+          {typeDescriptor.displayName}
         </span>
         <DirectionIcon className="h-3 w-3" aria-hidden />
         {directionLabel ? <span>{directionLabel}</span> : null}
@@ -68,7 +75,7 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
             to="/objects/$id"
             params={{ id: relatedId }}
             className="inline-flex min-w-0 max-w-full items-center gap-1 break-all text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label={`Open related object ${relatedId} (${directionLabel ?? "related"} ${rel.type})`}
+            aria-label={`Open related object ${relatedId} (${directionLabel ?? "related"} ${typeDescriptor.displayName})`}
           >
             {relatedNode}
           </Link>
