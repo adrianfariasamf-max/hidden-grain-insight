@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Compass, Network, LayoutDashboard, Activity } from "lucide-react";
+import { Compass, Network, LayoutDashboard, Activity, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Overview", to: "/", icon: LayoutDashboard, exact: true },
   { label: "Explorer", to: "/explorer", icon: Compass },
   { label: "Knowledge Graph", to: "/graph", icon: Network },
+  { label: "Discovery", to: "/discover", icon: Sparkles },
   { label: "System", to: "/system", icon: Activity },
 ];
 
