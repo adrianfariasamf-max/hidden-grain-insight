@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SystemRouteImport } from './routes/system'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExplorerRouteImport } from './routes/explorer'
+import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
 
@@ -30,6 +31,11 @@ const ExplorerRoute = ExplorerRouteImport.update({
   path: '/explorer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const ObjectsIdRoute = ObjectsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explorer' | '/graph' | '/system' | '/objects/$id'
+  fullPaths:
+    | '/'
+    | '/discover'
+    | '/explorer'
+    | '/graph'
+    | '/system'
+    | '/objects/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explorer' | '/graph' | '/system' | '/objects/$id'
-  id: '__root__' | '/' | '/explorer' | '/graph' | '/system' | '/objects/$id'
+  to: '/' | '/discover' | '/explorer' | '/graph' | '/system' | '/objects/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/discover'
+    | '/explorer'
+    | '/graph'
+    | '/system'
+    | '/objects/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DiscoverRoute: typeof DiscoverRoute
   ExplorerRoute: typeof ExplorerRoute
   GraphRoute: typeof GraphRoute
   SystemRoute: typeof SystemRoute
@@ -102,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DiscoverRoute: DiscoverRoute,
   ExplorerRoute: ExplorerRoute,
   GraphRoute: GraphRoute,
   SystemRoute: SystemRoute,
