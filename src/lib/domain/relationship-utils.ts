@@ -2,20 +2,12 @@
 // Explorer, Object Detail and Graph must all use these — never re-derive
 // per-component labels, tones or endpoint logic.
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowLeftRight,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowLeftRight, type LucideIcon } from "lucide-react";
 
 import type { KnowledgeObjectId } from "@/lib/api/types";
 
 import type { Relationship, RelationshipDirection, RelationshipStatus } from "./relationship";
-import {
-  getRelationshipTypeDescriptor,
-  type RelationshipTone,
-} from "./relationship-ontology";
+import { getRelationshipTypeDescriptor, type RelationshipTone } from "./relationship-ontology";
 
 /** Re-export the tone token so existing callers keep a single import site. */
 export type { RelationshipTone } from "./relationship-ontology";

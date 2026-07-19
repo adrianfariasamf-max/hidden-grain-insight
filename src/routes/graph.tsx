@@ -9,14 +9,19 @@ import { GraphMetrics } from "@/components/graph/GraphMetrics";
 import { GraphFilters, type GraphFilterValues } from "@/components/graph/GraphFilters";
 import { GraphNodeList } from "@/components/graph/GraphNodeList";
 import { GraphEdgeList } from "@/components/graph/GraphEdgeList";
+import { RelationshipLegend } from "@/components/graph/RelationshipLegend";
+import { RelationshipOntologyFilter } from "@/components/graph/RelationshipOntologyFilter";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import { graphQuery } from "@/lib/api/queries";
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import {
+  buildRelationshipOntologyPredicate,
   fromGraphNode,
+  summarizeRelationships,
   toRelationship,
   type KnowledgeObject,
   type Relationship,
+  type RelationshipCategory,
 } from "@/lib/domain";
 
 export const Route = createFileRoute("/graph")({
@@ -35,7 +40,6 @@ export const Route = createFileRoute("/graph")({
 
 const INITIAL_FILTERS: GraphFilterValues = {
   nodeType: "",
-  edgeType: "",
   resolution: "all",
 };
 
@@ -56,37 +60,70 @@ function uniqueSorted(values: (string | undefined | null)[]): string[] {
 }
 
 function GraphRoute() {
-  // NOTE (server-side filtering, HG-PATCH-003 phase 4):
+  // NOTE (server-side filtering, HG-PATCH-003 phase 4 / EPIC-002.4):
   // The query key already accepts `GraphQueryParams` so we can forward
   // filters to the backend as soon as `/graph` supports them. Today the
   // contract still returns the full projection, so we pass no params here
-  // and keep the local, in-memory filtering below. Switching to server-side
-  // is a one-line change: pass the normalized filters into `graphQuery({...})`.
+  // and keep local, in-memory filtering below. Migration path:
+  //   - `filters.nodeType`                → `GraphQueryParams.nodeType`
+  //   - `filters.resolution`              → `GraphQueryParams.resolution`
+  //   - `selectedTypeIds` (first entry)   → `GraphQueryParams.edgeType`
+  //     until the API supports multi-select; until then keep client-side.
+  //   - `selectedCategories`              → NOT SENT (no backend field yet).
+  // We intentionally do not send params the backend does not advertise.
   const query = useQuery(graphQuery());
   const [filters, setFilters] = useState<GraphFilterValues>(INITIAL_FILTERS);
+  const [selectedTypeIds, setSelectedTypeIds] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<RelationshipCategory[]>([]);
   const [nodeLimit, setNodeLimit] = useState(RENDER_CAP_INITIAL);
   const [edgeLimit, setEdgeLimit] = useState(RENDER_CAP_INITIAL);
+
+  const resetCaps = useCallback(() => {
+    setNodeLimit(RENDER_CAP_INITIAL);
+    setEdgeLimit(RENDER_CAP_INITIAL);
+  }, []);
 
   const patchFilters = useCallback((patch: Partial<GraphFilterValues>) => {
     setFilters((prev) => ({ ...prev, ...patch }));
     setNodeLimit(RENDER_CAP_INITIAL);
     setEdgeLimit(RENDER_CAP_INITIAL);
   }, []);
-  const clearFilters = useCallback(() => {
+  const clearAllFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS);
+    setSelectedTypeIds([]);
+    setSelectedCategories([]);
     setNodeLimit(RENDER_CAP_INITIAL);
     setEdgeLimit(RENDER_CAP_INITIAL);
   }, []);
+  const toggleType = useCallback(
+    (id: string) => {
+      setSelectedTypeIds((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+      );
+      resetCaps();
+    },
+    [resetCaps],
+  );
+  const toggleCategory = useCallback(
+    (c: RelationshipCategory) => {
+      setSelectedCategories((prev) =>
+        prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+      );
+      resetCaps();
+    },
+    [resetCaps],
+  );
+  const clearOntologyFilters = useCallback(() => {
+    setSelectedTypeIds([]);
+    setSelectedCategories([]);
+    resetCaps();
+  }, [resetCaps]);
 
   const graph = query.data;
 
   const nodeTypes = useMemo(
     () => uniqueSorted((graph?.nodes ?? []).map((n) => n.type)),
     [graph?.nodes],
-  );
-  const edgeTypes = useMemo(
-    () => uniqueSorted((graph?.edges ?? []).map((e) => e.type)),
-    [graph?.edges],
   );
 
   // Normalize once. The identity of each canonical node is stable across
@@ -109,20 +146,44 @@ function GraphRoute() {
     [graph],
   );
 
+  // Legend + filter surfaces are always driven by the FULL dataset so the
+  // user can see (and re-enable) any type/category even while an existing
+  // selection would exclude it. This mirrors typical faceted-filter UX and
+  // avoids "dead-end" states where a selection makes itself unreachable.
+  const summary = useMemo(
+    () => summarizeRelationships(canonicalRelationships),
+    [canonicalRelationships],
+  );
+
+  // Ontology predicate (types OR / categories OR / groups AND).
+  const ontologyPredicate = useMemo(
+    () =>
+      buildRelationshipOntologyPredicate({
+        typeIds: selectedTypeIds,
+        categories: selectedCategories,
+      }),
+    [selectedTypeIds, selectedCategories],
+  );
+
   const filteredRelationships = useMemo<Relationship[]>(() => {
-    if (!filters.edgeType && filters.resolution === "all") return canonicalRelationships;
     const wantStatus =
       filters.resolution === "resolved"
         ? "resolved"
         : filters.resolution === "unresolved"
           ? "unresolved"
           : null;
+    // AND across filter groups: resolution AND ontology(types/categories).
     return canonicalRelationships.filter((r) => {
-      if (filters.edgeType && r.type !== filters.edgeType) return false;
       if (wantStatus !== null && r.status !== wantStatus) return false;
+      if (!ontologyPredicate(r)) return false;
       return true;
     });
-  }, [canonicalRelationships, filters.edgeType, filters.resolution]);
+  }, [canonicalRelationships, filters.resolution, ontologyPredicate]);
+
+  const filteredSummary = useMemo(
+    () => summarizeRelationships(filteredRelationships),
+    [filteredRelationships],
+  );
 
   const knownNodeIds = useMemo<ReadonlySet<KnowledgeObjectId>>(
     () => new Set(canonicalNodes.map((n) => n.id)),
@@ -148,8 +209,13 @@ function GraphRoute() {
   const showMoreNodes = useCallback(() => setNodeLimit((n) => n + RENDER_CAP_STEP), []);
   const showMoreEdges = useCallback(() => setEdgeLimit((n) => n + RENDER_CAP_STEP), []);
 
-  const filtersActive =
-    filters.nodeType !== "" || filters.edgeType !== "" || filters.resolution !== "all";
+  const ontologyActive = selectedTypeIds.length > 0 || selectedCategories.length > 0;
+  const filtersActive = filters.nodeType !== "" || filters.resolution !== "all" || ontologyActive;
+  const activeFilterCount =
+    (filters.nodeType !== "" ? 1 : 0) +
+    (filters.resolution !== "all" ? 1 : 0) +
+    selectedTypeIds.length +
+    selectedCategories.length;
 
   return (
     <>
@@ -169,11 +235,31 @@ function GraphRoute() {
 
             <GraphFilters
               values={filters}
-              options={{ nodeTypes, edgeTypes }}
+              options={{ nodeTypes }}
               onChange={patchFilters}
-              onClearAll={clearFilters}
+              onClearAll={clearAllFilters}
+              hasAnyActiveFilters={filtersActive}
               visibleNodes={filteredNodes.length}
               visibleEdges={filteredRelationships.length}
+            />
+
+            <RelationshipLegend summary={summary} />
+
+            <RelationshipOntologyFilter
+              summary={summary}
+              selectedTypeIds={selectedTypeIds}
+              selectedCategories={selectedCategories}
+              onToggleType={toggleType}
+              onToggleCategory={toggleCategory}
+              onClear={clearOntologyFilters}
+            />
+
+            <GraphRelationshipSummary
+              visible={filteredRelationships.length}
+              total={canonicalRelationships.length}
+              visibleTypes={filteredSummary.types.length}
+              totalTypes={summary.types.length}
+              activeFilters={activeFilterCount}
             />
 
             {query.isFetching ? (
@@ -241,10 +327,19 @@ function GraphRoute() {
                   graph.edgeCount === 0
                     ? "The projection has no edges yet."
                     : filtersActive
-                      ? "Try clearing filters to see all relationships."
+                      ? "Try clearing filters to see all relationships. Use the button below."
                       : undefined
                 }
               />
+              {filteredRelationships.length === 0 && graph.edgeCount > 0 && filtersActive ? (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="inline-flex w-fit items-center gap-1 self-center rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent/20"
+                >
+                  Clear all filters
+                </button>
+              ) : null}
               {edgesTruncated ? (
                 <ShowMore
                   visible={visibleRelationships.length}
@@ -297,5 +392,35 @@ function ShowMore({ visible, total, onClick, label }: ShowMoreProps) {
         Show {Math.min(RENDER_CAP_STEP, remaining)} more
       </button>
     </div>
+  );
+}
+
+interface GraphRelationshipSummaryProps {
+  visible: number;
+  total: number;
+  visibleTypes: number;
+  totalTypes: number;
+  activeFilters: number;
+}
+
+/** Compact summary panel that reports how the current filter state
+ *  reduces the full dataset. Numbers come from the same summarizer used
+ *  by the legend, so counts are always consistent. */
+function GraphRelationshipSummary({
+  visible,
+  total,
+  visibleTypes,
+  totalTypes,
+  activeFilters,
+}: GraphRelationshipSummaryProps) {
+  return (
+    <p className="text-[11px] text-muted-foreground" aria-live="polite" role="status">
+      <span className="font-mono text-foreground">{visible}</span> of{" "}
+      <span className="font-mono text-foreground">{total}</span> relationships visible ·{" "}
+      <span className="font-mono text-foreground">{visibleTypes}</span> of{" "}
+      <span className="font-mono text-foreground">{totalTypes}</span> types ·{" "}
+      <span className="font-mono text-foreground">{activeFilters}</span> filter
+      {activeFilters === 1 ? "" : "s"} active
+    </p>
   );
 }
