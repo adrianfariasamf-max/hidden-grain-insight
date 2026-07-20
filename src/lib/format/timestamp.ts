@@ -14,7 +14,7 @@ export function formatTimestampHuman(value?: string | null): string | null {
   if (Number.isNaN(date.getTime())) return null;
   // Fixed locale so SSR and client render identical strings.
   return (
-    date.toLocaleString("en-US", {
+    date.toLocaleString("es-ES", {
       year: "numeric",
       month: "short",
       day: "2-digit",
