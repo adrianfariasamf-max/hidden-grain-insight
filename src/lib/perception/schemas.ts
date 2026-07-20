@@ -29,7 +29,7 @@ export const updateExperimentSchema = z.object({
 
 export const updateStimulusSchema = z.object({
   altText: z.string().max(500).optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.union([z.string().url(), z.literal("")]).optional(),
   imagePath: z.string().min(1).optional(),
 });
 
@@ -40,7 +40,7 @@ export const signUploadSchema = z.object({
 
 export const createStimulusSchema = z.object({
   position: positionSchema,
-  imageUrl: z.string().url(),
+  imageUrl: z.union([z.string().url(), z.literal("")]).optional().default(""),
   imagePath: z.string().min(1),
   altText: z.string().max(500).optional(),
   displayDurationSeconds: z.number().positive().nullable().optional(),
