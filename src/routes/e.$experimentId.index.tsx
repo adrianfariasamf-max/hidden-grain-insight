@@ -80,7 +80,7 @@ function ParticipantLanding() {
   // A participant only exists once the first stimulus has been fetched by the
   // browser. This eliminates the "0-response" ghost participants that appear
   // when someone opens a link or just clicks the consent button.
-  const [stage, setStage] = useState<"form" | "instructions" | "preloading">("form");
+  const [stage, setStage] = useState<"form" | "preloading">("form");
   const [preloadError, setPreloadError] = useState<string | null>(null);
 
   // Contamination shield (RR-005): sessions started with ?test=1 in the URL
@@ -153,24 +153,6 @@ function ParticipantLanding() {
   const isClosed = exp.status === "closed";
   const firstStimulus = [...(data.stimuli ?? [])].sort((a, b) => a.position - b.position)[0];
 
-  if (isOpen && stage === "instructions") {
-    return (
-      <>
-      <PreviewBanner active={preview} />
-      <InstructionsStage
-        title={exp.title}
-        instructions={exp.instructions}
-        total={data.stimuli?.length ?? 0}
-        onBegin={() => {
-          setPreloadError(null);
-          setStage("preloading");
-        }}
-        onBack={() => setStage("form")}
-      />
-      </>
-    );
-  }
-
   if (isOpen && stage === "preloading") {
     return (
       <>
@@ -184,7 +166,7 @@ function ParticipantLanding() {
         }}
         onFail={(msg) => setPreloadError(msg)}
         onCancel={() => {
-          setStage("instructions");
+          setStage("form");
           setPreloadError(null);
         }}
       />
@@ -226,7 +208,8 @@ function ParticipantLanding() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!consent || !ageRange) return;
-            setStage("instructions");
+            setPreloadError(null);
+            setStage("preloading");
           }}
         >
           <section aria-labelledby="consent-heading" className="grid gap-2">
@@ -302,44 +285,6 @@ function ParticipantLanding() {
       )}
     </div>
     </>
-  );
-}
-
-function InstructionsStage({
-  title,
-  instructions,
-  total,
-  onBegin,
-  onBack,
-}: {
-  title: string;
-  instructions: string;
-  total: number;
-  onBegin: () => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mb-1 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:gap-6">
-        <h1 className="min-w-0 truncate text-lg font-semibold text-foreground sm:text-2xl">{title}</h1>
-        <BrandingLogo className="flex shrink-0 items-center" size="lg" />
-      </div>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
-      </p>
-      <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm leading-relaxed text-foreground sm:p-5">
-        {instructions ||
-          "Observa cada imagen con calma.\nNo intentes encontrar una respuesta correcta.\nSimplemente responde de acuerdo con lo primero que percibas o sientas."}
-      </div>
-      <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <Button type="button" variant="ghost" onClick={onBack} className="sm:w-auto">
-          Volver
-        </Button>
-        <Button type="button" size="lg" onClick={onBegin} className="sm:w-auto">
-          Comenzar
-        </Button>
-      </div>
-    </div>
   );
 }
 
