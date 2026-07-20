@@ -38,7 +38,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
         headers: { "content-type": file.type || "application/octet-stream" },
         body: file,
       });
-      if (!put.ok) throw new Error(`Upload failed (${put.status})`);
+      if (!put.ok) throw new Error(`No se pudo subir la imagen (${put.status})`);
 
       if (stimulus) {
         await experimentsApi.updateStimulus(experimentId, stimulus.id, {
@@ -82,7 +82,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
           <span className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 font-mono text-[11px] text-primary">
             {position}
           </span>
-          <h3 className="text-sm font-semibold text-foreground">Stimulus {position}</h3>
+          <h3 className="text-sm font-semibold text-foreground">Estímulo {position}</h3>
         </div>
         {stimulus ? (
           <span className="rounded bg-primary/15 px-2 py-0.5 font-mono text-[11px] text-primary">
@@ -100,7 +100,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={stimulus.imageUrl}
-            alt={stimulus.altText || `Stimulus ${position}`}
+            alt={stimulus.altText || `Estímulo ${position}`}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -133,7 +133,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
           />
           {showAltMissing ? (
             <p className="text-[11px] text-warning">
-              Texto alternativo is required before publishing.
+              El texto alternativo es obligatorio antes de publicar.
             </p>
           ) : null}
           <p className="truncate font-mono text-[10px] text-muted-foreground">

@@ -40,7 +40,7 @@ export function SessionsPanel({ experimentId }: Props) {
         <ul className="divide-y divide-border/60">
           {items.map((it, idx) => {
             const s = it.session;
-            const label = s.participantAlias?.trim() || `Participant ${idx + 1}`;
+            const label = s.participantAlias?.trim() || `Participante ${idx + 1}`;
             const open = openToken === s.publicToken;
             return (
               <li key={s.id} className="py-2">
@@ -53,13 +53,13 @@ export function SessionsPanel({ experimentId }: Props) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{label}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      <StatusChip status={s.status} /> · {it.responseCount} response
-                      {it.responseCount === 1 ? "" : "s"} · started{" "}
+                      <StatusChip status={s.status} /> · {it.responseCount} respuesta
+                      {it.responseCount === 1 ? "" : "s"} · iniciada{" "}
                       <SafeTimestamp value={s.startedAt ?? s.createdAt} />
                     </p>
                   </div>
                   <span className="font-mono text-[10px] text-muted-foreground">
-                    {open ? "hide" : "view"}
+                     {open ? "ocultar" : "ver"}
                   </span>
                 </button>
                 {open ? (
@@ -112,7 +112,7 @@ function SessionResponses({
             <article key={r.id} className="rounded border border-border/60 bg-card p-3">
               <header className="mb-2 flex items-baseline justify-between text-[11px] text-muted-foreground">
                 <span className="font-mono">
-                  Stimulus {stim?.position ?? "?"}
+                  Estímulo {stim?.position ?? "?"}
                   {stim?.altText ? ` — ${stim.altText}` : ""}
                 </span>
                 <span className="font-mono">
@@ -154,13 +154,19 @@ function StatusChip({ status }: { status: string }) {
     completed: "bg-primary/25 text-primary",
     abandoned: "bg-destructive/15 text-destructive",
   };
+  const label: Record<string, string> = {
+    pending: "pendiente",
+    in_progress: "en progreso",
+    completed: "completada",
+    abandoned: "abandonada",
+  };
   return (
     <span
       className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${
         tone[status] ?? "bg-muted text-muted-foreground"
       }`}
     >
-      {status}
+      {label[status] ?? status}
     </span>
   );
 }
