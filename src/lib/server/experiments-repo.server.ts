@@ -17,9 +17,21 @@ import type {
   ExperimentStimulus,
   ParticipantSession,
   PerceptionExperiment,
+  PublicExperiment,
+  SessionSnapshot,
+  SessionSummary,
   StimulusResponse,
   SubmitResponseRequest,
 } from "@/lib/perception/types";
+// Public projection: strip hiddenTarget before any payload leaves the server
+// for participants. Every /sessions/* endpoint MUST route experiment data
+// through this helper.
+const toPublicExperiment = (e: PerceptionExperiment): PublicExperiment => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { hiddenTarget: _omit, ...safe } = e;
+  return safe;
+};
+
 
 // ------------------- Mappers -------------------
 
@@ -371,9 +383,8 @@ export async function createSession(
 
 export async function getSessionByToken(token: string): Promise<{
   session: ParticipantSession;
-  experiment: PerceptionExperiment;
-  stimuli: ExperimentStimulus[];
-} | null> {
+} | null>;
+export async function getSessionByToken(token: string): Promise<SessionSnapshot | null> {
   const { data, error } = await supabaseAdmin
     .from("participant_sessions")
     .select("*")
@@ -384,10 +395,17 @@ export async function getSessionByToken(token: string): Promise<{
   const session = toSession(data as SessionRow);
   const detail = await getExperimentDetail(session.experimentId);
   if (!detail) return null;
+  const { data: rr, error: re } = await supabaseAdmin
+    .from("stimulus_responses")
+    .select("*")
+    .eq("session_id", session.id);
+  if (re) throw re;
+  const responses = ((rr ?? []) as ResponseRow[]).map(toResponse);
   return {
     session,
-    experiment: detail.experiment,
+    experiment: toPublicExperiment(detail.experiment),
     stimuli: detail.stimuli,
+    responses,
   };
 }
 
