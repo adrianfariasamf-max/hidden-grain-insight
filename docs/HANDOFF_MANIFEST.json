@@ -1,0 +1,30 @@
+{
+  "product": "Hidden Grain",
+  "version": "1.0.0",
+  "epic": "EPIC-005.0",
+  "mode": "read-write",
+  "persistence": {
+    "provider": "Lovable Cloud (Supabase)",
+    "tables": ["public.knowledge_objects", "public.relationships"]
+  },
+  "api": {
+    "base": "/api",
+    "endpoints": [
+      { "method": "GET",  "path": "/health" },
+      { "method": "GET",  "path": "/objects" },
+      { "method": "POST", "path": "/objects" },
+      { "method": "GET",  "path": "/objects/:id" },
+      { "method": "GET",  "path": "/graph" },
+      { "method": "POST", "path": "/relationships" }
+    ],
+    "openapi": "docs/hidden-grain-api.openapi.yaml"
+  },
+  "fields": {
+    "clientAuthored": ["title","type","category","status","summary","keywords","tags","description","provenance","confidence","sourceObjectId","targetObjectId"],
+    "serverDerived":  ["id","version","checksum","path","relationshipCount","resolved","createdAt","updatedAt"]
+  },
+  "rls": {
+    "policy": "public-read; writes routed through server (service-role bypass). Tighten to owner-scoped policies once auth ships.",
+    "anonAccess": "SELECT only"
+  }
+}
