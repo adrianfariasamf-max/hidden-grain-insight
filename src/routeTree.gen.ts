@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObjectsNewRouteImport } from './routes/objects.new'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
 import { Route as ExperimentsIdRouteImport } from './routes/experiments.$id'
+import { Route as EExperimentIdRouteImport } from './routes/e.$experimentId'
 import { Route as ApiRelationshipsRouteImport } from './routes/api/relationships'
 import { Route as ApiObjectsRouteImport } from './routes/api/objects'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
@@ -80,6 +81,11 @@ const ExperimentsIdRoute = ExperimentsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => ExperimentsRoute,
+} as any)
+const EExperimentIdRoute = EExperimentIdRouteImport.update({
+  id: '/e/$experimentId',
+  path: '/e/$experimentId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRelationshipsRoute = ApiRelationshipsRouteImport.update({
   id: '/api/relationships',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/e/$experimentId': typeof EExperimentIdRoute
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/e/$experimentId': typeof EExperimentIdRoute
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/e/$experimentId': typeof EExperimentIdRoute
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/e/$experimentId'
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/e/$experimentId'
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/e/$experimentId'
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiObjectsRoute: typeof ApiObjectsRouteWithChildren
   ApiRelationshipsRoute: typeof ApiRelationshipsRoute
+  EExperimentIdRoute: typeof EExperimentIdRoute
   ObjectsIdRoute: typeof ObjectsIdRoute
   ObjectsNewRoute: typeof ObjectsNewRoute
   ApiSessionsTokenRoute: typeof ApiSessionsTokenRouteWithChildren
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/experiments/$id'
       preLoaderRoute: typeof ExperimentsIdRouteImport
       parentRoute: typeof ExperimentsRoute
+    }
+    '/e/$experimentId': {
+      id: '/e/$experimentId'
+      path: '/e/$experimentId'
+      fullPath: '/e/$experimentId'
+      preLoaderRoute: typeof EExperimentIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/relationships': {
       id: '/api/relationships'
@@ -646,6 +666,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiObjectsRoute: ApiObjectsRouteWithChildren,
   ApiRelationshipsRoute: ApiRelationshipsRoute,
+  EExperimentIdRoute: EExperimentIdRoute,
   ObjectsIdRoute: ObjectsIdRoute,
   ObjectsNewRoute: ObjectsNewRoute,
   ApiSessionsTokenRoute: ApiSessionsTokenRouteWithChildren,
