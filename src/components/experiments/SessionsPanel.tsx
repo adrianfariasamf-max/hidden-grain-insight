@@ -125,7 +125,7 @@ function SessionResponses({
                 <Row k="Sensación" v={r.feeling} />
                 <Row k="Interpretación" v={r.interpretation} />
                 <Row
-                  k="Nivel de confianza"
+                  k="Confianza"
                   v={r.confidence == null ? "—" : `${Math.round(r.confidence * 5)}/5`}
                 />
               </dl>

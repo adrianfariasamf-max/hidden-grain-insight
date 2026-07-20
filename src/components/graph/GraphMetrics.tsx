@@ -15,9 +15,9 @@ export function GraphMetrics({ graph }: GraphMetricsProps) {
       <MetricCard label="Nodes" value={graph.nodeCount} />
       <MetricCard label="Edges" value={graph.edgeCount} />
       <MetricCard
-        label="Unresolved edges"
+        label="Aristas no resueltas"
         value={graph.unresolvedEdgeCount}
-        hint={graph.unresolvedEdgeCount > 0 ? "Targets missing in projection" : undefined}
+        hint={graph.unresolvedEdgeCount > 0 ? "Destinos ausentes en la proyección" : undefined}
       />
       <MetricCard label="Schema" value={graph.schemaVersion} mono />
     </div>

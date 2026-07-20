@@ -126,16 +126,16 @@ function CreateRelationshipForm({
     setFieldErrors({});
 
     const errs: FieldErrors = {};
-    if (!targetObjectId) errs.targetObjectId = "Select a target object.";
+    if (!targetObjectId) errs.targetObjectId = "Selecciona un objeto destino.";
     else if (targetObjectId === sourceObjectId)
-      errs.targetObjectId = "Source and target must differ.";
-    if (!type) errs.type = "Select a relationship type.";
+      errs.targetObjectId = "Origen y destino deben ser distintos.";
+    if (!type) errs.type = "Selecciona un tipo de relación.";
 
     let confidenceNum: number | undefined;
     if (confidence.trim() !== "") {
       const n = Number(confidence);
       if (!Number.isFinite(n) || n < 0 || n > 1) {
-        errs.confidence = "Nivel de confianza must be a number between 0 and 1.";
+        errs.confidence = "Confianza must be a number between 0 and 1.";
       } else {
         confidenceNum = n;
       }
@@ -281,7 +281,7 @@ function CreateRelationshipForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="rel-conf">Nivel de confianza</Label>
+          <Label htmlFor="rel-conf">Confianza</Label>
           <Input
             id="rel-conf"
             value={confidence}
@@ -359,7 +359,7 @@ function TargetResults({
   return (
     <ul
       role="listbox"
-      aria-label="Target object search results"
+      aria-label="Resultados de búsqueda del objeto destino"
       className="max-h-56 overflow-y-auto rounded-md border border-border/60 bg-card/40"
     >
       {filtered.map((r) => (

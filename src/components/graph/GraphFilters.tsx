@@ -31,7 +31,7 @@ interface GraphFiltersProps {
  * Relationship type + category filtering lives in a dedicated
  * ontology-driven surface (see RelationshipOntologyFilter). This
  * component owns the node-type and resolution axes only, plus the
- * cross-cutting "Clear filters" action.
+ * cross-cutting "Limpiar filtros" action.
  */
 export function GraphFilters({
   values,
@@ -46,7 +46,7 @@ export function GraphFilters({
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card/40 p-3 sm:p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
         <Select
-          label="Node type"
+          label="Tipo de nodo"
           value={values.nodeType}
           options={options.nodeTypes}
           onChange={(v) => onChange({ nodeType: v })}
@@ -70,10 +70,10 @@ export function GraphFilters({
             type="button"
             onClick={onClearAll}
             className="inline-flex h-9 items-center gap-1 self-start rounded-md border border-border/60 bg-background px-3 text-xs text-muted-foreground transition-colors hover:text-foreground sm:self-end"
-            aria-label="Clear all graph filters"
+            aria-label="Limpiar todos los filtros del grafo"
           >
             <X className="h-3 w-3" aria-hidden />
-            Clear filters
+            Limpiar filtros
           </button>
         ) : null}
       </div>

@@ -19,7 +19,7 @@ export function ActiveFiltersBar({
   count,
   onClear,
   className,
-  emptyLabel = "No active filters",
+  emptyLabel = "Sin filtros activos",
 }: ActiveFiltersBarProps) {
   if (count === 0) {
     return (
@@ -43,7 +43,7 @@ export function ActiveFiltersBar({
         type="button"
         onClick={onClear}
         className="inline-flex items-center gap-1 rounded text-muted-foreground transition-colors hover:text-foreground"
-        aria-label="Clear all active filters"
+        aria-label="Limpiar todos los filtros activos"
       >
         <X className="h-3 w-3" aria-hidden />
         Clear

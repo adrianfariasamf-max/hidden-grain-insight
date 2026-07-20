@@ -28,7 +28,7 @@ export const Route = createFileRoute("/discover")({
       {
         name: "description",
         content:
-          "Discovery Workspace: explore, prioritise and inspect deterministic insights from the Grafo de conocimiento.",
+          "Espacio de descubrimiento: explore, prioritise and inspect deterministic insights from the Grafo de conocimiento.",
       },
     ],
   }),
@@ -88,7 +88,7 @@ function DiscoverRoute() {
     <>
       <PageHeader
         eyebrow="Discovery"
-        title="Discovery Workspace"
+        title="Espacio de descubrimiento"
         description="Deterministic insights derived from the Grafo de conocimiento — no AI, no probabilistic ranking."
       />
       <section className="flex flex-col gap-4 px-4 py-6 sm:px-8">

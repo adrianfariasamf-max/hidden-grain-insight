@@ -8,12 +8,12 @@ interface SafeTimestampProps {
 
 /**
  * Renders a timestamp defensively:
- * - missing/invalid → neutral "Timestamp unavailable" (or provided fallback)
+ * - missing/invalid → neutral "Marca de tiempo no disponible" (or provided fallback)
  * - valid → human-readable UTC label with the ISO string as tooltip + <time datetime>
  */
 export function SafeTimestamp({
   value,
-  fallback = "Timestamp unavailable",
+  fallback = "Marca de tiempo no disponible",
   className,
 }: SafeTimestampProps) {
   const iso = formatTimestampIso(value);

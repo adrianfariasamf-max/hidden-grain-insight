@@ -64,7 +64,7 @@ export function FiltersBar({ values, options, onChange, onClearAll, disabled }: 
           className="inline-flex h-9 items-center gap-1 self-start rounded-md border border-border/60 bg-background px-3 text-xs text-muted-foreground transition-colors hover:text-foreground sm:self-end"
         >
           <X className="h-3 w-3" aria-hidden />
-          Clear filters
+          Limpiar filtros
         </button>
       ) : null}
     </div>

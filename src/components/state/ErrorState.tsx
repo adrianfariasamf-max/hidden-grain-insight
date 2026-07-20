@@ -16,34 +16,34 @@ interface ErrorStateProps {
 
 function describe(error: unknown): { title: string; message: string } {
   if (error instanceof ApiNotFoundError) {
-    return { title: "No encontrado", message: "The requested resource does not exist." };
+    return { title: "No encontrado", message: "El recurso solicitado no existe." };
   }
   if (error instanceof ApiTimeoutError) {
     return {
-      title: "Request timed out",
-      message: "The API did not respond in time. It may be overloaded or unreachable.",
+      title: "Se agotó el tiempo de espera",
+      message: "La API no respondió a tiempo. Puede estar saturada o inaccesible.",
     };
   }
   if (error instanceof ApiNetworkError) {
     return {
-      title: "Network error",
+      title: "Error de red",
       message: "Could not reach the Hidden Grain API. Check your connection and VITE_HG_API_BASE.",
     };
   }
   if (error instanceof ApiContractError) {
     return {
-      title: "Contract mismatch",
+      title: "Contrato incompatible",
       message:
-        "The API response did not match the expected schema. The backend may be out of sync.",
+        "La respuesta de la API no coincidió con el esquema esperado. El backend puede estar desincronizado.",
     };
   }
   if (error instanceof ApiError) {
     return { title: `Request failed (${error.status})`, message: error.message };
   }
   if (error instanceof Error) {
-    return { title: "Something went wrong", message: error.message };
+    return { title: "Ocurrió un problema", message: error.message };
   }
-  return { title: "Something went wrong", message: "Error desconocido." };
+  return { title: "Ocurrió un problema", message: "Error desconocido." };
 }
 
 export function ErrorState({ error, onRetry, title }: ErrorStateProps) {

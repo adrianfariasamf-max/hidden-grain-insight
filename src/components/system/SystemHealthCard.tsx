@@ -26,7 +26,7 @@ export function SystemStatusCard({ health, isRefreshing }: SystemHealthCardProps
           {isRefreshing ? (
             <span
               className="inline-flex items-center gap-1 text-[11px] text-muted-foreground"
-              aria-label="Refreshing health status"
+              aria-label="Actualizando estado"
             >
               <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
               refreshing

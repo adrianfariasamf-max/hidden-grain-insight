@@ -259,10 +259,10 @@ function StimulusView({
 
         <fieldset className="grid gap-2">
           <legend className="text-sm font-medium text-foreground">
-            Nivel de confianza in your response{" "}
+            Confianza in your response{" "}
             <span className="text-xs text-muted-foreground">(opcional)</span>
           </legend>
-          <div className="flex gap-2" role="radiogroup" aria-label="Nivel de confianza level">
+          <div className="flex gap-2" role="radiogroup" aria-label="Confianza level">
             {[1, 2, 3, 4, 5].map((n) => {
               const active = confidence === n;
               return (

@@ -36,7 +36,7 @@ export class ApiNotFoundError extends ApiError {
 
 export class ApiNetworkError extends ApiError {
   constructor(url: string, cause?: unknown, meta: ApiErrorMeta = {}) {
-    super("Network error while contacting the API", 0, url, meta);
+    super("Error de red while contacting the API", 0, url, meta);
     this.name = "ApiNetworkError";
     if (cause) (this as { cause?: unknown }).cause = cause;
   }
@@ -44,7 +44,7 @@ export class ApiNetworkError extends ApiError {
 
 export class ApiTimeoutError extends ApiError {
   constructor(url: string, timeoutMs: number, meta: ApiErrorMeta = {}) {
-    super(`Request timed out after ${timeoutMs}ms`, 0, url, meta);
+    super(`Se agotó el tiempo de espera after ${timeoutMs}ms`, 0, url, meta);
     this.name = "ApiTimeoutError";
   }
 }

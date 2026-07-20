@@ -14,7 +14,7 @@ export function RuntimeInfo({ health }: RuntimeInfoProps) {
   const rows: Array<{ label: string; value: string; mono?: boolean }> = [
     { label: "API base", value: API_BASE, mono: true },
     { label: "Service", value: health.service, mono: true },
-    { label: "Schema version", value: health.schemaVersion, mono: true },
+    { label: "Versión del esquema", value: health.schemaVersion, mono: true },
   ];
 
   return (

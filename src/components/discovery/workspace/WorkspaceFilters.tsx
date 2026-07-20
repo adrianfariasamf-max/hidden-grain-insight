@@ -145,7 +145,7 @@ function WorkspaceFiltersImpl({
               type="button"
               onClick={handleClear}
               className="ml-1 inline-flex items-center gap-1 rounded text-muted-foreground hover:text-foreground"
-              aria-label="Clear all filters"
+              aria-label="Limpiar todos los filtros"
             >
               <X className="h-3 w-3" aria-hidden />
               Clear
