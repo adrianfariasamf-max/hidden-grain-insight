@@ -54,12 +54,12 @@ export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props)
       <DialogTrigger asChild>
         <Button size="sm" variant="default">
           <Plus className="mr-1.5 h-3.5 w-3.5" aria-hidden />
-          Create Relationship
+          Crear relación
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create Relationship</DialogTitle>
+          <DialogTitle>Crear relación</DialogTitle>
           <DialogDescription>
             Link <span className="font-medium text-foreground">{sourceTitle}</span> to another
             Knowledge Object.
@@ -207,7 +207,7 @@ function CreateRelationshipForm({
                 id="rel-target"
                 value={targetQuery}
                 onChange={(e) => setTargetQuery(e.target.value)}
-                placeholder="Search objects by title, keyword…"
+                placeholder="Buscar objetos por título o palabra clave…"
                 autoComplete="off"
                 className="pl-8"
                 disabled={disabled}
@@ -237,7 +237,7 @@ function CreateRelationshipForm({
         </Label>
         <Select value={type} onValueChange={setType} disabled={disabled}>
           <SelectTrigger id="rel-type">
-            <SelectValue placeholder="Select a relationship type…" />
+            <SelectValue placeholder="Selecciona un tipo de relación…" />
           </SelectTrigger>
           <SelectContent>
             {ontology.map((d) => (
@@ -265,7 +265,7 @@ function CreateRelationshipForm({
           rows={2}
           maxLength={500}
           disabled={disabled}
-          placeholder="Optional context…"
+          placeholder="Contexto opcional…"
         />
       </div>
 
@@ -318,7 +318,7 @@ function CreateRelationshipForm({
               Guardando…
             </>
           ) : (
-            "Create Relationship"
+            "Crear relación"
           )}
         </Button>
       </DialogFooter>

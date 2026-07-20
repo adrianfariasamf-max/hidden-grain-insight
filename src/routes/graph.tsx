@@ -588,7 +588,7 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
         {summary.hasConfidence ? (
           <>
             <div className="inline-flex items-baseline gap-1.5">
-              <dt className="uppercase tracking-wide">With confidence</dt>
+              <dt className="uppercase tracking-wide">Con confianza</dt>
               <dd className="font-mono text-xs text-foreground">{summary.withConfidence}</dd>
             </div>
             <div className="inline-flex items-baseline gap-1.5">
@@ -607,7 +607,7 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
           : null}
         {summary.hasProvenance && summary.withoutProvenance > 0 ? (
           <div className="inline-flex items-baseline gap-1.5">
-            <dt className="uppercase tracking-wide">Not specified</dt>
+            <dt className="uppercase tracking-wide">Sin especificar</dt>
             <dd className="font-mono text-xs text-foreground">{summary.withoutProvenance}</dd>
           </div>
         ) : null}

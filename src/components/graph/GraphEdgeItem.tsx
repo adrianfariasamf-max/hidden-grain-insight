@@ -47,7 +47,7 @@ function Endpoint({
  *
  * Resolved edges → both endpoints link to /objects/:id.
  * Unresolved edges → we keep the edge visible with an explicit
- * "Unresolved target" hint. We DO NOT claim which side failed; we only turn
+ * "Destino no resuelto" hint. We DO NOT claim which side failed; we only turn
  * an endpoint into a link when its id is present in the projection's node
  * set (i.e. we can prove it exists). No extra fetch is issued.
  */
@@ -88,7 +88,7 @@ function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
         />
       </div>
 
-      {!resolved ? <p className="text-[11px] text-warning">Unresolved target</p> : null}
+      {!resolved ? <p className="text-[11px] text-warning">Destino no resuelto</p> : null}
 
       {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
     </li>

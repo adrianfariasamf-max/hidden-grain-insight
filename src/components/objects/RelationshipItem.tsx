@@ -86,9 +86,9 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
           <span className="flex flex-col gap-1">
             <span className="min-w-0 break-all font-mono text-xs text-foreground">{relatedId}</span>
             {isSelfReference ? (
-              <span className="text-[11px] text-muted-foreground">Current object</span>
+              <span className="text-[11px] text-muted-foreground">Objeto actual</span>
             ) : !resolved ? (
-              <span className="text-[11px] text-warning">Unresolved target</span>
+              <span className="text-[11px] text-warning">Destino no resuelto</span>
             ) : null}
           </span>
         )}

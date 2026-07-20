@@ -192,7 +192,7 @@ function ExplorerRoute() {
           <SearchInput
             value={search.q ?? ""}
             onChange={handleTextChange}
-            placeholder="Search Objetos de conocimiento…"
+            placeholder="Buscar objetos de conocimiento…"
             ariaLabel="Search Objetos de conocimiento"
           />
 

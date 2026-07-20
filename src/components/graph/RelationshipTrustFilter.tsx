@@ -153,7 +153,7 @@ export function RelationshipTrustFilter({
                   )}
                   title="Relationships that did not declare a provenance."
                 >
-                  <span>Not specified</span>
+                  <span>Sin especificar</span>
                   <span className="font-mono text-[10px] text-muted-foreground">
                     {summary.withoutProvenance}
                   </span>
@@ -235,7 +235,7 @@ export function RelationshipTrustFilter({
                 threshold
               </span>
             ) : (
-              <span className="text-[10px] text-muted-foreground">No threshold</span>
+              <span className="text-[10px] text-muted-foreground">Sin umbral</span>
             )}
           </label>
           {thresholdActive && summary.withoutConfidence > 0 ? (
