@@ -234,10 +234,7 @@ function ObjectDetailBody({
             <span className="font-mono text-[11px] text-muted-foreground">
               {relationshipCount ?? 0} total
             </span>
-            <CreateRelationshipDialog
-              sourceObjectId={object.id}
-              sourceTitle={object.title}
-            />
+            <CreateRelationshipDialog sourceObjectId={object.id} sourceTitle={object.title} />
           </div>
         </header>
         <RelationshipsSummary summary={summary} />

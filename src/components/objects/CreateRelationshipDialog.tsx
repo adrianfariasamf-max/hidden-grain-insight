@@ -66,10 +66,7 @@ export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props)
           </DialogDescription>
         </DialogHeader>
         {open ? (
-          <CreateRelationshipForm
-            sourceObjectId={sourceObjectId}
-            onClose={() => setOpen(false)}
-          />
+          <CreateRelationshipForm sourceObjectId={sourceObjectId} onClose={() => setOpen(false)} />
         ) : null}
       </DialogContent>
     </Dialog>
@@ -345,9 +342,7 @@ function TargetResults({
   onPick: (obj: KnowledgeObjectSummary) => void;
 }) {
   if (!enabled) {
-    return (
-      <p className="text-[11px] text-muted-foreground">Type to search Knowledge Objects.</p>
-    );
+    return <p className="text-[11px] text-muted-foreground">Type to search Knowledge Objects.</p>;
   }
   if (isLoading) {
     return <p className="text-[11px] text-muted-foreground">Searching…</p>;
