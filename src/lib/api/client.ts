@@ -18,6 +18,8 @@ import {
   HealthResponseSchema,
   ObjectDetailResponseSchema,
   ObjectsListResponseSchema,
+  CreateKnowledgeObjectResponseSchema,
+  CreateRelationshipResponseSchema,
 } from "./schemas";
 import type {
   GraphResponse,
@@ -25,6 +27,10 @@ import type {
   ObjectDetailResponse,
   ObjectsListResponse,
   ObjectsQueryParams,
+  CreateKnowledgeObjectRequest,
+  CreateKnowledgeObjectResponse,
+  CreateRelationshipRequest,
+  CreateRelationshipResponse,
 } from "./types";
 import type { GraphQueryParams } from "./types";
 
@@ -87,9 +93,15 @@ function extractErrorMeta(response: Response, body: unknown): ApiErrorMeta {
 async function request<T>(
   path: string,
   schema: ZodType<T>,
-  opts: { query?: Record<string, unknown>; signal?: AbortSignal } = {},
+  opts: {
+    query?: Record<string, unknown>;
+    signal?: AbortSignal;
+    method?: "GET" | "POST";
+    body?: unknown;
+  } = {},
 ): Promise<T> {
   const url = buildUrl(path, opts.query);
+  const method = opts.method ?? "GET";
 
   // Compose a timeout signal with the caller's cancellation signal. We must
   // distinguish a caller abort (react-query cancellation) from a real timeout.
@@ -106,15 +118,17 @@ async function request<T>(
   }
 
   const headers: Record<string, string> = { Accept: "application/json" };
-  const cached = etagCache.get(url);
+  const cached = method === "GET" ? etagCache.get(url) : undefined;
   if (cached) headers["If-None-Match"] = cached.etag;
+  if (method !== "GET") headers["Content-Type"] = "application/json";
 
   let response: Response;
   try {
     response = await fetch(url, {
-      method: "GET",
+      method,
       headers,
       signal: timeoutCtl.signal,
+      body: method === "GET" || opts.body === undefined ? undefined : JSON.stringify(opts.body),
     });
   } catch (cause) {
     // Caller aborted (react-query cancellation) → propagate the caller's signal.
@@ -170,7 +184,7 @@ async function request<T>(
   }
 
   const etag = response.headers.get("etag");
-  if (etag) etagCache.set(url, { etag, data: parsed.data });
+  if (etag && method === "GET") etagCache.set(url, { etag, data: parsed.data });
 
   return parsed.data;
 }
@@ -192,11 +206,27 @@ export const api = {
       query: params as Record<string, unknown>,
       signal,
     }),
+
+  createObject: (body: CreateKnowledgeObjectRequest, signal?: AbortSignal) =>
+    request("/objects", CreateKnowledgeObjectResponseSchema, {
+      method: "POST",
+      body,
+      signal,
+    }),
+
+  createRelationship: (body: CreateRelationshipRequest, signal?: AbortSignal) =>
+    request("/relationships", CreateRelationshipResponseSchema, {
+      method: "POST",
+      body,
+      signal,
+    }),
 } satisfies {
   health: (signal?: AbortSignal) => Promise<HealthResponse>;
   listObjects: (params?: ObjectsQueryParams, signal?: AbortSignal) => Promise<ObjectsListResponse>;
   getObject: (id: string, signal?: AbortSignal) => Promise<ObjectDetailResponse>;
   graph: (params?: GraphQueryParams, signal?: AbortSignal) => Promise<GraphResponse>;
+  createObject: (body: CreateKnowledgeObjectRequest, signal?: AbortSignal) => Promise<CreateKnowledgeObjectResponse>;
+  createRelationship: (body: CreateRelationshipRequest, signal?: AbortSignal) => Promise<CreateRelationshipResponse>;
 };
 
 export type Api = typeof api;
