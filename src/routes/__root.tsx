@@ -79,20 +79,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Perception Studio — Hidden Grain" },
+      { title: "Overview — Perception Studio" },
       {
         name: "description",
         content:
-        "Perception Studio by Hidden Grain: diseña, publica y comparte estudios de percepción de principio a fin.",
+        "Perception Studio: diseña, publica y comparte estudios de percepción, y explora el repositorio de conocimiento.",
       },
       { name: "author", content: "Hidden Grain" },
-      { property: "og:title", content: "Perception Studio — Hidden Grain" },
+      { property: "og:title", content: "Overview — Perception Studio" },
       {
         property: "og:description",
-        content: "Diseña, publica y comparte estudios de percepción con Hidden Grain.",
+        content: "Perception Studio: diseña, publica y comparte estudios de percepción, y explora el repositorio de conocimiento.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Overview — Perception Studio" },
+      { name: "twitter:description", content: "Perception Studio: diseña, publica y comparte estudios de percepción, y explora el repositorio de conocimiento." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8d179b58-ed90-4423-a442-02b0891346f0/id-preview-aedf3fa5--069e677f-fc9c-46cf-bc23-b7e868660414.lovable.app-1784511928599.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8d179b58-ed90-4423-a442-02b0891346f0/id-preview-aedf3fa5--069e677f-fc9c-46cf-bc23-b7e868660414.lovable.app-1784511928599.png" },
     ],
     links: [
       {
