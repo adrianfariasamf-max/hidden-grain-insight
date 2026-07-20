@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
@@ -6,7 +6,6 @@ import { queryOptions } from "@tanstack/react-query";
 import { API_BASE } from "@/lib/api/client";
 import { experimentsApi } from "@/lib/perception/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { PublicExperiment } from "@/lib/perception/types";
@@ -28,6 +27,21 @@ const publicExperimentQuery = (id: string) =>
     },
   });
 
+// Demographic fields the investigator can eventually toggle per experiment.
+// For now every field defined here is shown and required. The array shape is
+// intentional so a future config can filter/reorder without refactor.
+const AGE_RANGES = [
+  { value: "under_18", label: "Menos de 18" },
+  { value: "18-24", label: "18–24" },
+  { value: "25-34", label: "25–34" },
+  { value: "35-44", label: "35–44" },
+  { value: "45-54", label: "45–54" },
+  { value: "55-64", label: "55–64" },
+  { value: "65_plus", label: "65+" },
+] as const;
+
+type AgeRange = (typeof AGE_RANGES)[number]["value"];
+
 export const Route = createFileRoute("/e/$experimentId/")({
   component: ParticipantLanding,
   head: () => ({
@@ -39,13 +53,29 @@ function ParticipantLanding() {
   const { experimentId } = Route.useParams();
   const navigate = useNavigate();
   const { data, isLoading, error, refetch } = useQuery(publicExperimentQuery(experimentId));
-  const [alias, setAlias] = useState("");
+  const [ageRange, setAgeRange] = useState<AgeRange | null>(null);
   const [consent, setConsent] = useState(false);
+
+  // Contamination shield (RR-005): sessions started with ?test=1 in the URL
+  // or from an automated browser (Playwright/WebDriver) are tagged as test
+  // sessions so real research data stays clean.
+  const isTestSession = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const flagged = new URLSearchParams(window.location.search).get("test") === "1";
+    const automated =
+      typeof navigator !== "undefined" &&
+      (navigator as Navigator & { webdriver?: boolean }).webdriver === true;
+    return flagged || automated;
+  }, []);
 
   const start = useMutation({
     mutationFn: async () => {
       const session = await experimentsApi.createSession(experimentId, {
-        participantAlias: alias.trim() || null,
+        participantAlias: null,
+        metadata: {
+          demographics: { ageRange },
+          ...(isTestSession ? { test: true, testSource: "url_or_webdriver" } : {}),
+        },
       });
       await experimentsApi.acceptConsent(session.publicToken);
       return session;
@@ -81,7 +111,7 @@ function ParticipantLanding() {
           className="mt-6 grid gap-5 rounded-lg border border-border bg-card p-5"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!consent || start.isPending) return;
+            if (!consent || !ageRange || start.isPending) return;
             start.mutate();
           }}
         >
@@ -96,19 +126,37 @@ function ParticipantLanding() {
             </p>
           </section>
 
-          <div className="grid gap-1.5">
-            <Label htmlFor="alias">
-              Alias <span className="text-muted-foreground">(opcional)</span>
-            </Label>
-            <Input
-              id="alias"
-              value={alias}
-              onChange={(ev) => setAlias(ev.target.value)}
-              placeholder="Déjalo en blanco para permanecer anónimo"
-              maxLength={64}
-              autoComplete="off"
-            />
-          </div>
+          <fieldset
+            className="grid gap-2"
+            aria-describedby="demographics-hint"
+            data-demographic-field="age_range"
+          >
+            <legend className="text-sm font-medium text-foreground">Edad</legend>
+            <p id="demographics-hint" className="text-[11px] text-muted-foreground">
+              Selecciona el rango que te corresponde.
+            </p>
+            <div className="mt-1 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+              {AGE_RANGES.map((r) => {
+                const active = ageRange === r.value;
+                return (
+                  <button
+                    key={r.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => setAgeRange(r.value)}
+                    className={`h-9 rounded-md border text-sm transition-colors ${
+                      active
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
 
           <label className="flex cursor-pointer items-start gap-3 text-sm">
             <Checkbox
@@ -121,7 +169,17 @@ function ParticipantLanding() {
             </span>
           </label>
 
-          <Button type="submit" disabled={!consent || start.isPending} className="w-full">
+          {isTestSession ? (
+            <p className="rounded border border-dashed border-border/70 bg-muted/30 px-2 py-1 text-[11px] text-muted-foreground">
+              Esta sesión se guardará como <strong>Sesión de prueba</strong>.
+            </p>
+          ) : null}
+
+          <Button
+            type="submit"
+            disabled={!consent || !ageRange || start.isPending}
+            className="w-full"
+          >
             {start.isPending ? "Comenzando…" : "Comenzar"}
           </Button>
 
