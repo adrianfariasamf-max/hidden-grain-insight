@@ -90,6 +90,14 @@ export const experimentsApi = {
     json<PerceptionExperiment>(
       await fetch(`${API_BASE}/experiments/${id}/publish`, { method: "POST" }),
     ),
+  close: async (id: string) =>
+    json<PerceptionExperiment>(
+      await fetch(`${API_BASE}/experiments/${id}/close`, { method: "POST" }),
+    ),
+  duplicate: async (id: string) =>
+    json<PerceptionExperiment>(
+      await fetch(`${API_BASE}/experiments/${id}/duplicate`, { method: "POST" }),
+    ),
   createSession: async (id: string, input: CreateSessionRequest = {}) =>
     json<ParticipantSession>(
       await fetch(`${API_BASE}/experiments/${id}/sessions`, {
