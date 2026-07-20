@@ -1,15 +1,35 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Check, Copy, Download, Share2 } from "lucide-react";
+import { AlertTriangle, Check, Copy, Download, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
+// Preferred participant-facing origin. When the researcher is working on the
+// preview host (`id-preview--…lovable.app` / `lovableproject.com`), the
+// preview URL is auth-gated by the platform: any participant opening it will
+// be bounced to `/auth-bridge` and see an `HTTP 401 {"error":"unauthorized"}`
+// even though our public `/api/public/*` endpoints are open. Setting
+// `VITE_HG_PUBLIC_BASE` to the published origin (e.g. `https://<slug>.lovable.app`)
+// forces SharePanel to always emit the published, participant-safe URL.
+const PUBLIC_BASE = (import.meta.env.VITE_HG_PUBLIC_BASE ?? "").toString().trim().replace(/\/+$/, "");
+
+function looksLikePreviewOrigin(origin: string): boolean {
+  return (
+    origin.includes("id-preview--") ||
+    origin.includes("-preview-") ||
+    origin.endsWith(".lovableproject.com") ||
+    origin.includes(".lovableproject.com")
+  );
+}
 
 export function SharePanel({ experimentId }: { experimentId: string }) {
   const [origin, setOrigin] = useState("");
   const [qr, setQr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = origin ? `${origin}/e/${experimentId}` : "";
+  const shareOrigin = PUBLIC_BASE || origin;
+  const shareUrl = shareOrigin ? `${shareOrigin}/e/${experimentId}` : "";
+  const previewWarning = !PUBLIC_BASE && origin && looksLikePreviewOrigin(origin);
 
   useEffect(() => {
     if (typeof window !== "undefined") setOrigin(window.location.origin);
@@ -50,6 +70,18 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
       <p className="mt-1 text-xs text-muted-foreground">
         Comparte este enlace con las personas participantes. Cualquiera con el enlace puede unirse.
       </p>
+
+      {previewWarning ? (
+        <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-200">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+          <p>
+            Estás en el entorno de vista previa. Este enlace requiere iniciar sesión de
+            investigador y mostrará <code className="font-mono">HTTP 401</code> a los participantes.
+            Comparte el enlace desde el sitio publicado o configura
+            {" "}<code className="font-mono">VITE_HG_PUBLIC_BASE</code> con el dominio público.
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
         <div className="grid gap-2">
