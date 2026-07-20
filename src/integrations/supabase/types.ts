@@ -14,27 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      branding_settings: {
-        Row: {
-          id: string
-          logo_path: string | null
-          logo_visible: boolean
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          logo_path?: string | null
-          logo_visible?: boolean
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          logo_path?: string | null
-          logo_visible?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
       experiment_stimuli: {
         Row: {
           alt_text: string
@@ -335,6 +314,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_settings: {
+        Row: {
+          id: string
+          logo_path: string | null
+          logo_visible: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          logo_path?: string | null
+          logo_visible?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          logo_path?: string | null
+          logo_visible?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
