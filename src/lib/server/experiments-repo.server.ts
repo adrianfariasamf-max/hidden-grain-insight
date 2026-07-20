@@ -514,16 +514,44 @@ export async function listSessionsForExperiment(experimentId: string): Promise<S
   const sessions = ((data ?? []) as SessionRow[]).map(toSession);
   if (sessions.length === 0) return [];
   const ids = sessions.map((s) => s.id);
+  // RR-010 · Join with stimulus positions so we can compute the highest
+  // stimulus reached and the last-response timestamp for abandoned sessions.
   const { data: rr, error: re } = await supabaseAdmin
     .from("stimulus_responses")
-    .select("session_id")
+    .select("session_id, submitted_at, stimulus:experiment_stimuli!inner(position)")
     .in("session_id", ids);
   if (re) throw re;
   const counts = new Map<string, number>();
-  for (const row of (rr ?? []) as { session_id: string }[]) {
+  const maxPos = new Map<string, number>();
+  const lastAt = new Map<string, string>();
+  for (const row of (rr ?? []) as Array<{
+    session_id: string;
+    submitted_at: string;
+    stimulus: { position: number } | { position: number }[] | null;
+  }>) {
     counts.set(row.session_id, (counts.get(row.session_id) ?? 0) + 1);
+    const stim = Array.isArray(row.stimulus) ? row.stimulus[0] : row.stimulus;
+    const pos = stim?.position ?? 0;
+    if (pos > (maxPos.get(row.session_id) ?? 0)) maxPos.set(row.session_id, pos);
+    const prev = lastAt.get(row.session_id);
+    if (!prev || row.submitted_at > prev) lastAt.set(row.session_id, row.submitted_at);
   }
-  return sessions.map((s) => ({ session: s, responseCount: counts.get(s.id) ?? 0 }));
+  return sessions.map((s) => {
+    const start = s.startedAt ?? s.createdAt;
+    const end = s.completedAt ?? lastAt.get(s.id) ?? null;
+    let durationMs: number | null = null;
+    if (start && end) {
+      const a = new Date(start).getTime();
+      const b = new Date(end).getTime();
+      if (!Number.isNaN(a) && !Number.isNaN(b)) durationMs = Math.max(0, b - a);
+    }
+    return {
+      session: s,
+      responseCount: counts.get(s.id) ?? 0,
+      lastPositionReached: maxPos.get(s.id) ?? null,
+      durationMs,
+    };
+  });
 }
 
 // ------------------- Results -------------------
