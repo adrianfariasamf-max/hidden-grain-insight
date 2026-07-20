@@ -219,7 +219,12 @@ export async function updateExperiment(
   id: string,
   input: UpdateExperimentRequest,
 ): Promise<PerceptionExperiment> {
-  const patch: Record<string, unknown> = {};
+  const patch: Partial<{
+    title: string;
+    description: string;
+    instructions: string;
+    hidden_target: string;
+  }> = {};
   if (input.title !== undefined) patch.title = input.title;
   if (input.description !== undefined) patch.description = input.description;
   if (input.instructions !== undefined) patch.instructions = input.instructions;
@@ -244,7 +249,7 @@ export async function updateStimulus(
   stimulusId: string,
   input: UpdateStimulusRequest,
 ): Promise<ExperimentStimulus> {
-  const patch: Record<string, unknown> = {};
+  const patch: Partial<{ alt_text: string; image_url: string; image_path: string }> = {};
   if (input.altText !== undefined) patch.alt_text = input.altText;
   if (input.imageUrl !== undefined) patch.image_url = input.imageUrl;
   if (input.imagePath !== undefined) patch.image_path = input.imagePath;
