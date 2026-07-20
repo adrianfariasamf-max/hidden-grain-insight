@@ -20,7 +20,7 @@ export const Route = createFileRoute("/experiments/$id")({
     ],
   }),
   errorComponent: ({ error, reset }) => (
-    <ErrorState message={error.message} onRetry={reset} />
+    <ErrorState error={error} onRetry={reset} />
   ),
   notFoundComponent: () => <EmptyState title="Experiment not found" />,
 });
@@ -43,7 +43,7 @@ function ExperimentDetailPage() {
   if (isLoading) return <LoadingState label="Loading experiment…" />;
   if (error)
     return (
-      <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
+      <ErrorState error={error} onRetry={() => refetch()} />
     );
   if (!data) return <EmptyState title="Experiment not found" />;
 
