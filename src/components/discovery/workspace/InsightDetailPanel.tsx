@@ -7,15 +7,15 @@ import {
   DISCOVERY_ACTION_CATALOG,
   getInsightActionState,
   toInsightViewModel,
-  type DescubrimientosInsight,
+  type DiscoveryInsight,
 } from "@/lib/domain/discovery";
 
 export interface InsightDetailPanelProps {
-  insight: DescubrimientosInsight | null;
+  insight: DiscoveryInsight | null;
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
 }
 
-const PRIORITY_TONE: Record<DescubrimientosInsight["priority"], string> = {
+const PRIORITY_TONE: Record<DiscoveryInsight["priority"], string> = {
   critical: "border-destructive/40 bg-destructive/10 text-destructive",
   high: "border-orange-500/40 bg-orange-500/10 text-orange-300",
   medium: "border-amber-500/40 bg-amber-500/10 text-amber-300",

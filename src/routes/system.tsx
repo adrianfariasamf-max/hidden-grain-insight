@@ -5,8 +5,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
-import { SistemaStatusCard } from "@/components/system/SistemaStatusCard";
-import { EjecuciónInfo } from "@/components/system/EjecuciónInfo";
+import { SystemStatusCard } from "@/components/system/SystemHealthCard";
+import { RuntimeInfo } from "@/components/system/RuntimeInfo";
 import { RepositoryMetrics } from "@/components/system/RepositoryMetrics";
 import { ReadOnlyNotice } from "@/components/system/ReadOnlyNotice";
 import { healthQuery } from "@/lib/api/queries";
@@ -14,14 +14,14 @@ import { healthQuery } from "@/lib/api/queries";
 export const Route = createFileRoute("/system")({
   head: () => ({
     meta: [
-      { title: "Sistema — Hidden Grain" },
+      { title: "System — Hidden Grain" },
       { name: "description", content: "Estado en vivo, métricas y modo de solo lectura." },
     ],
   }),
-  component: SistemaRoute,
+  component: SystemRoute,
 });
 
-function SistemaRoute() {
+function SystemRoute() {
   // Estado polling is scoped to the Sistema route. Inicio and other routes
   // read the same query key from cache without triggering their own polling.
   const query = useQuery({ ...healthQuery(), refetchInterval: 30_000 });
@@ -32,7 +32,7 @@ function SistemaRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Sistema"
+        eyebrow="System"
         title="Estado y métricas"
         description="Estado en vivo de la API, información de ejecución y contadores del repositorio. Se actualiza automáticamente cada 30 segundos."
       />
@@ -55,14 +55,14 @@ function SistemaRoute() {
               <h2 id="health-heading" className="text-sm font-semibold text-foreground">
                 Estado
               </h2>
-              <SistemaStatusCard health={query.data} isRefreshing={isRefreshing} />
+              <SystemStatusCard health={query.data} isRefreshing={isRefreshing} />
             </section>
 
             <section aria-labelledby="runtime-heading" className="flex flex-col gap-3">
               <h2 id="runtime-heading" className="text-sm font-semibold text-foreground">
                 Ejecución
               </h2>
-              <EjecuciónInfo health={query.data} />
+              <RuntimeInfo health={query.data} />
             </section>
 
             <section aria-labelledby="projection-heading" className="flex flex-col gap-3">

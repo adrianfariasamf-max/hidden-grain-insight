@@ -5,7 +5,7 @@ import type { StatusResponse } from "@/lib/api/types";
 
 import { StatusStatusIndicator } from "./StatusStatusIndicator";
 
-interface SistemaStatusCardProps {
+interface SystemHealthCardProps {
   health: StatusResponse;
   isRefreshing?: boolean;
 }
@@ -14,7 +14,7 @@ interface SistemaStatusCardProps {
  * Compact summary of /health for Inicio and Sistema. Only fields that
  * exist in the contract are rendered — nothing is inferred.
  */
-export function SistemaStatusCard({ health, isRefreshing }: SistemaStatusCardProps) {
+export function SystemStatusCard({ health, isRefreshing }: SystemHealthCardProps) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card px-4 py-4">
       <div className="flex items-start justify-between gap-3">

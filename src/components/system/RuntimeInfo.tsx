@@ -1,7 +1,7 @@
 import { API_BASE } from "@/lib/api/client";
 import type { StatusResponse } from "@/lib/api/types";
 
-interface EjecuciónInfoProps {
+interface RuntimeInfoProps {
   health: Pick<StatusResponse, "service" | "schemaVersion">;
 }
 
@@ -10,7 +10,7 @@ interface EjecuciónInfoProps {
  * already-resolved client value so we never duplicate the resolution logic.
  * VITE_HG_API_BASE is a public frontend variable — no secret exposure.
  */
-export function EjecuciónInfo({ health }: EjecuciónInfoProps) {
+export function RuntimeInfo({ health }: RuntimeInfoProps) {
   const rows: Array<{ label: string; value: string; mono?: boolean }> = [
     { label: "API base", value: API_BASE, mono: true },
     { label: "Service", value: health.service, mono: true },

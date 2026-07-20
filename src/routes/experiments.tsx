@@ -11,10 +11,10 @@ import { NewExperimentDialog } from "@/components/experiments/NewExperimentDialo
 import { experimentListQuery } from "@/lib/perception/client";
 
 export const Route = createFileRoute("/experiments")({
-  component: ExperimentosPage,
+  component: ExperimentsPage,
   head: () => ({
     meta: [
-      { title: "Experimentos — Perception Studio" },
+      { title: "Experiments — Perception Studio" },
       {
         name: "description",
         content: "Diseña, ejecuta y analiza estudios de percepción en Perception Studio.",
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/experiments")({
   notFoundComponent: () => <EmptyState title="No encontrado" />,
 });
 
-function ExperimentosPage() {
+function ExperimentsPage() {
   const { data, isLoading, error, refetch } = useQuery(experimentListQuery());
 
   const newButton = (
@@ -42,7 +42,7 @@ function ExperimentosPage() {
     <div className="mx-auto w-full max-w-5xl px-4 py-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageHeader
-          title="Experimentos"
+          title="Experiments"
           description="Estudios de percepción creados y compartidos desde un único espacio."
         />
         <div className="pt-1">{newButton}</div>

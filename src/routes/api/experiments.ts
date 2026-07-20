@@ -6,8 +6,8 @@ export const Route = createFileRoute("/api/experiments")({
   server: {
     handlers: {
       GET: async () => {
-        const { listExperimentos } = await import("@/lib/server/experiments-repo.server");
-        return Response.json({ items: await listExperimentos() });
+        const { listExperiments } = await import("@/lib/server/experiments-repo.server");
+        return Response.json({ items: await listExperiments() });
       },
       POST: async ({ request }) => {
         let raw: unknown;

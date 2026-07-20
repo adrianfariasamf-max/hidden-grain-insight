@@ -2,12 +2,12 @@ import { memo, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
-import { getInsightTypeDescriptor, type DescubrimientosInsight } from "@/lib/domain/discovery";
+import { getInsightTypeDescriptor, type DiscoveryInsight } from "@/lib/domain/discovery";
 import type { Relationship } from "@/lib/domain";
 import { getRelationshipTypeDescriptor } from "@/lib/domain";
 
 export interface InsightContextPanelProps {
-  insight: DescubrimientosInsight | null;
+  insight: DiscoveryInsight | null;
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type" | "category">>;
   /** Full relationship set — the panel derives the involved subset locally. */
   relationships: readonly Relationship[];

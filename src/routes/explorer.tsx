@@ -37,17 +37,17 @@ const searchSchema = z.object({
   ),
 });
 
-type ExploradorSearch = z.infer<typeof searchSchema>;
+type ExplorerSearch = z.infer<typeof searchSchema>;
 
 export const Route = createFileRoute("/explorer")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Explorador — Hidden Grain" },
+      { title: "Explorer — Hidden Grain" },
       { name: "description", content: "Busca, filtra y pagina Objetos de Conocimiento." },
     ],
   }),
-  component: ExploradorRoute,
+  component: ExplorerRoute,
 });
 
 /**
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/explorer")({
  * expose it. Every write projects back to the URL — that is the ONE
  * Explorador ↔ SearchQuery ↔ URL binding.
  */
-function searchQueryFromUrl(input: ExploradorSearch): SearchQuery {
+function searchQueryFromUrl(input: ExplorerSearch): SearchQuery {
   const q: SearchQuery = {
     pagination: { offset: input.offset, limit: normalizeLimit(input.limit) },
   };
@@ -67,7 +67,7 @@ function searchQueryFromUrl(input: ExploradorSearch): SearchQuery {
   return q;
 }
 
-function ExploradorRoute() {
+function ExplorerRoute() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -110,7 +110,7 @@ function ExploradorRoute() {
     if (lastPageOffset === search.offset) return;
     navigate({
       to: ".",
-      search: (prev: ExploradorSearch) => ({ ...prev, offset: lastPageOffset }),
+      search: (prev: ExplorerSearch) => ({ ...prev, offset: lastPageOffset }),
       replace: true,
     });
   }, [listQuery.data, search.offset, navigate]);
@@ -119,7 +119,7 @@ function ExploradorRoute() {
     (patch: Partial<{ type: string; category: string; status: string }>) => {
       navigate({
         to: ".",
-        search: (prev: ExploradorSearch) => ({ ...prev, ...patch, offset: 0 }),
+        search: (prev: ExplorerSearch) => ({ ...prev, ...patch, offset: 0 }),
       });
     },
     [navigate],
@@ -131,7 +131,7 @@ function ExploradorRoute() {
       if (next === (search.q ?? "")) return;
       navigate({
         to: ".",
-        search: (prev: ExploradorSearch) => ({ ...prev, q: next, offset: 0 }),
+        search: (prev: ExplorerSearch) => ({ ...prev, q: next, offset: 0 }),
         replace: true,
       });
     },
@@ -158,7 +158,7 @@ function ExploradorRoute() {
     (offset: number) => {
       navigate({
         to: ".",
-        search: (prev: ExploradorSearch) => ({ ...prev, offset }),
+        search: (prev: ExplorerSearch) => ({ ...prev, offset }),
       });
     },
     [navigate],
@@ -175,7 +175,7 @@ function ExploradorRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Explorador"
+        eyebrow="Explorer"
         title="Objetos de conocimiento"
         description="Busca, filtra y pagina el índice de objetos. Los filtros envían q, type, category y status a la API."
         actions={

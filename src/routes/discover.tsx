@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
-import { DescubrimientosEmptyState } from "@/components/discovery/DescubrimientosEmptyState";
+import { DiscoveryEmptyState } from "@/components/discovery/DiscoveryEmptyState";
 import { InsightListPanel } from "@/components/discovery/workspace/InsightListPanel";
 import { InsightDetailPanel } from "@/components/discovery/workspace/InsightDetailPanel";
 import { InsightContextPanel } from "@/components/discovery/workspace/InsightContextPanel";
@@ -17,18 +17,18 @@ import {
   EMPTY_DISCOVERY_FILTERS,
   selectInsightsByFilters,
   sortInsights,
-  type DescubrimientosFilters,
-  type DescubrimientosSortMode,
+  type DiscoveryFilters,
+  type DiscoverySortMode,
 } from "@/lib/domain/discovery";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
     meta: [
-      { title: "Descubrimientos — Hidden Grain" },
+      { title: "Discovery — Hidden Grain" },
       {
         name: "description",
         content:
-          "Descubrimientos Workspace: explore, prioritise and inspect deterministic insights from the Grafo de conocimiento.",
+          "Discovery Workspace: explore, prioritise and inspect deterministic insights from the Grafo de conocimiento.",
       },
     ],
   }),
@@ -37,8 +37,8 @@ export const Route = createFileRoute("/discover")({
 
 function DiscoverRoute() {
   const query = useQuery(graphQuery());
-  const [filters, setFilters] = useState<DescubrimientosFilters>(EMPTY_DISCOVERY_FILTERS);
-  const [sort, setSort] = useState<DescubrimientosSortMode>("ranked");
+  const [filters, setFilters] = useState<DiscoveryFilters>(EMPTY_DISCOVERY_FILTERS);
+  const [sort, setSort] = useState<DiscoverySortMode>("ranked");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const graph = query.data;
@@ -81,14 +81,14 @@ function DiscoverRoute() {
   );
 
   const handleSelect = useCallback((id: string) => setSelectedId(id), []);
-  const handleFiltersChange = useCallback((next: DescubrimientosFilters) => setFilters(next), []);
-  const handleSortChange = useCallback((next: DescubrimientosSortMode) => setSort(next), []);
+  const handleFiltersChange = useCallback((next: DiscoveryFilters) => setFilters(next), []);
+  const handleSortChange = useCallback((next: DiscoverySortMode) => setSort(next), []);
 
   return (
     <>
       <PageHeader
-        eyebrow="Descubrimientos"
-        title="Descubrimientos Workspace"
+        eyebrow="Discovery"
+        title="Discovery Workspace"
         description="Deterministic insights derived from the Grafo de conocimiento — no AI, no probabilistic ranking."
       />
       <section className="flex flex-col gap-4 px-4 py-6 sm:px-8">
@@ -97,7 +97,7 @@ function DiscoverRoute() {
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
         ) : insights.length === 0 ? (
-          <DescubrimientosEmptyState hasGraph={!!graph && graph.nodes.length > 0} />
+          <DiscoveryEmptyState hasGraph={!!graph && graph.nodes.length > 0} />
         ) : (
           <div className="grid min-h-[70vh] gap-4 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)_minmax(260px,340px)]">
             <InsightListPanel

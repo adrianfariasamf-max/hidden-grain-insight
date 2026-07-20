@@ -7,14 +7,14 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { RepositoryMetrics } from "@/components/system/RepositoryMetrics";
-import { SistemaStatusCard } from "@/components/system/SistemaStatusCard";
+import { SystemStatusCard } from "@/components/system/SystemHealthCard";
 import { ReadOnlyNotice } from "@/components/system/ReadOnlyNotice";
 import { healthQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Inicio — Perception Studio" },
+      { title: "Overview — Perception Studio" },
       {
         name: "description",
         content:
@@ -22,10 +22,10 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: InicioRoute,
+  component: OverviewRoute,
 });
 
-function InicioRoute() {
+function OverviewRoute() {
   const query = useQuery(healthQuery());
   const isInitialLoading = query.isPending && !query.data;
   const isRefreshing = query.isFetching && !query.isPending;
@@ -33,7 +33,7 @@ function InicioRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Inicio"
+        eyebrow="Overview"
         title="Perception Studio"
         description="Diseña estudios de percepción de principio a fin y explora el repositorio de conocimiento Hidden Grain — todo en un mismo espacio."
       />
@@ -104,7 +104,7 @@ function InicioRoute() {
             <ErrorState error={query.error} onRetry={() => query.refetch()} />
           ) : query.data ? (
             <div className="flex flex-col gap-4">
-              <SistemaStatusCard health={query.data} isRefreshing={isRefreshing} />
+              <SystemStatusCard health={query.data} isRefreshing={isRefreshing} />
               <RepositoryMetrics health={query.data} includeSchema />
             </div>
           ) : null}

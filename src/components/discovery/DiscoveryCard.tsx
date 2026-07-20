@@ -1,18 +1,18 @@
 import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 
-import type { DescubrimientosInsightViewModel } from "@/lib/domain/discovery";
+import type { DiscoveryInsightViewModel } from "@/lib/domain/discovery";
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
-export interface DescubrimientosCardProps {
-  insight: DescubrimientosInsightViewModel;
+export interface DiscoveryCardProps {
+  insight: DiscoveryInsightViewModel;
   /** Lookup for object metadata (title/type). Optional — the card falls
    *  back to raw ids if the lookup is missing an entry. */
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
 }
 
-const PRIORITY_TONE: Record<DescubrimientosInsightViewModel["priority"], string> = {
+const PRIORITY_TONE: Record<DiscoveryInsightViewModel["priority"], string> = {
   critical: "border-destructive/40 bg-destructive/10 text-destructive",
   high: "border-orange-500/40 bg-orange-500/10 text-orange-300",
   medium: "border-amber-500/40 bg-amber-500/10 text-amber-300",
@@ -20,7 +20,7 @@ const PRIORITY_TONE: Record<DescubrimientosInsightViewModel["priority"], string>
   info: "border-border/60 bg-muted/40 text-muted-foreground",
 };
 
-function DescubrimientosCardImpl({ insight, nodesById }: DescubrimientosCardProps) {
+function DiscoveryCardImpl({ insight, nodesById }: DiscoveryCardProps) {
   const Icon = insight.descriptor.icon;
   const primaryId = insight.objectIds[0];
   const primaryNode = primaryId ? nodesById?.get(primaryId) : undefined;
@@ -104,4 +104,4 @@ function DescubrimientosCardImpl({ insight, nodesById }: DescubrimientosCardProp
   );
 }
 
-export const DescubrimientosCard = memo(DescubrimientosCardImpl);
+export const DiscoveryCard = memo(DiscoveryCardImpl);

@@ -6,31 +6,31 @@ import {
   groupInsightsByPriority,
   rankInsights,
   toInsightViewModel,
-  type DescubrimientosInsight,
+  type DiscoveryInsight,
   type InsightCategory,
   type InsightPriority,
 } from "@/lib/domain/discovery";
 
-import { DescubrimientosCard } from "./DescubrimientosCard";
-import { DescubrimientosEmptyState } from "./DescubrimientosEmptyState";
+import { DiscoveryCard } from "./DiscoveryCard";
+import { DiscoveryEmptyState } from "./DiscoveryEmptyState";
 
-export type DescubrimientosFeedGrouping = "none" | "priority" | "category";
+export type DiscoveryFeedGrouping = "none" | "priority" | "category";
 
-export interface DescubrimientosFeedProps {
-  insights: readonly DescubrimientosInsight[];
+export interface DiscoveryFeedProps {
+  insights: readonly DiscoveryInsight[];
   /** Called for lookups only — never mutated. */
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
-  grouping?: DescubrimientosFeedGrouping;
+  grouping?: DiscoveryFeedGrouping;
   /** Drives the "no graph yet" vs "no insights" vacío state. */
   hasGraph: boolean;
 }
 
-function DescubrimientosFeedImpl({
+function DiscoveryFeedImpl({
   insights,
   nodesById,
   grouping = "none",
   hasGraph,
-}: DescubrimientosFeedProps) {
+}: DiscoveryFeedProps) {
   // Ordering is delegated to `rankInsights` — never resorted in React.
   const ranked = useMemo(() => rankInsights(insights), [insights]);
 
@@ -45,12 +45,12 @@ function DescubrimientosFeedImpl({
   }, [grouping, insights]);
 
   if (ranked.length === 0) {
-    return <DescubrimientosEmptyState hasGraph={hasGraph} />;
+    return <DiscoveryEmptyState hasGraph={hasGraph} />;
   }
 
   if (grouped) {
     // Selectors already emit buckets in deterministic order — we only iterate.
-    const entries: Array<[InsightPriority | InsightCategory, DescubrimientosInsight[]]> = [];
+    const entries: Array<[InsightPriority | InsightCategory, DiscoveryInsight[]]> = [];
     grouped.buckets.forEach((bucket, key) => {
       entries.push([key as InsightPriority | InsightCategory, bucket]);
     });
@@ -74,7 +74,7 @@ function DescubrimientosFeedImpl({
             <ul className="grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
               {bucket.map((insight) => (
                 <li key={insight.id}>
-                  <DescubrimientosCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
+                  <DiscoveryCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
                 </li>
               ))}
             </ul>
@@ -88,11 +88,11 @@ function DescubrimientosFeedImpl({
     <ul className="grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
       {ranked.map((insight) => (
         <li key={insight.id}>
-          <DescubrimientosCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
+          <DiscoveryCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
         </li>
       ))}
     </ul>
   );
 }
 
-export const DescubrimientosFeed = memo(DescubrimientosFeedImpl);
+export const DiscoveryFeed = memo(DiscoveryFeedImpl);

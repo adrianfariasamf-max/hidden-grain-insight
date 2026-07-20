@@ -1,10 +1,10 @@
 import { memo } from "react";
 
 import { cn } from "@/lib/utils";
-import type { DescubrimientosInsight } from "@/lib/domain/discovery";
+import type { DiscoveryInsight } from "@/lib/domain/discovery";
 import { getInsightTypeDescriptor } from "@/lib/domain/discovery";
 
-const PRIORITY_DOT: Record<DescubrimientosInsight["priority"], string> = {
+const PRIORITY_DOT: Record<DiscoveryInsight["priority"], string> = {
   critical: "bg-destructive",
   high: "bg-orange-500",
   medium: "bg-amber-500",
@@ -13,7 +13,7 @@ const PRIORITY_DOT: Record<DescubrimientosInsight["priority"], string> = {
 };
 
 export interface InsightListItemProps {
-  insight: DescubrimientosInsight;
+  insight: DiscoveryInsight;
   selected: boolean;
   onSelect: (id: string) => void;
 }

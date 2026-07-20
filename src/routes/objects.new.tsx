@@ -105,7 +105,7 @@ function NewObjectRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Explorador"
+        eyebrow="Explorer"
         title="Nuevo Objeto de conocimiento"
         description="Crea un Objeto de conocimiento persistido a través del contrato canónico de la API."
         actions={

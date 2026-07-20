@@ -4,10 +4,10 @@ import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DISCOVERY_ACTION_CATALOG,
-  countActiveDescubrimientosFilters,
+  countActiveDiscoveryFilters,
   listInsightTypes,
-  type DescubrimientosFilters,
-  type DescubrimientosSortMode,
+  type DiscoveryFilters,
+  type DiscoverySortMode,
   type InsightCategory,
   type InsightPriority,
   type InsightType,
@@ -22,7 +22,7 @@ const CATEGORY_OPTIONS: InsightCategory[] = [
   "custom",
 ];
 
-const SORT_OPTIONS: { value: DescubrimientosSortMode; label: string }[] = [
+const SORT_OPTIONS: { value: DiscoverySortMode; label: string }[] = [
   { value: "ranked", label: "Ranked" },
   { value: "score-desc", label: "Score ↓" },
   { value: "score-asc", label: "Score ↑" },
@@ -30,10 +30,10 @@ const SORT_OPTIONS: { value: DescubrimientosSortMode; label: string }[] = [
 ];
 
 export interface WorkspaceFiltersProps {
-  filters: DescubrimientosFilters;
-  onFiltersChange: (next: DescubrimientosFilters) => void;
-  sort: DescubrimientosSortMode;
-  onSortChange: (mode: DescubrimientosSortMode) => void;
+  filters: DiscoveryFilters;
+  onFiltersChange: (next: DiscoveryFilters) => void;
+  sort: DiscoverySortMode;
+  onSortChange: (mode: DiscoverySortMode) => void;
   /** Filtered result count for the counter. */
   filteredCount: number;
   totalCount: number;
@@ -54,7 +54,7 @@ function WorkspaceFiltersImpl({
   filteredCount,
   totalCount,
 }: WorkspaceFiltersProps) {
-  const activeCount = countActiveDescubrimientosFilters(filters);
+  const activeCount = countActiveDiscoveryFilters(filters);
   const typeCatalog = listInsightTypes();
 
   const handleQuery = useCallback(
