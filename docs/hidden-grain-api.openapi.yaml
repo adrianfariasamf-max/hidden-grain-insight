@@ -1,0 +1,185 @@
+openapi: 3.1.0
+info:
+  title: Hidden Grain API
+  version: 1.0.0
+  description: |
+    Canonical wire contract for Hidden Grain. As of EPIC-005.0 the API is
+    read-write and backed by Lovable Cloud (Supabase).
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: Service health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthResponse" }
+  /objects:
+    get:
+      summary: List knowledge objects
+      parameters:
+        - { in: query, name: q,        schema: { type: string } }
+        - { in: query, name: type,     schema: { type: string } }
+        - { in: query, name: category, schema: { type: string } }
+        - { in: query, name: status,   schema: { type: string } }
+        - { in: query, name: tag,      schema: { type: string } }
+        - { in: query, name: offset,   schema: { type: integer, minimum: 0 } }
+        - { in: query, name: limit,    schema: { type: integer, minimum: 1, maximum: 100 } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObjectsListResponse" }
+    post:
+      summary: Create a knowledge object
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateKnowledgeObjectRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObjectDetailResponse" }
+        "422": { description: Validation failed }
+  /objects/{id}:
+    get:
+      summary: Object detail
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObjectDetailResponse" }
+        "404": { description: Not found }
+  /graph:
+    get:
+      summary: Full knowledge graph
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GraphResponse" }
+  /relationships:
+    post:
+      summary: Create a relationship
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateRelationshipRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GraphEdge" }
+        "422": { description: Validation failed }
+components:
+  schemas:
+    KnowledgeObjectSummary:
+      type: object
+      required: [id,title,type,category,status,version,summary,keywords,tags,path,checksum,relationshipCount]
+      properties:
+        id: { type: string }
+        title: { type: string, maxLength: 200 }
+        type: { type: string }
+        category: { type: string }
+        status: { type: string }
+        version: { type: string }
+        summary: { type: string, maxLength: 2000 }
+        keywords: { type: array, items: { type: string } }
+        tags: { type: array, items: { type: string } }
+        path: { type: string }
+        checksum: { type: string }
+        relationshipCount: { type: integer }
+    GraphNode:
+      type: object
+      required: [id,title,type,category]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        type: { type: string }
+        category: { type: string }
+    GraphEdge:
+      type: object
+      required: [id,source,target,type,resolved]
+      properties:
+        id: { type: string }
+        source: { type: string }
+        target: { type: string }
+        type: { type: string }
+        description: { type: string }
+        resolved: { type: boolean }
+    ObjectsListResponse:
+      type: object
+      required: [total,offset,limit,items]
+      properties:
+        total: { type: integer }
+        offset: { type: integer }
+        limit: { type: integer }
+        items: { type: array, items: { $ref: "#/components/schemas/KnowledgeObjectSummary" } }
+    ObjectDetailResponse:
+      type: object
+      required: [object,relationships]
+      properties:
+        object: { $ref: "#/components/schemas/KnowledgeObjectSummary" }
+        node:   { $ref: "#/components/schemas/GraphNode" }
+        relationships:
+          type: object
+          required: [outgoing,incoming]
+          properties:
+            outgoing: { type: array, items: { $ref: "#/components/schemas/GraphEdge" } }
+            incoming: { type: array, items: { $ref: "#/components/schemas/GraphEdge" } }
+    GraphResponse:
+      type: object
+      required: [generatedAt,schemaVersion,nodeCount,edgeCount,unresolvedEdgeCount,nodes,edges]
+      properties:
+        generatedAt: { type: string, format: date-time }
+        schemaVersion: { type: string }
+        nodeCount: { type: integer }
+        edgeCount: { type: integer }
+        unresolvedEdgeCount: { type: integer }
+        nodes: { type: array, items: { $ref: "#/components/schemas/GraphNode" } }
+        edges: { type: array, items: { $ref: "#/components/schemas/GraphEdge" } }
+    HealthResponse:
+      type: object
+      required: [status,service,schemaVersion,objects,nodes,edges,generatedAt]
+      properties:
+        status: { type: string }
+        service: { type: string }
+        schemaVersion: { type: string }
+        objects: { type: integer }
+        nodes: { type: integer }
+        edges: { type: integer }
+        generatedAt: { type: string, format: date-time }
+    CreateKnowledgeObjectRequest:
+      type: object
+      required: [title,type,category,status]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        type: { type: string }
+        category: { type: string }
+        status: { type: string }
+        summary: { type: string, maxLength: 2000 }
+        keywords: { type: array, items: { type: string } }
+        tags: { type: array, items: { type: string } }
+    CreateRelationshipRequest:
+      type: object
+      required: [sourceObjectId,targetObjectId,type]
+      properties:
+        sourceObjectId: { type: string, format: uuid }
+        targetObjectId: { type: string, format: uuid }
+        type: { type: string }
+        description: { type: string }
+        provenance: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
