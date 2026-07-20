@@ -1,10 +1,11 @@
 openapi: 3.1.0
 info:
   title: Hidden Grain API
-  version: 1.0.0
+  version: 1.1.0
   description: |
-    Canonical wire contract for Hidden Grain. As of EPIC-005.0 the API is
-    read-write and backed by Lovable Cloud (Supabase).
+    Canonical wire contract for Hidden Grain. As of EPIC-006.0 the API also
+    exposes the Perception Experiment domain (experiments, stimuli, sessions,
+    responses). Knowledge Object endpoints remain from prior EPICs.
 servers:
   - url: /api
 paths:
@@ -84,6 +85,27 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/GraphEdge" }
         "422": { description: Validation failed }
+  /experiments:
+    get:  { summary: List perception experiments,   responses: { "200": { description: OK } } }
+    post: { summary: Create a perception experiment, responses: { "201": { description: Created }, "422": { description: Validation failed } } }
+  /experiments/{id}:
+    get:  { summary: Experiment detail with stimuli and publish readiness, responses: { "200": { description: OK }, "404": { description: Not found } } }
+  /experiments/{id}/stimuli:
+    post: { summary: Attach a stimulus (position 1, 2, or 3), responses: { "201": { description: Created }, "422": { description: Validation failed } } }
+  /experiments/{id}/publish:
+    post: { summary: Publish (requires exactly 3 stimuli), responses: { "200": { description: OK }, "422": { description: Not ready } } }
+  /experiments/{id}/sessions:
+    post: { summary: Start a participant session (published experiments only), responses: { "201": { description: Created }, "422": { description: Not publishable } } }
+  /experiments/{id}/results:
+    get:  { summary: Sessions and responses for an experiment, responses: { "200": { description: OK }, "404": { description: Not found } } }
+  /sessions/{token}:
+    get:  { summary: Session, experiment and stimuli by public token, responses: { "200": { description: OK }, "404": { description: Not found } } }
+  /sessions/{token}/consent:
+    post: { summary: Accept consent and start the session, responses: { "200": { description: OK } } }
+  /sessions/{token}/responses:
+    post: { summary: Submit a stimulus response, responses: { "201": { description: Created }, "422": { description: Validation failed } } }
+  /sessions/{token}/complete:
+    post: { summary: Complete the session, responses: { "200": { description: OK } } }
 components:
   schemas:
     KnowledgeObjectSummary:
