@@ -294,7 +294,7 @@ export async function createSession(
       public_token: generatePublicToken(),
       status: "pending",
       participant_alias: input.participantAlias ?? null,
-      metadata: input.metadata ?? {},
+      metadata: (input.metadata ?? {}) as never,
     })
     .select("*")
     .single();
@@ -402,7 +402,7 @@ export async function submitResponse(
       discovered_hidden_element: input.discoveredHiddenElement,
       discovered_text: input.discoveredText ?? null,
       confidence: input.confidence ?? null,
-      metadata: input.metadata ?? {},
+      metadata: (input.metadata ?? {}) as never,
     })
     .select("*")
     .single();
