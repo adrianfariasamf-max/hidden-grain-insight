@@ -16,7 +16,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Explorer", to: "/explorer", icon: Compass },
   { label: "Grafo de conocimiento", to: "/graph", icon: Network },
   { label: "Discovery", to: "/discover", icon: Sparkles },
-  { label: "System", to: "/system", icon: Actividad },
+  { label: "System", to: "/system", icon: Activity },
 ];
 
 interface SideNavigationProps {

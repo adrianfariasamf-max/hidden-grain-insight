@@ -1,12 +1,12 @@
 import { Loader2 } from "lucide-react";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
-import type { StatusResponse } from "@/lib/api/types";
+import type { HealthResponse } from "@/lib/api/types";
 
 import { HealthStatusIndicator } from "./HealthStatusIndicator";
 
 interface SystemHealthCardProps {
-  health: StatusResponse;
+  health: HealthResponse;
   isRefreshing?: boolean;
 }
 

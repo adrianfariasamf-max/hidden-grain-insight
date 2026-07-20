@@ -1,8 +1,8 @@
 import { API_BASE } from "@/lib/api/client";
-import type { StatusResponse } from "@/lib/api/types";
+import type { HealthResponse } from "@/lib/api/types";
 
 interface RuntimeInfoProps {
-  health: Pick<StatusResponse, "service" | "schemaVersion">;
+  health: Pick<HealthResponse, "service" | "schemaVersion">;
 }
 
 /**
