@@ -157,9 +157,7 @@ function ParticipantLanding() {
     return (
       <>
       <PreviewBanner active={preview} />
-      <div className="relative">
-        <BrandingLogo />
-        <InstructionsStage
+      <InstructionsStage
         title={exp.title}
         instructions={exp.instructions}
         total={data.stimuli?.length ?? 0}
@@ -168,8 +166,7 @@ function ParticipantLanding() {
           setStage("preloading");
         }}
         onBack={() => setStage("form")}
-        />
-      </div>
+      />
       </>
     );
   }
@@ -198,9 +195,8 @@ function ParticipantLanding() {
   return (
     <>
     <PreviewBanner active={preview} />
-    <div className="relative">
-      <BrandingLogo />
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
+      <BrandingLogo />
       <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
       {exp.description ? (
         <p className="mt-2 text-sm text-muted-foreground">{exp.description}</p>
@@ -303,7 +299,6 @@ function ParticipantLanding() {
         </form>
       )}
     </div>
-    </div>
     </>
   );
 }
@@ -323,6 +318,7 @@ function InstructionsStage({
 }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
+      <BrandingLogo />
       <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{title}</h1>
       <p className="mt-1 text-xs text-muted-foreground">
         Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
