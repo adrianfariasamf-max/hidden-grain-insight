@@ -16,6 +16,7 @@ import type {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -163,7 +164,8 @@ function StimulusView({
     observation.trim().length > 0 &&
     attention.trim().length > 0 &&
     feeling.trim().length > 0 &&
-    interpretation.trim().length > 0;
+    interpretation.trim().length > 0 &&
+    confidence !== null;
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-6">
@@ -220,6 +222,21 @@ function StimulusView({
         </Field>
 
         <Field
+          id="q-interpretation"
+          label="Describe con una palabra qué te genera esta imagen"
+          hint="Una sola palabra, la primera que se te venga a la mente."
+        >
+          <Input
+            id="q-interpretation"
+            value={interpretation}
+            onChange={(e) => setInterpretation(e.target.value)}
+            maxLength={40}
+            autoComplete="off"
+            required
+          />
+        </Field>
+
+        <Field
           id="q-attention"
           label="¿Qué elementos llamaron primero tu atención?"
           hint="Menciona cualquier detalle al que vuelva tu mirada."
@@ -243,49 +260,49 @@ function StimulusView({
           />
         </Field>
 
-        <Field
-          id="q-interpretation"
-          label="¿Cómo interpretas lo que estás viendo?"
-          hint="No hay respuestas correctas ni incorrectas."
-        >
-          <Textarea
-            id="q-interpretation"
-            value={interpretation}
-            onChange={(e) => setInterpretation(e.target.value)}
-            rows={2}
-            required
-          />
-        </Field>
-
-        <fieldset className="grid gap-2">
+        {/* RR-002 · Variable experimental "Seguridad" — obligatoria. */}
+        <fieldset className="grid gap-2" data-experimental-variable="security">
           <legend className="text-sm font-medium text-foreground">
-            Confianza en tu respuesta{" "}
-            <span className="text-xs text-muted-foreground">(opcional)</span>
+            ¿Qué tan seguro(a) estás de lo que acabas de responder?
           </legend>
-          <div className="flex gap-2" role="radiogroup" aria-label="Nivel de confianza">
-            {[1, 2, 3, 4, 5].map((n) => {
-              const active = confidence === n;
-              return (
-                <button
-                  key={n}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => setConfidence(active ? null : n)}
-                  className={`h-9 flex-1 rounded-md border text-sm transition-colors ${
-                    active
-                      ? "border-primary bg-primary/15 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {n}
-                </button>
-              );
-            })}
+          <div
+            className="flex items-center gap-3"
+            role="radiogroup"
+            aria-label="Nivel de seguridad"
+          >
+            <span className="whitespace-nowrap text-[11px] text-muted-foreground">
+              Nada seguro
+            </span>
+            <div className="flex flex-1 items-center justify-between gap-2">
+              {[1, 2, 3, 4, 5].map((n) => {
+                const active = confidence === n;
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    aria-label={`Nivel ${n} de 5`}
+                    onClick={() => setConfidence(n)}
+                    className={`grid h-9 w-9 place-items-center rounded-full border-2 transition-colors ${
+                      active
+                        ? "border-primary bg-primary/25"
+                        : "border-border hover:border-foreground/40"
+                    }`}
+                  >
+                    <span
+                      className={`h-3 w-3 rounded-full ${
+                        active ? "bg-primary" : "bg-transparent"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <span className="whitespace-nowrap text-[11px] text-muted-foreground">
+              Muy seguro
+            </span>
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            1 = poca confianza · 5 = mucha confianza
-          </p>
         </fieldset>
 
         {error ? (
