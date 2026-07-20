@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { signUploadSchema } from "@/lib/perception/schemas";
 
-export const Route = createFileRoute("/api/experiments/stimuli/upload-url")({
+export const Route = createFileRoute("/api/experiments/$id/stimuli/upload-url")({
   server: {
     handlers: {
       POST: async ({ params, request }) => {
