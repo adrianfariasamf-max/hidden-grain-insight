@@ -145,6 +145,12 @@ export interface SubmitResponseRequest {
 export interface SessionSummary {
   session: ParticipantSession;
   responseCount: number;
+  // RR-010 · Enriched summary. `lastPositionReached` is the max stimulus
+  // position with a recorded response (null if none). `durationMs` is the
+  // elapsed time between session start and either completion or last
+  // response (for abandoned sessions).
+  lastPositionReached: number | null;
+  durationMs: number | null;
 }
 
 // Public snapshot returned by GET /sessions/:token

@@ -104,6 +104,7 @@ function ParticipantLanding() {
 
   const exp = data.experiment;
   const isOpen = exp.status === "published";
+  const isClosed = exp.status === "closed";
   const firstStimulus = [...(data.stimuli ?? [])].sort((a, b) => a.position - b.position)[0];
 
   if (isOpen && stage === "instructions") {
@@ -147,9 +148,21 @@ function ParticipantLanding() {
       ) : null}
 
       {!isOpen ? (
-        <p className="mt-6 rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
-          Este experimento no está aceptando participantes en este momento.
-        </p>
+        <div className="mt-6 rounded-md border border-border bg-card p-4 text-sm">
+          {isClosed ? (
+            <>
+              <p className="font-medium text-foreground">Este estudio ya finalizó.</p>
+              <p className="mt-1 text-muted-foreground">
+                Gracias por tu interés. La recolección de respuestas ha concluido y ya no acepta
+                nuevas participaciones.
+              </p>
+            </>
+          ) : (
+            <p className="text-muted-foreground">
+              Este experimento no está aceptando participantes en este momento.
+            </p>
+          )}
+        </div>
       ) : (
         <form
           className="mt-6 grid gap-5 rounded-lg border border-border bg-card p-4 sm:p-5"

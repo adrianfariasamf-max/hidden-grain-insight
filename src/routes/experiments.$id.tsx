@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Circle, EyeOff, Rocket } from "lucide-react";
+import { CheckCircle2, Circle, Copy, EyeOff, Lock, Rocket } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -51,13 +51,32 @@ function ExperimentEditor({
   qc: ReturnType<typeof useQueryClient>;
 }) {
   const { experiment, stimuli, sessionCount, responseCount, publishReadiness } = detail;
-  const isPublished = experiment.status !== "draft";
+  const isPublished = experiment.status === "published";
+  const isClosed = experiment.status === "closed";
+  const isLocked = experiment.status !== "draft";
+  const navigate = useNavigate();
 
   const publish = useMutation({
     mutationFn: () => experimentsApi.publish(experimentId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
       qc.invalidateQueries({ queryKey: experimentKeys.list() });
+    },
+  });
+
+  const close = useMutation({
+    mutationFn: () => experimentsApi.close(experimentId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
+      qc.invalidateQueries({ queryKey: experimentKeys.list() });
+    },
+  });
+
+  const duplicate = useMutation({
+    mutationFn: () => experimentsApi.duplicate(experimentId),
+    onSuccess: (created) => {
+      qc.invalidateQueries({ queryKey: experimentKeys.list() });
+      navigate({ to: "/experiments/$id", params: { id: created.id } });
     },
   });
 
@@ -71,8 +90,24 @@ function ExperimentEditor({
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageHeader title={experiment.title} description={experiment.description} />
-        <StatusPill status={experiment.status} />
+        <div className="flex items-center gap-2">
+          <StatusPill status={experiment.status} />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => duplicate.mutate()}
+            disabled={duplicate.isPending}
+            title="Crear un borrador nuevo con la misma configuración"
+          >
+            <Copy className="mr-1.5 h-3.5 w-3.5" />
+            {duplicate.isPending ? "Duplicando…" : "Duplicar"}
+          </Button>
+        </div>
       </div>
+      {duplicate.error ? (
+        <p className="mt-2 text-xs text-destructive">{(duplicate.error as Error).message}</p>
+      ) : null}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-6">
@@ -80,7 +115,7 @@ function ExperimentEditor({
             detail={detail}
             experimentId={experimentId}
             qc={qc}
-            readOnly={isPublished}
+            readOnly={isLocked}
           />
 
           <section className="rounded-lg border border-border bg-card p-5">
@@ -103,15 +138,27 @@ function ExperimentEditor({
                   experimentId={experimentId}
                   position={pos as 1 | 2 | 3}
                   stimulus={stimuli.find((s) => s.position === pos)}
-                  readOnly={isPublished}
+                  readOnly={isLocked}
                 />
               ))}
             </div>
           </section>
 
           {isPublished ? <SharePanel experimentId={experimentId} /> : null}
+          {isClosed ? (
+            <section className="rounded-lg border border-border bg-muted/30 p-5 text-sm">
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <h3 className="font-semibold text-foreground">Estudio cerrado</h3>
+              </div>
+              <p className="mt-1 text-muted-foreground">
+                Este experimento ya no acepta nuevas sesiones. Las respuestas ya recolectadas
+                permanecen disponibles para revisión. Para lanzar una nueva ronda, duplícalo.
+              </p>
+            </section>
+          ) : null}
 
-          {isPublished ? <SessionsPanel experimentId={experimentId} /> : null}
+          {isLocked ? <SessionsPanel experimentId={experimentId} /> : null}
         </div>
 
         <aside className="grid gap-4 lg:sticky lg:top-6 lg:self-start">
@@ -122,6 +169,18 @@ function ExperimentEditor({
             onPublish={() => publish.mutate()}
             pending={publish.isPending}
             error={publish.error ? (publish.error as Error).message : null}
+            onClose={() => {
+              if (
+                typeof window !== "undefined" &&
+                !window.confirm(
+                  "¿Cerrar este experimento? Dejará de aceptar nuevas sesiones. Esta acción no se puede deshacer.",
+                )
+              )
+                return;
+              close.mutate();
+            }}
+            closing={close.isPending}
+            closeError={close.error ? (close.error as Error).message : null}
           />
 
           <section className="rounded-lg border border-border bg-card p-4">
@@ -259,6 +318,9 @@ function PublishChecklist({
   onPublish,
   pending,
   error,
+  onClose,
+  closing,
+  closeError,
 }: {
   reasons: string[];
   ready: boolean;
@@ -266,6 +328,9 @@ function PublishChecklist({
   onPublish: () => void;
   pending: boolean;
   error: string | null;
+  onClose: () => void;
+  closing: boolean;
+  closeError: string | null;
 }) {
   const items = [
     { key: "title", label: "Título presente" },
@@ -326,10 +391,26 @@ function PublishChecklist({
           <Rocket className="mr-1.5 h-4 w-4" />
           {pending ? "Publicando…" : "Publicar experimento"}
         </Button>
+      ) : status === "published" ? (
+        <>
+          <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="mt-2 w-full"
+            onClick={onClose}
+            disabled={closing}
+          >
+            <Lock className="mr-1.5 h-4 w-4" />
+            {closing ? "Cerrando…" : "Cerrar estudio"}
+          </Button>
+        </>
       ) : (
-        <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
+        <p className="mt-4 text-xs text-muted-foreground">Este estudio ya está cerrado.</p>
       )}
       {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
+      {closeError ? <p className="mt-2 text-xs text-destructive">{closeError}</p> : null}
     </section>
   );
 }

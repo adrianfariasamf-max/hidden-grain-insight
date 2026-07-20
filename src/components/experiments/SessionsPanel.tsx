@@ -56,6 +56,32 @@ function sessionDurationMs(s: ParticipantSession): number | null {
   return b - a;
 }
 
+// RR-010 · Derive an outcome status independent of the raw DB `status`.
+// Rules:
+//   - responseCount === 0 → "discarded" (never opened a stimulus).
+//   - session.status === "completed" → "completed".
+//   - otherwise (has responses but did not reach the end) → "abandoned".
+type SessionOutcome = "discarded" | "completed" | "abandoned";
+function classifyOutcome(item: {
+  session: ParticipantSession;
+  responseCount: number;
+}): SessionOutcome {
+  if (item.responseCount === 0) return "discarded";
+  if (item.session.status === "completed") return "completed";
+  return "abandoned";
+}
+
+const OUTCOME_LABEL: Record<SessionOutcome, string> = {
+  discarded: "descartada",
+  completed: "completada",
+  abandoned: "abandonada",
+};
+const OUTCOME_TONE: Record<SessionOutcome, string> = {
+  discarded: "bg-muted text-muted-foreground",
+  completed: "bg-primary/25 text-primary",
+  abandoned: "bg-amber-500/15 text-amber-400",
+};
+
 interface Props {
   experimentId: string;
 }
@@ -79,8 +105,8 @@ export function SessionsPanel({ experimentId }: Props) {
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">Sesiones de participantes</h3>
           <p className="text-xs text-muted-foreground">
-            Datos crudos de participantes. Las sesiones vacías (0 respuestas) se ocultan por
-            defecto.
+            Datos crudos de participantes. Las sesiones sin respuestas (descartadas) se ocultan
+            por defecto. Las sesiones abandonadas conservan sus respuestas parciales.
           </p>
         </div>
         <div className="flex items-center gap-3 text-[11px]">
@@ -108,6 +134,8 @@ export function SessionsPanel({ experimentId }: Props) {
             const test = isTestSession(s);
             const label = `Participante ${idx + 1}`;
             const open = openToken === s.publicToken;
+            const outcome = classifyOutcome(it);
+            const durationLabel = formatDurationMs(it.durationMs);
             return (
               <li key={s.id} className="py-2">
                 <button
@@ -119,6 +147,11 @@ export function SessionsPanel({ experimentId }: Props) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">
                       {label}
+                      <span
+                        className={`ml-2 rounded px-1.5 py-0.5 font-mono text-[10px] ${OUTCOME_TONE[outcome]}`}
+                      >
+                        {OUTCOME_LABEL[outcome]}
+                      </span>
                       {test ? (
                         <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] text-amber-400">
                           sesión de prueba
@@ -126,9 +159,13 @@ export function SessionsPanel({ experimentId }: Props) {
                       ) : null}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      <StatusChip status={s.status} /> · Edad {readAgeRange(s)} ·{" "}
-                      {it.responseCount} respuesta
-                      {it.responseCount === 1 ? "" : "s"} · iniciada{" "}
+                      Edad {readAgeRange(s)} · {it.responseCount}/3 respuesta
+                      {it.responseCount === 1 ? "" : "s"}
+                      {outcome === "abandoned" && it.lastPositionReached
+                        ? ` · abandonó tras estímulo ${it.lastPositionReached}`
+                        : ""}
+                      {" · "}
+                      duración {durationLabel} · iniciada{" "}
                       <SafeTimestamp value={s.startedAt ?? s.createdAt} />
                     </p>
                   </div>
@@ -141,6 +178,7 @@ export function SessionsPanel({ experimentId }: Props) {
                     token={s.publicToken}
                     session={s}
                     stimuli={detailQ.data?.stimuli ?? []}
+                    totalDurationMs={it.durationMs}
                   />
                 ) : null}
               </li>
@@ -156,19 +194,22 @@ function SessionResponses({
   token,
   session,
   stimuli,
+  totalDurationMs,
 }: {
   token: string;
   session: ParticipantSession;
   stimuli: ExperimentStimulus[];
+  totalDurationMs: number | null;
 }) {
   const rq = useQuery(sessionResponsesQuery(token));
   const responses = rq.data?.items ?? [];
   const byId = useMemo(() => new Map(stimuli.map((s) => [s.id, s])), [stimuli]);
-  const totalDurationMs = sessionDurationMs(session);
+  // Fallback for older sessions that lack the enriched duration from the API.
+  const effectiveDuration = totalDurationMs ?? sessionDurationMs(session);
 
   return (
     <div className="mt-2 grid gap-3 rounded-md border border-border/60 bg-background/40 p-3">
-      <ParticipantSummary session={session} totalDurationMs={totalDurationMs} />
+      <ParticipantSummary session={session} totalDurationMs={effectiveDuration} />
       {rq.isLoading ? (
         <p className="text-xs text-muted-foreground">Cargando respuestas…</p>
       ) : responses.length === 0 ? (
