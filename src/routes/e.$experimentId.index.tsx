@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
 import { experimentDetailQuery } from "@/lib/perception/client";
 import { PreviewBanner, usePreviewMode } from "@/components/experiments/PreviewBanner";
+import { BrandingLogo } from "@/components/branding/BrandingLogo";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -156,7 +157,9 @@ function ParticipantLanding() {
     return (
       <>
       <PreviewBanner active={preview} />
-      <InstructionsStage
+      <div className="relative">
+        <BrandingLogo />
+        <InstructionsStage
         title={exp.title}
         instructions={exp.instructions}
         total={data.stimuli?.length ?? 0}
@@ -165,7 +168,8 @@ function ParticipantLanding() {
           setStage("preloading");
         }}
         onBack={() => setStage("form")}
-      />
+        />
+      </div>
       </>
     );
   }
@@ -194,6 +198,8 @@ function ParticipantLanding() {
   return (
     <>
     <PreviewBanner active={preview} />
+    <div className="relative">
+      <BrandingLogo />
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
       {exp.description ? (
@@ -232,7 +238,8 @@ function ParticipantLanding() {
             <p className="text-sm text-muted-foreground">
               Verás tres imágenes en secuencia y responderás algunas preguntas breves sobre cada
               una. Tus respuestas se registran de forma anónima y se usan sólo con fines de
-              investigación. Puedes detenerte en cualquier momento cerrando esta página.
+              investigación. No existen respuestas correctas o incorrectas. Nos interesa conocer
+              tu percepción personal.
             </p>
           </section>
 
@@ -296,6 +303,7 @@ function ParticipantLanding() {
         </form>
       )}
     </div>
+    </div>
     </>
   );
 }
@@ -321,7 +329,7 @@ function InstructionsStage({
       </p>
       <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm leading-relaxed text-foreground sm:p-5">
         {instructions ||
-          "Observa cada imagen con atención y responde las preguntas a continuación."}
+          "Observa cada imagen con calma.\nNo intentes encontrar una respuesta correcta.\nSimplemente responde de acuerdo con lo primero que percibas o sientas."}
       </div>
       <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="ghost" onClick={onBack} className="sm:w-auto">
