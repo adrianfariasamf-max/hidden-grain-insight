@@ -13,6 +13,8 @@ import type {
   ExperimentStimulus,
   ParticipantSession,
   PerceptionExperiment,
+  SessionSnapshot,
+  SessionSummary,
   SignUploadResponse,
   StimulusResponse,
   SubmitResponseRequest,
@@ -97,11 +99,15 @@ export const experimentsApi = {
       }),
     ),
   session: async (token: string, signal?: AbortSignal) =>
-    json<{
-      session: ParticipantSession;
-      experiment: PerceptionExperiment;
-      stimuli: ExperimentStimulus[];
-    }>(await fetch(`${API_BASE}/sessions/${token}`, { signal })),
+    json<SessionSnapshot>(await fetch(`${API_BASE}/sessions/${token}`, { signal })),
+  sessionResponses: async (token: string, signal?: AbortSignal) =>
+    json<{ items: StimulusResponse[] }>(
+      await fetch(`${API_BASE}/sessions/${token}/responses`, { signal }),
+    ),
+  listSessions: async (id: string, signal?: AbortSignal) =>
+    json<{ items: SessionSummary[] }>(
+      await fetch(`${API_BASE}/experiments/${id}/sessions`, { signal }),
+    ),
   acceptConsent: async (token: string) =>
     json<ParticipantSession>(
       await fetch(`${API_BASE}/sessions/${token}/consent`, { method: "POST" }),
@@ -127,6 +133,10 @@ export const experimentKeys = {
   list: () => [...experimentKeys.all, "experiments"] as const,
   detail: (id: string) => [...experimentKeys.all, "experiment", id] as const,
   results: (id: string) => [...experimentKeys.all, "results", id] as const,
+  session: (token: string) => [...experimentKeys.all, "session", token] as const,
+  sessionResponses: (token: string) =>
+    [...experimentKeys.all, "session", token, "responses"] as const,
+  sessions: (id: string) => [...experimentKeys.all, "sessions", id] as const,
 };
 
 export const experimentListQuery = () =>
@@ -139,4 +149,22 @@ export const experimentDetailQuery = (id: string) =>
   queryOptions({
     queryKey: experimentKeys.detail(id),
     queryFn: ({ signal }) => experimentsApi.detail(id, signal),
+  });
+
+export const sessionSnapshotQuery = (token: string) =>
+  queryOptions({
+    queryKey: experimentKeys.session(token),
+    queryFn: ({ signal }) => experimentsApi.session(token, signal),
+  });
+
+export const sessionResponsesQuery = (token: string) =>
+  queryOptions({
+    queryKey: experimentKeys.sessionResponses(token),
+    queryFn: ({ signal }) => experimentsApi.sessionResponses(token, signal),
+  });
+
+export const experimentSessionsQuery = (id: string) =>
+  queryOptions({
+    queryKey: experimentKeys.sessions(id),
+    queryFn: ({ signal }) => experimentsApi.listSessions(id, signal),
   });
