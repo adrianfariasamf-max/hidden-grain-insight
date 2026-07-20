@@ -694,6 +694,7 @@ export async function signStimulusUpload(
   experimentId: string,
   filename: string,
 ): Promise<{ uploadUrl: string; imagePath: string; imageUrl: string; token: string }> {
+  await assertExperimentDraft(experimentId, "upload stimulus");
   const safe = filename.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);
   const path = `${experimentId}/${Date.now()}_${safe}`;
   const { data, error } = await supabaseAdmin.storage
