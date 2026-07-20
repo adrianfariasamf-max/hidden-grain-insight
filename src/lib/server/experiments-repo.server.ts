@@ -17,9 +17,21 @@ import type {
   ExperimentStimulus,
   ParticipantSession,
   PerceptionExperiment,
+  PublicExperiment,
+  SessionSnapshot,
+  SessionSummary,
   StimulusResponse,
   SubmitResponseRequest,
 } from "@/lib/perception/types";
+// Public projection: strip hiddenTarget before any payload leaves the server
+// for participants. Every /sessions/* endpoint MUST route experiment data
+// through this helper.
+const toPublicExperiment = (e: PerceptionExperiment): PublicExperiment => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { hiddenTarget: _omit, ...safe } = e;
+  return safe;
+};
+
 
 // ------------------- Mappers -------------------
 
@@ -65,6 +77,7 @@ interface ResponseRow {
   submitted_at: string;
   response_time_ms: number | null;
   observation: string;
+  attention: string;
   feeling: string;
   interpretation: string;
   discovered_hidden_element: boolean;
@@ -118,6 +131,7 @@ const toResponse = (r: ResponseRow): StimulusResponse => ({
   submittedAt: r.submitted_at,
   responseTimeMs: r.response_time_ms,
   observation: r.observation,
+  attention: r.attention ?? "",
   feeling: r.feeling,
   interpretation: r.interpretation,
   discoveredHiddenElement: r.discovered_hidden_element,
@@ -367,11 +381,7 @@ export async function createSession(
   return toSession(data as SessionRow);
 }
 
-export async function getSessionByToken(token: string): Promise<{
-  session: ParticipantSession;
-  experiment: PerceptionExperiment;
-  stimuli: ExperimentStimulus[];
-} | null> {
+export async function getSessionByToken(token: string): Promise<SessionSnapshot | null> {
   const { data, error } = await supabaseAdmin
     .from("participant_sessions")
     .select("*")
@@ -382,10 +392,17 @@ export async function getSessionByToken(token: string): Promise<{
   const session = toSession(data as SessionRow);
   const detail = await getExperimentDetail(session.experimentId);
   if (!detail) return null;
+  const { data: rr, error: re } = await supabaseAdmin
+    .from("stimulus_responses")
+    .select("*")
+    .eq("session_id", session.id);
+  if (re) throw re;
+  const responses = ((rr ?? []) as ResponseRow[]).map(toResponse);
   return {
     session,
-    experiment: detail.experiment,
+    experiment: toPublicExperiment(detail.experiment),
     stimuli: detail.stimuli,
+    responses,
   };
 }
 
@@ -458,9 +475,10 @@ export async function submitResponse(
       submitted_at: submittedAt.toISOString(),
       response_time_ms: responseTimeMs,
       observation: input.observation,
+      attention: input.attention,
       feeling: input.feeling,
       interpretation: input.interpretation,
-      discovered_hidden_element: input.discoveredHiddenElement,
+      discovered_hidden_element: input.discoveredHiddenElement ?? false,
       discovered_text: input.discoveredText ?? null,
       confidence: input.confidence ?? null,
       metadata: (input.metadata ?? {}) as never,
@@ -469,6 +487,47 @@ export async function submitResponse(
     .single();
   if (error) throw error;
   return toResponse(data as ResponseRow);
+}
+
+export async function getSessionResponses(token: string): Promise<StimulusResponse[]> {
+  const { data: sess, error: se } = await supabaseAdmin
+    .from("participant_sessions")
+    .select("id")
+    .eq("public_token", token)
+    .maybeSingle();
+  if (se) throw se;
+  if (!sess) return [];
+  const { data, error } = await supabaseAdmin
+    .from("stimulus_responses")
+    .select("*")
+    .eq("session_id", (sess as { id: string }).id)
+    .order("submitted_at", { ascending: true });
+  if (error) throw error;
+  return ((data ?? []) as ResponseRow[]).map(toResponse);
+}
+
+export async function listSessionsForExperiment(
+  experimentId: string,
+): Promise<SessionSummary[]> {
+  const { data, error } = await supabaseAdmin
+    .from("participant_sessions")
+    .select("*")
+    .eq("experiment_id", experimentId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  const sessions = ((data ?? []) as SessionRow[]).map(toSession);
+  if (sessions.length === 0) return [];
+  const ids = sessions.map((s) => s.id);
+  const { data: rr, error: re } = await supabaseAdmin
+    .from("stimulus_responses")
+    .select("session_id")
+    .in("session_id", ids);
+  if (re) throw re;
+  const counts = new Map<string, number>();
+  for (const row of (rr ?? []) as { session_id: string }[]) {
+    counts.set(row.session_id, (counts.get(row.session_id) ?? 0) + 1);
+  }
+  return sessions.map((s) => ({ session: s, responseCount: counts.get(s.id) ?? 0 }));
 }
 
 // ------------------- Results -------------------

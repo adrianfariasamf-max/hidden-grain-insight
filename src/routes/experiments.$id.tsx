@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SharePanel } from "@/components/experiments/SharePanel";
 import { StimulusSlot } from "@/components/experiments/StimulusSlot";
+import { SessionsPanel } from "@/components/experiments/SessionsPanel";
 import { experimentDetailQuery, experimentKeys, experimentsApi } from "@/lib/perception/client";
 import type { ExperimentDetail } from "@/lib/perception/types";
 
@@ -103,6 +104,8 @@ function ExperimentEditor({
           </section>
 
           {isPublished ? <SharePanel experimentId={experimentId} /> : null}
+
+          {isPublished ? <SessionsPanel experimentId={experimentId} /> : null}
         </div>
 
         <aside className="grid gap-4 lg:sticky lg:top-6 lg:self-start">

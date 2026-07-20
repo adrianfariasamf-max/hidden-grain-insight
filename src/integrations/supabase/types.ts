@@ -245,6 +245,7 @@ export type Database = {
       }
       stimulus_responses: {
         Row: {
+          attention: string
           confidence: number | null
           created_at: string
           discovered_hidden_element: boolean
@@ -262,6 +263,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attention?: string
           confidence?: number | null
           created_at?: string
           discovered_hidden_element?: boolean
@@ -279,6 +281,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attention?: string
           confidence?: number | null
           created_at?: string
           discovered_hidden_element?: boolean

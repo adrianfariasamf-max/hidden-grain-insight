@@ -16,6 +16,10 @@ export interface PerceptionExperiment {
   updatedAt: string;
 }
 
+// Public-safe projection: NEVER contains hiddenTarget.
+// Used for every payload delivered to the participant.
+export type PublicExperiment = Omit<PerceptionExperiment, "hiddenTarget">;
+
 export interface ExperimentStimulus {
   id: string;
   experimentId: string;
@@ -50,6 +54,7 @@ export interface StimulusResponse {
   submittedAt: string;
   responseTimeMs: number | null;
   observation: string;
+  attention: string;
   feeling: string;
   interpretation: string;
   discoveredHiddenElement: boolean;
@@ -128,10 +133,24 @@ export interface SubmitResponseRequest {
   stimulusId: string;
   firstViewedAt?: string | null;
   observation: string;
+  attention: string;
   feeling: string;
   interpretation: string;
-  discoveredHiddenElement: boolean;
+  discoveredHiddenElement?: boolean;
   discoveredText?: string | null;
   confidence?: number | null;
   metadata?: Record<string, unknown>;
+}
+
+export interface SessionSummary {
+  session: ParticipantSession;
+  responseCount: number;
+}
+
+// Public snapshot returned by GET /sessions/:token
+export interface SessionSnapshot {
+  session: ParticipantSession;
+  experiment: PublicExperiment;
+  stimuli: ExperimentStimulus[];
+  responses: StimulusResponse[];
 }

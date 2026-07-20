@@ -1,0 +1,1 @@
+ALTER TABLE public.stimulus_responses ADD COLUMN IF NOT EXISTS attention text NOT NULL DEFAULT '';
