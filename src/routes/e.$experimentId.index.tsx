@@ -6,9 +6,8 @@ import { queryOptions } from "@tanstack/react-query";
 import { API_BASE } from "@/lib/api/client";
 import { experimentsApi } from "@/lib/perception/client";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { PublicExperiment } from "@/lib/perception/types";
+import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -23,7 +22,10 @@ const publicExperimentQuery = (id: string) =>
       const res = await fetch(`${API_BASE}/public/experiments/${id}`, { signal });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return (await res.json()) as { experiment: PublicExperiment };
+      return (await res.json()) as {
+        experiment: PublicExperiment;
+        stimuli: ExperimentStimulus[];
+      };
     },
   });
 
@@ -55,6 +57,13 @@ function ParticipantLanding() {
   const { data, isLoading, error, refetch } = useQuery(publicExperimentQuery(experimentId));
   const [ageRange, setAgeRange] = useState<AgeRange | null>(null);
   const [consent, setConsent] = useState(false);
+  // RR-006 · Session lifecycle:
+  //   form → instructions → preloading (first image) → session created + navigate.
+  // A participant only exists once the first stimulus has been fetched by the
+  // browser. This eliminates the "0-response" ghost participants that appear
+  // when someone opens a link or just clicks the consent button.
+  const [stage, setStage] = useState<"form" | "instructions" | "preloading">("form");
+  const [preloadError, setPreloadError] = useState<string | null>(null);
 
   // Contamination shield (RR-005): sessions started with ?test=1 in the URL
   // or from an automated browser (Playwright/WebDriver) are tagged as test
@@ -86,6 +95,7 @@ function ParticipantLanding() {
         params: { experimentId, token: session.publicToken },
       });
     },
+    onError: (err) => setPreloadError((err as Error).message),
   });
 
   if (isLoading) return <LoadingState label="Cargando…" />;
@@ -94,9 +104,43 @@ function ParticipantLanding() {
 
   const exp = data.experiment;
   const isOpen = exp.status === "published";
+  const firstStimulus = [...(data.stimuli ?? [])].sort((a, b) => a.position - b.position)[0];
+
+  if (isOpen && stage === "instructions") {
+    return (
+      <InstructionsStage
+        title={exp.title}
+        instructions={exp.instructions}
+        total={data.stimuli?.length ?? 0}
+        onBegin={() => {
+          setPreloadError(null);
+          setStage("preloading");
+        }}
+        onBack={() => setStage("form")}
+      />
+    );
+  }
+
+  if (isOpen && stage === "preloading") {
+    return (
+      <PreloadingStage
+        stimulus={firstStimulus}
+        error={preloadError}
+        onReady={() => {
+          if (start.isPending || start.isSuccess) return;
+          start.mutate();
+        }}
+        onFail={(msg) => setPreloadError(msg)}
+        onCancel={() => {
+          setStage("instructions");
+          setPreloadError(null);
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-10">
+    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
       {exp.description ? (
         <p className="mt-2 text-sm text-muted-foreground">{exp.description}</p>
@@ -108,11 +152,11 @@ function ParticipantLanding() {
         </p>
       ) : (
         <form
-          className="mt-6 grid gap-5 rounded-lg border border-border bg-card p-5"
+          className="mt-6 grid gap-5 rounded-lg border border-border bg-card p-4 sm:p-5"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!consent || !ageRange || start.isPending) return;
-            start.mutate();
+            if (!consent || !ageRange) return;
+            setStage("instructions");
           }}
         >
           <section aria-labelledby="consent-heading" className="grid gap-2">
@@ -177,19 +221,114 @@ function ParticipantLanding() {
 
           <Button
             type="submit"
-            disabled={!consent || !ageRange || start.isPending}
+            size="lg"
+            disabled={!consent || !ageRange}
             className="w-full"
           >
-            {start.isPending ? "Comenzando…" : "Comenzar"}
+            Continuar
           </Button>
-
-          {start.error ? (
-            <p className="text-xs text-destructive">
-              No pudimos iniciar tu sesión. {(start.error as Error).message}
-            </p>
-          ) : null}
         </form>
       )}
+    </div>
+  );
+}
+
+function InstructionsStage({
+  title,
+  instructions,
+  total,
+  onBegin,
+  onBack,
+}: {
+  title: string;
+  instructions: string;
+  total: number;
+  onBegin: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
+      <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{title}</h1>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
+      </p>
+      <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm leading-relaxed text-foreground sm:p-5">
+        {instructions ||
+          "Observa cada imagen con atención y responde las preguntas a continuación."}
+      </div>
+      <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button type="button" variant="ghost" onClick={onBack} className="sm:w-auto">
+          Volver
+        </Button>
+        <Button type="button" size="lg" onClick={onBegin} className="sm:w-auto">
+          Comenzar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * RR-006 · Session-creation gate.
+ *
+ * The session is only created after the browser reports that the first
+ * stimulus image has fully loaded — that is the moment the person becomes a
+ * real participant. If they close the tab or the image fails, no session
+ * row is created.
+ */
+function PreloadingStage({
+  stimulus,
+  error,
+  onReady,
+  onFail,
+  onCancel,
+}: {
+  stimulus: ExperimentStimulus | undefined;
+  error: string | null;
+  onReady: () => void;
+  onFail: (message: string) => void;
+  onCancel: () => void;
+}) {
+  if (!stimulus || !stimulus.imageUrl) {
+    return (
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="text-sm text-destructive">
+          No pudimos preparar la primera imagen. Vuelve a intentarlo más tarde.
+        </p>
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Volver
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
+      <div
+        role="status"
+        aria-live="polite"
+        className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary"
+      />
+      <p className="text-sm text-foreground">Preparando la primera imagen…</p>
+      {/* Hidden preloader: browser fully downloads the image before the
+          session is created. onLoad = participant is real. */}
+      <img
+        src={stimulus.imageUrl}
+        alt=""
+        aria-hidden
+        className="hidden"
+        onLoad={onReady}
+        onError={() =>
+          onFail("No pudimos cargar la primera imagen. Verifica tu conexión e intenta de nuevo.")
+        }
+      />
+      {error ? (
+        <div className="mt-2 grid gap-2">
+          <p className="text-xs text-destructive">{error}</p>
+          <Button type="button" variant="secondary" onClick={onCancel}>
+            Reintentar
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }
