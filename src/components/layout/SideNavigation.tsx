@@ -1,5 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Compass, Network, LayoutDashboard, Activity, Sparkles, FlaskConical } from "lucide-react";
+import {
+  Compass,
+  Network,
+  LayoutDashboard,
+  Activity,
+  Sparkles,
+  FlaskConical,
+  Settings,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -17,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Grafo de conocimiento", to: "/graph", icon: Network },
   { label: "Discovery", to: "/discover", icon: Sparkles },
   { label: "System", to: "/system", icon: Activity },
+  { label: "Configuración", to: "/settings", icon: Settings },
 ];
 
 interface SideNavigationProps {

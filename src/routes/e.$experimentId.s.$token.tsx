@@ -229,7 +229,10 @@ function StimulusView({
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)]">
+      {/* RR-023 · La imagen es el elemento protagonista: 60% del ancho en
+          desktop, formulario 40%. En móvil/tablet mantenemos el diseño
+          responsive con la imagen dominante en la parte superior. */}
+      <div className="grid gap-4 lg:grid-cols-[3fr_2fr] lg:gap-8">
         <div className="lg:sticky lg:top-4 lg:self-start">
           <div className="overflow-hidden rounded-lg border border-border bg-black">
             {/* Full-image display, preserve aspect ratio. Height caps keep
@@ -291,7 +294,7 @@ function StimulusView({
 
         <Field
           id="q-attention"
-          label="¿Qué elementos llamaron primero tu atención?"
+          label="¿Qué es lo primero que te llamó la atención de esta imagen?"
           hint="Menciona cualquier detalle al que vuelva tu mirada."
         >
           <Textarea
@@ -314,47 +317,42 @@ function StimulusView({
         </Field>
 
         {/* RR-002 · Variable experimental "Seguridad" — obligatoria. */}
+        {/* RR-022 · Escala numérica 1–5 con extremos etiquetados debajo,
+            reemplaza la escala de círculos por mayor claridad visual. La
+            lógica de almacenamiento (0..1) no cambia. */}
         <fieldset className="grid gap-2" data-experimental-variable="security">
           <legend className="text-sm font-medium text-foreground">
             ¿Qué tan seguro(a) estás de lo que acabas de responder?
           </legend>
           <div
-            className="flex items-center gap-3"
+            className="grid grid-cols-5 gap-2"
             role="radiogroup"
             aria-label="Nivel de seguridad"
           >
-            <span className="whitespace-nowrap text-[11px] text-muted-foreground">
-              Nada seguro
-            </span>
-            <div className="flex flex-1 items-center justify-between gap-2">
-              {[1, 2, 3, 4, 5].map((n) => {
-                const active = confidence === n;
-                return (
-                  <button
-                    key={n}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    aria-label={`Nivel ${n} de 5`}
-                    onClick={() => setConfidence(n)}
-                    className={`grid h-9 w-9 place-items-center rounded-full border-2 transition-colors ${
-                      active
-                        ? "border-primary bg-primary/25"
-                        : "border-border hover:border-foreground/40"
-                    }`}
-                  >
-                    <span
-                      className={`h-3 w-3 rounded-full ${
-                        active ? "bg-primary" : "bg-transparent"
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-            </div>
-            <span className="whitespace-nowrap text-[11px] text-muted-foreground">
-              Muy seguro
-            </span>
+            {[1, 2, 3, 4, 5].map((n) => {
+              const active = confidence === n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  aria-label={`Nivel ${n} de 5`}
+                  onClick={() => setConfidence(n)}
+                  className={`h-10 rounded-md border text-sm font-semibold transition-colors ${
+                    active
+                      ? "border-primary bg-primary/20 text-primary"
+                      : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                  }`}
+                >
+                  {n}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex justify-between text-[11px] text-muted-foreground">
+            <span>Nada seguro</span>
+            <span>Muy seguro</span>
           </div>
         </fieldset>
 
