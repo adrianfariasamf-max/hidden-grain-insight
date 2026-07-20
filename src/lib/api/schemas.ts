@@ -70,3 +70,27 @@ export const HealthResponseSchema = z.object({
   edges: z.number(),
   generatedAt: z.string(),
 });
+
+// ------------------- Write contract (EPIC-005.0) -------------------
+export const CreateKnowledgeObjectRequestSchema = z.object({
+  title: z.string().min(1).max(200),
+  type: z.string().min(1),
+  category: z.string().min(1),
+  status: z.string().min(1),
+  summary: z.string().max(2000).optional(),
+  keywords: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+});
+
+export const CreateKnowledgeObjectResponseSchema = ObjectDetailResponseSchema;
+
+export const CreateRelationshipRequestSchema = z.object({
+  sourceObjectId: z.string().uuid(),
+  targetObjectId: z.string().uuid(),
+  type: z.string().min(1),
+  description: z.string().optional(),
+  provenance: z.string().optional(),
+  confidence: z.number().min(0).max(1).optional(),
+});
+
+export const CreateRelationshipResponseSchema = GraphEdgeSchema;

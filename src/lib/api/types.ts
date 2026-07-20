@@ -97,3 +97,32 @@ export interface HealthResponse {
   edges: number;
   generatedAt: string;
 }
+
+// ------------------- Write contract (EPIC-005.0) -------------------
+// Client-authored fields for POST /objects.
+// Server-derived (never client-controlled): id, version, checksum, path,
+// relationshipCount, createdAt, updatedAt.
+export interface CreateKnowledgeObjectRequest {
+  title: string;
+  type: string;
+  category: string;
+  status: string;
+  summary?: string;
+  keywords?: string[];
+  tags?: string[];
+}
+
+export type CreateKnowledgeObjectResponse = ObjectDetailResponse;
+
+// Client-authored fields for POST /relationships.
+// Server-derived: id, resolved, createdAt, updatedAt.
+export interface CreateRelationshipRequest {
+  sourceObjectId: string;
+  targetObjectId: string;
+  type: string;
+  description?: string;
+  provenance?: string;
+  confidence?: number;
+}
+
+export type CreateRelationshipResponse = GraphEdge;
