@@ -318,6 +318,9 @@ function PublishChecklist({
   onPublish,
   pending,
   error,
+  onClose,
+  closing,
+  closeError,
 }: {
   reasons: string[];
   ready: boolean;
@@ -325,6 +328,9 @@ function PublishChecklist({
   onPublish: () => void;
   pending: boolean;
   error: string | null;
+  onClose: () => void;
+  closing: boolean;
+  closeError: string | null;
 }) {
   const items = [
     { key: "title", label: "Título presente" },
@@ -385,10 +391,26 @@ function PublishChecklist({
           <Rocket className="mr-1.5 h-4 w-4" />
           {pending ? "Publicando…" : "Publicar experimento"}
         </Button>
+      ) : status === "published" ? (
+        <>
+          <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="mt-2 w-full"
+            onClick={onClose}
+            disabled={closing}
+          >
+            <Lock className="mr-1.5 h-4 w-4" />
+            {closing ? "Cerrando…" : "Cerrar estudio"}
+          </Button>
+        </>
       ) : (
         <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
       )}
       {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
+      {closeError ? <p className="mt-2 text-xs text-destructive">{closeError}</p> : null}
     </section>
   );
 }
