@@ -128,13 +128,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const isParticipantRoute = useRouterState({
-    select: (s) => s.location.pathname.startsWith("/e/"),
+  const chromeless = useRouterState({
+    select: (s) =>
+      s.location.pathname.startsWith("/e/") || s.location.pathname === "/auth",
   });
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isParticipantRoute ? (
+      {chromeless ? (
         // Participant surface: no researcher chrome, full-viewport neutral canvas.
         <div className="min-h-screen bg-background text-foreground">
           <Outlet />

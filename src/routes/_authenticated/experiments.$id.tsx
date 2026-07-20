@@ -17,7 +17,7 @@ import { SessionsPanel } from "@/components/experiments/SessionsPanel";
 import { experimentDetailQuery, experimentKeys, experimentsApi } from "@/lib/perception/client";
 import type { ExperimentDetail } from "@/lib/perception/types";
 
-export const Route = createFileRoute("/experiments/$id")({
+export const Route = createFileRoute("/_authenticated/experiments/$id")({
   component: ExperimentDetailPage,
   head: () => ({
     meta: [

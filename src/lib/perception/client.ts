@@ -4,6 +4,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { API_BASE } from "@/lib/api/client";
+import { authFetch } from "@/lib/auth/session";
 import type {
   CreateExperimentRequest,
   CreateSessionRequest,
@@ -30,6 +31,13 @@ async function json<T>(res: Response): Promise<T> {
   return (await res.json()) as T;
 }
 
+// Base for participant / public endpoints. Never carries a bearer token.
+const PUBLIC_BASE = `${API_BASE}/public`;
+
+// Admin fetch: attaches the researcher's Supabase JWT so RLS checks can
+// authorize the caller. Never used for participant flows.
+const afetch = (input: RequestInfo | URL, init: RequestInit = {}) => authFetch(input, init);
+
 export type ExperimentListItem = PerceptionExperiment & {
   stimulusCount: number;
   sessionCount: number;
@@ -37,12 +45,12 @@ export type ExperimentListItem = PerceptionExperiment & {
 
 export const experimentsApi = {
   list: async (signal?: AbortSignal) =>
-    json<{ items: ExperimentListItem[] }>(await fetch(`${API_BASE}/experiments`, { signal })),
+    json<{ items: ExperimentListItem[] }>(await afetch(`${API_BASE}/experiments`, { signal })),
   detail: async (id: string, signal?: AbortSignal) =>
-    json<ExperimentDetail>(await fetch(`${API_BASE}/experiments/${id}`, { signal })),
+    json<ExperimentDetail>(await afetch(`${API_BASE}/experiments/${id}`, { signal })),
   create: async (input: CreateExperimentRequest) =>
     json<PerceptionExperiment>(
-      await fetch(`${API_BASE}/experiments`, {
+      await afetch(`${API_BASE}/experiments`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
@@ -50,7 +58,7 @@ export const experimentsApi = {
     ),
   update: async (id: string, input: UpdateExperimentRequest) =>
     json<PerceptionExperiment>(
-      await fetch(`${API_BASE}/experiments/${id}`, {
+      await afetch(`${API_BASE}/experiments/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
@@ -58,7 +66,7 @@ export const experimentsApi = {
     ),
   addStimulus: async (id: string, input: CreateStimulusRequest) =>
     json<ExperimentStimulus>(
-      await fetch(`${API_BASE}/experiments/${id}/stimuli`, {
+      await afetch(`${API_BASE}/experiments/${id}/stimuli`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
@@ -66,7 +74,7 @@ export const experimentsApi = {
     ),
   updateStimulus: async (id: string, stimulusId: string, input: UpdateStimulusRequest) =>
     json<ExperimentStimulus>(
-      await fetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
+      await afetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
@@ -74,13 +82,13 @@ export const experimentsApi = {
     ),
   deleteStimulus: async (id: string, stimulusId: string) =>
     json<{ deleted: true }>(
-      await fetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
+      await afetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
         method: "DELETE",
       }),
     ),
   signUpload: async (id: string, filename: string, contentType?: string) =>
     json<SignUploadResponse>(
-      await fetch(`${API_BASE}/experiments/${id}/stimuli/upload-url`, {
+      await afetch(`${API_BASE}/experiments/${id}/stimuli/upload-url`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ filename, contentType }),
@@ -88,41 +96,43 @@ export const experimentsApi = {
     ),
   publish: async (id: string) =>
     json<PerceptionExperiment>(
-      await fetch(`${API_BASE}/experiments/${id}/publish`, { method: "POST" }),
+      await afetch(`${API_BASE}/experiments/${id}/publish`, { method: "POST" }),
     ),
   close: async (id: string) =>
     json<PerceptionExperiment>(
-      await fetch(`${API_BASE}/experiments/${id}/close`, { method: "POST" }),
+      await afetch(`${API_BASE}/experiments/${id}/close`, { method: "POST" }),
     ),
   duplicate: async (id: string) =>
     json<PerceptionExperiment>(
-      await fetch(`${API_BASE}/experiments/${id}/duplicate`, { method: "POST" }),
+      await afetch(`${API_BASE}/experiments/${id}/duplicate`, { method: "POST" }),
     ),
+  // Participant-scoped helpers (no auth). Kept on this object so participant
+  // routes have a single import surface.
   createSession: async (id: string, input: CreateSessionRequest = {}) =>
     json<ParticipantSession>(
-      await fetch(`${API_BASE}/experiments/${id}/sessions`, {
+      await fetch(`${PUBLIC_BASE}/experiments/${id}/sessions`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
       }),
     ),
   session: async (token: string, signal?: AbortSignal) =>
-    json<SessionSnapshot>(await fetch(`${API_BASE}/sessions/${token}`, { signal })),
+    json<SessionSnapshot>(await fetch(`${PUBLIC_BASE}/sessions/${token}`, { signal })),
   sessionResponses: async (token: string, signal?: AbortSignal) =>
     json<{ items: StimulusResponse[] }>(
-      await fetch(`${API_BASE}/sessions/${token}/responses`, { signal }),
+      await fetch(`${PUBLIC_BASE}/sessions/${token}/responses`, { signal }),
     ),
   listSessions: async (id: string, signal?: AbortSignal) =>
     json<{ items: SessionSummary[] }>(
-      await fetch(`${API_BASE}/experiments/${id}/sessions`, { signal }),
+      await afetch(`${API_BASE}/experiments/${id}/sessions`, { signal }),
     ),
   acceptConsent: async (token: string) =>
     json<ParticipantSession>(
-      await fetch(`${API_BASE}/sessions/${token}/consent`, { method: "POST" }),
+      await fetch(`${PUBLIC_BASE}/sessions/${token}/consent`, { method: "POST" }),
     ),
   submitResponse: async (token: string, input: SubmitResponseRequest) =>
     json<StimulusResponse>(
-      await fetch(`${API_BASE}/sessions/${token}/responses`, {
+      await fetch(`${PUBLIC_BASE}/sessions/${token}/responses`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
@@ -130,10 +140,10 @@ export const experimentsApi = {
     ),
   completeSession: async (token: string) =>
     json<ParticipantSession>(
-      await fetch(`${API_BASE}/sessions/${token}/complete`, { method: "POST" }),
+      await fetch(`${PUBLIC_BASE}/sessions/${token}/complete`, { method: "POST" }),
     ),
   results: async (id: string, signal?: AbortSignal) =>
-    json<ExperimentResults>(await fetch(`${API_BASE}/experiments/${id}/results`, { signal })),
+    json<ExperimentResults>(await afetch(`${API_BASE}/experiments/${id}/results`, { signal })),
 };
 
 export const experimentKeys = {

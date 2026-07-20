@@ -5,11 +5,23 @@ import { createExperimentSchema } from "@/lib/perception/schemas";
 export const Route = createFileRoute("/api/experiments")({
   server: {
     handlers: {
-      GET: async () => {
-        const { listExperiments } = await import("@/lib/server/experiments-repo.server");
-        return Response.json({ items: await listExperiments() });
+      GET: async ({ request }) => {
+        const { requireResearcher } = await import("@/lib/server/auth-guard.server");
+        const ctx = await requireResearcher(request);
+        if (ctx instanceof Response) return ctx;
+        const { listExperimentsFor } = await import(
+          "@/lib/server/experiments-repo.server"
+        );
+        // Install OWNER / ADMIN see every experiment; researchers see only their own.
+        const scope = ctx.roles.includes("owner") || ctx.roles.includes("admin")
+          ? null
+          : ctx.userId;
+        return Response.json({ items: await listExperimentsFor(scope) });
       },
       POST: async ({ request }) => {
+        const { requireResearcher } = await import("@/lib/server/auth-guard.server");
+        const ctx = await requireResearcher(request);
+        if (ctx instanceof Response) return ctx;
         let raw: unknown;
         try {
           raw = await request.json();
@@ -25,7 +37,7 @@ export const Route = createFileRoute("/api/experiments")({
         }
         try {
           const { createExperiment } = await import("@/lib/server/experiments-repo.server");
-          const created = await createExperiment(parsed.data);
+          const created = await createExperiment(parsed.data, ctx.userId);
           return Response.json(created, { status: 201 });
         } catch (err) {
           return Response.json({ error: (err as Error).message }, { status: 500 });

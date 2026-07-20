@@ -10,7 +10,7 @@ import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { brandingAdminQuery, brandingApi } from "@/lib/branding/client";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Configuración — Hidden Grain" },

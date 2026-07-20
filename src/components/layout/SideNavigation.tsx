@@ -7,9 +7,12 @@ import {
   Sparkles,
   FlaskConical,
   Settings,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useSession, signOut } from "@/lib/auth/session";
 
 type NavItem = {
   label: string;
@@ -34,6 +37,7 @@ interface SideNavigationProps {
 
 export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const session = useSession();
 
   return (
     <nav
@@ -76,10 +80,43 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
         })}
       </ul>
 
-      <div className="px-4 py-3 text-[11px] text-muted-foreground">
-        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono">
-          perception mvp
-        </span>
+      <div className="mt-auto border-t border-sidebar-border px-3 py-3 text-[11px] text-muted-foreground">
+        {session.status === "authenticated" ? (
+          <div className="space-y-2">
+            <div className="truncate px-1" title={session.user?.email ?? ""}>
+              <span className="text-foreground/80">
+                {session.user?.email ?? "Investigador"}
+              </span>
+              {session.roles.length > 0 && (
+                <span className="ml-1 rounded border border-border/60 px-1 py-0.5 font-mono uppercase text-[9px]">
+                  {session.roles[0]}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                void signOut();
+                onNavigate?.();
+              }}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+            >
+              <LogOut className="h-3.5 w-3.5" aria-hidden />
+              Cerrar sesión
+            </button>
+          </div>
+        ) : session.status === "anonymous" ? (
+          <Link
+            to="/auth"
+            onClick={onNavigate}
+            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+          >
+            <LogIn className="h-3.5 w-3.5" aria-hidden />
+            Iniciar sesión
+          </Link>
+        ) : (
+          <span className="px-1 opacity-60">Verificando sesión…</span>
+        )}
       </div>
     </nav>
   );

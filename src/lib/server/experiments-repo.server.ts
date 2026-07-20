@@ -162,10 +162,21 @@ const toResponse = (r: ResponseRow): StimulusResponse => ({
 export async function listExperiments(): Promise<
   Array<PerceptionExperiment & { stimulusCount: number; sessionCount: number }>
 > {
-  const { data, error } = await supabaseAdmin
+  return listExperimentsFor(null);
+}
+
+// SR-013 · Researcher-scoped listing. When `ownerId` is provided, only that
+// user's experiments are returned. Install OWNER / ADMIN pass `null` to see
+// every experiment.
+export async function listExperimentsFor(
+  ownerId: string | null,
+): Promise<Array<PerceptionExperiment & { stimulusCount: number; sessionCount: number }>> {
+  let query = supabaseAdmin
     .from("perception_experiments")
     .select("*")
     .order("created_at", { ascending: false });
+  if (ownerId) query = query.eq("owner_id", ownerId);
+  const { data, error } = await query;
   if (error) throw error;
   const experiments = (data ?? []).map((r) => toExperiment(r as ExperimentRow));
   if (experiments.length === 0) return [];
@@ -191,6 +202,7 @@ export async function listExperiments(): Promise<
 
 export async function createExperiment(
   input: CreateExperimentRequest,
+  ownerId?: string | null,
 ): Promise<PerceptionExperiment> {
   const { data, error } = await supabaseAdmin
     .from("perception_experiments")
@@ -200,6 +212,7 @@ export async function createExperiment(
       hidden_target: input.hiddenTarget,
       instructions: input.instructions ?? "",
       status: "draft",
+      owner_id: ownerId ?? null,
     })
     .select("*")
     .single();
@@ -400,7 +413,10 @@ export async function closeExperiment(id: string): Promise<PerceptionExperiment>
 // description, instructions and hidden target, and clones every stimulus
 // image object inside the private storage bucket so the original and the
 // copy stay independent. Sessions and responses are never copied.
-export async function duplicateExperiment(id: string): Promise<PerceptionExperiment> {
+export async function duplicateExperiment(
+  id: string,
+  ownerId?: string | null,
+): Promise<PerceptionExperiment> {
   const { data: src, error: qe } = await supabaseAdmin
     .from("perception_experiments")
     .select("*")
@@ -418,6 +434,7 @@ export async function duplicateExperiment(id: string): Promise<PerceptionExperim
       hidden_target: source.hiddenTarget,
       instructions: source.instructions,
       status: "draft",
+      owner_id: ownerId ?? null,
     })
     .select("*")
     .single();

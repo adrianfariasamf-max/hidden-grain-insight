@@ -114,7 +114,7 @@ function ParticipantLanding() {
           ...(isTestSession ? { test: true, testSource: "url_or_webdriver" } : {}),
         },
       };
-      const res = await fetch(`${API_BASE}/experiments/${experimentId}/sessions`, {
+      const res = await fetch(`${API_BASE}/public/experiments/${experimentId}/sessions`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),
@@ -124,7 +124,7 @@ function ParticipantLanding() {
       const session = (await res.json()) as { publicToken: string };
       // Consent acceptance is best-effort; the session row already exists.
       try {
-        await fetch(`${API_BASE}/sessions/${session.publicToken}/consent`, {
+        await fetch(`${API_BASE}/public/sessions/${session.publicToken}/consent`, {
           method: "POST",
           keepalive: true,
         });

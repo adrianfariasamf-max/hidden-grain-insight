@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { submitResponseSchema } from "@/lib/perception/schemas";
 
-export const Route = createFileRoute("/api/sessions/$token/responses")({
+export const Route = createFileRoute("/api/public/sessions/$token/responses")({
   server: {
     handlers: {
       GET: async ({ params }) => {
