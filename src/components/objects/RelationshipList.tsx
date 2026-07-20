@@ -8,14 +8,14 @@ interface RelationshipListProps {
   title: string;
   relationships: Relationship[];
   currentId: KnowledgeObjectId;
-  vacíoLabel: string;
+  emptyLabel: string;
 }
 
 export function RelationshipList({
   title,
   relationships,
   currentId,
-  vacíoLabel,
+  emptyLabel,
 }: RelationshipListProps) {
   return (
     <section className="flex flex-col gap-3">
@@ -24,7 +24,7 @@ export function RelationshipList({
         <span className="font-mono text-[11px] text-muted-foreground">{relationships.length}</span>
       </header>
       {relationships.length === 0 ? (
-        <EmptyState title={vacíoLabel} />
+        <EmptyState title={emptyLabel} />
       ) : (
         <ul className="flex flex-col gap-2">
           {relationships.map((rel) => (

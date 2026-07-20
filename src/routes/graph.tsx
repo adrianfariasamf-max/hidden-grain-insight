@@ -419,12 +419,12 @@ function GraphRoute() {
               </header>
               <GraphNodeList
                 nodes={visibleNodes}
-                vacíoLabel={
+                emptyLabel={
                   graph.nodeCount === 0
-                    ? "No nodes in the graph"
+                    ? "No hay nodos en el grafo"
                     : filtersActive
-                      ? "No nodes match the current filters"
-                      : "No nodes to display"
+                      ? "Ningún nodo coincide con los filtros"
+                      : "No hay nodos que mostrar"
                 }
                 vacíoDescription={
                   graph.nodeCount === 0
@@ -456,12 +456,12 @@ function GraphRoute() {
               <GraphEdgeList
                 relationships={visibleRelationships}
                 knownNodeIds={knownNodeIds}
-                vacíoLabel={
+                emptyLabel={
                   graph.edgeCount === 0
-                    ? "No relationships in the graph"
+                    ? "No hay relaciones en el grafo"
                     : filtersActive
-                      ? "No relationships match the current filters"
-                      : "No relationships to display"
+                      ? "Ninguna relación coincide con los filtros"
+                      : "No hay relaciones que mostrar"
                 }
                 vacíoDescription={
                   graph.edgeCount === 0
