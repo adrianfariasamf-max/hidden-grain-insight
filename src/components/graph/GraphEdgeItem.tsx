@@ -3,9 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
-import { Nivel de confianzaBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
+import { ConfidenceBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
 import type { KnowledgeObjectId } from "@/lib/api/types";
-import { getRelationshipTipoDescriptor, type Relationship } from "@/lib/domain";
+import { getRelationshipTypeDescriptor, type Relationship } from "@/lib/domain";
 
 interface GraphEdgeItemProps {
   relationship: Relationship;
@@ -56,7 +56,7 @@ function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
   const sourceNavigable = resolved || knownNodeIds.has(relationship.sourceId);
   const targetNavigable = resolved || knownNodeIds.has(relationship.targetId);
   const description = relationship.metadata.description;
-  const typeDescriptor = getRelationshipTipoDescriptor(relationship.type);
+  const typeDescriptor = getRelationshipTypeDescriptor(relationship.type);
 
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border/60 bg-card/60 p-3">
@@ -71,7 +71,7 @@ function GraphEdgeItemImpl({ relationship, knownNodeIds }: GraphEdgeItemProps) {
         </span>
         <ResolutionBadge resolved={resolved} />
         <ProvenanceBadge relationship={relationship} />
-        <Nivel de confianzaBadge relationship={relationship} />
+        <ConfidenceBadge relationship={relationship} />
       </div>
 
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm">

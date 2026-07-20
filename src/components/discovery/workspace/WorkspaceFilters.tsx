@@ -5,16 +5,16 @@ import { cn } from "@/lib/utils";
 import {
   DISCOVERY_ACTION_CATALOG,
   countActiveDescubrimientosFilters,
-  listInsightTipos,
+  listInsightTypes,
   type DescubrimientosFilters,
   type DescubrimientosSortMode,
-  type InsightCategoría,
+  type InsightCategory,
   type InsightPriority,
-  type InsightTipo,
+  type InsightType,
 } from "@/lib/domain/discovery";
 
 const PRIORITY_OPTIONS: InsightPriority[] = ["critical", "high", "medium", "low", "info"];
-const CATEGORY_OPTIONS: InsightCategoría[] = [
+const CATEGORY_OPTIONS: InsightCategory[] = [
   "connectivity",
   "structural",
   "quality",
@@ -55,7 +55,7 @@ function WorkspaceFiltersImpl({
   totalCount,
 }: WorkspaceFiltersProps) {
   const activeCount = countActiveDescubrimientosFilters(filters);
-  const typeCatalog = listInsightTipos();
+  const typeCatalog = listInsightTypes();
 
   const handleQuery = useCallback(
     (value: string) => onFiltersChange({ ...filters, query: value }),
@@ -121,11 +121,11 @@ function WorkspaceFiltersImpl({
         {typeCatalog.map((t) => (
           <Chip
             key={t.id}
-            active={filters.types.has(t.id as InsightTipo)}
+            active={filters.types.has(t.id as InsightType)}
             onClick={() =>
               onFiltersChange({
                 ...filters,
-                types: toggleSet(filters.types, t.id as InsightTipo),
+                types: toggleSet(filters.types, t.id as InsightType),
               })
             }
             title={t.description}

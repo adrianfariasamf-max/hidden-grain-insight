@@ -152,13 +152,13 @@ function ObjectDetailBody({
   graphView?: KnowledgeObject;
 }) {
   const { relationships } = data;
-  const hasEtiquetas = object.tags.length > 0;
+  const hasTags = object.tags.length > 0;
   const keywords = object.metadata.keywords;
-  const hasPalabras clave = keywords.length > 0;
+  const hasKeywords = keywords.length > 0;
   const version = getDisplayVersion(object);
   const category = object.metadata.category;
-  const graphCategoría = graphView?.metadata.category;
-  const graphTipo = graphView?.type;
+  const graphCategory = graphView?.metadata.category;
+  const graphType = graphView?.type;
   const checksum = object.metadata.checksum;
   const path = object.metadata.path ?? object.source;
   const relationshipCount = object.metadata.relationshipCount ?? data.object.relationshipCount;
@@ -237,7 +237,7 @@ function ObjectDetailBody({
             <CreateRelationshipDialog sourceObjectId={object.id} sourceTitle={object.title} />
           </div>
         </header>
-        <RelationshipsResumen summary={summary} />
+        <RelationshipsSummary summary={summary} />
         <RelationshipsFilter value={filter} onChange={setFilter} summary={summary} />
         {summary.total === 0 ? (
           <EmptyState
@@ -274,19 +274,19 @@ function ObjectDetailBody({
           {path ? <MetaRow label="Path" value={path} mono /> : null}
           {graphView ? (
             <>
-              {graphTipo ? <MetaRow label="Graph type" value={graphTipo} mono /> : null}
-              {graphCategoría ? <MetaRow label="Graph category" value={graphCategoría} mono /> : null}
+              {graphType ? <MetaRow label="Graph type" value={graphType} mono /> : null}
+              {graphCategory ? <MetaRow label="Graph category" value={graphCategory} mono /> : null}
             </>
           ) : null}
         </dl>
       </section>
 
       {/* Etiquetas & keywords */}
-      {hasEtiquetas || hasPalabras clave ? (
+      {hasTags || hasKeywords ? (
         <section className="flex flex-col gap-4">
           <h2 className="text-lg font-semibold text-foreground">Etiquetas &amp; keywords</h2>
-          {hasEtiquetas ? <TagCloud label="Etiquetas" items={object.tags} /> : null}
-          {hasPalabras clave ? <TagCloud label="Palabras clave" items={keywords} /> : null}
+          {hasTags ? <TagCloud label="Etiquetas" items={object.tags} /> : null}
+          {hasKeywords ? <TagCloud label="Palabras clave" items={keywords} /> : null}
         </section>
       ) : null}
 
@@ -323,7 +323,7 @@ function TagCloud({ label, items }: { label: string; items: readonly string[] })
   );
 }
 
-interface RelationshipsResumenData {
+interface RelationshipsSummaryData {
   outgoingCount: number;
   backlinksCount: number;
   total: number;
@@ -331,17 +331,17 @@ interface RelationshipsResumenData {
   droppedDuplicates: number;
 }
 
-function RelationshipsResumen({ summary }: { summary: RelationshipsResumenData }) {
+function RelationshipsSummary({ summary }: { summary: RelationshipsSummaryData }) {
   return (
     <dl
       className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground"
       aria-label="Relationships summary"
     >
-      <ResumenChip label="Total" value={summary.total} />
-      <ResumenChip label="Outgoing" value={summary.outgoingCount} />
-      <ResumenChip label="Backlinks" value={summary.backlinksCount} />
+      <SummaryChip label="Total" value={summary.total} />
+      <SummaryChip label="Outgoing" value={summary.outgoingCount} />
+      <SummaryChip label="Backlinks" value={summary.backlinksCount} />
       {summary.unresolved > 0 ? (
-        <ResumenChip label="Unresolved" value={summary.unresolved} tone="warning" />
+        <SummaryChip label="Unresolved" value={summary.unresolved} tone="warning" />
       ) : null}
       {summary.droppedDuplicates > 0 ? (
         <span className="text-[10px] italic text-muted-foreground">
@@ -352,7 +352,7 @@ function RelationshipsResumen({ summary }: { summary: RelationshipsResumenData }
   );
 }
 
-function ResumenChip({
+function SummaryChip({
   label,
   value,
   tone = "neutral",
@@ -379,7 +379,7 @@ function RelationshipsFilter({
 }: {
   value: RelationshipsFilterValue;
   onChange: (next: RelationshipsFilterValue) => void;
-  summary: RelationshipsResumenData;
+  summary: RelationshipsSummaryData;
 }) {
   const options: { key: RelationshipsFilterValue; label: string; count: number }[] = [
     { key: "all", label: "All", count: summary.total },

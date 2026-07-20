@@ -27,7 +27,7 @@ import {
   type KnowledgeObject,
   type ProvenanceFilterValue,
   type Relationship,
-  type RelationshipCategoría,
+  type RelationshipCategory,
   type RelationshipStatus,
 } from "@/lib/domain";
 import { countActiveFilters, toGraphQueryParams, type SearchQuery } from "@/lib/domain/search";
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/graph")({
 });
 
 const INITIAL_FILTERS: GraphFilterValues = {
-  nodeTipo: "",
+  nodeType: "",
   resolution: "all",
 };
 
@@ -75,19 +75,19 @@ function GraphRoute() {
   // backend advertises support. Today the contract still returns the full
   // projection so we intentionally call `graphQuery()` without params and
   // keep local, in-memory filtering. The mapping is:
-  //   objectTipos[0]        → nodeTipo
-  //   relationshipTipos[0]  → edgeTipo
+  //   objectTypes[0]        → nodeType
+  //   relationshipTypes[0]  → edgeType
   //   status ({r}|{u} only) → resolution
   //   categories, provenance, multi-select, min-confidence, unknown policy
   //     → NOT SENT (not part of the current wire contract; applied locally).
   const query = useQuery(graphQuery());
   const [filters, setFilters] = useState<GraphFilterValues>(INITIAL_FILTERS);
-  const [selectedTipoIds, setSelectedTipoIds] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<RelationshipCategoría[]>([]);
+  const [selectedTypeIds, setSelectedTypeIds] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<RelationshipCategory[]>([]);
   const [selectedProvenances, setSelectedProvenances] = useState<ProvenanceFilterValue[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<RelationshipStatus[]>([]);
-  const [minLevel de confianzaPct, setMinLevel de confianzaPct] = useState(0);
-  const [unknownLevel de confianzaPolicy, setUnknownLevel de confianzaPolicy] = useState<"include" | "exclude">(
+  const [minConfidencePct, setMinConfidencePct] = useState(0);
+  const [unknownConfidencePolicy, setUnknownConfidencePolicy] = useState<"include" | "exclude">(
     "include",
   );
   const [nodeLimit, setNodeLimit] = useState(RENDER_CAP_INITIAL);
@@ -105,26 +105,26 @@ function GraphRoute() {
   }, []);
   const clearAllFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS);
-    setSelectedTipoIds([]);
+    setSelectedTypeIds([]);
     setSelectedCategories([]);
     setSelectedProvenances([]);
     setSelectedStatuses([]);
-    setMinLevel de confianzaPct(0);
-    setUnknownLevel de confianzaPolicy("include");
+    setMinConfidencePct(0);
+    setUnknownConfidencePolicy("include");
     setNodeLimit(RENDER_CAP_INITIAL);
     setEdgeLimit(RENDER_CAP_INITIAL);
   }, []);
-  const toggleTipo = useCallback(
+  const toggleType = useCallback(
     (id: string) => {
-      setSelectedTipoIds((prev) =>
+      setSelectedTypeIds((prev) =>
         prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
       );
       resetCaps();
     },
     [resetCaps],
   );
-  const toggleCategoría = useCallback(
-    (c: RelationshipCategoría) => {
+  const toggleCategory = useCallback(
+    (c: RelationshipCategory) => {
       setSelectedCategories((prev) =>
         prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
       );
@@ -133,7 +133,7 @@ function GraphRoute() {
     [resetCaps],
   );
   const clearOntologyFilters = useCallback(() => {
-    setSelectedTipoIds([]);
+    setSelectedTypeIds([]);
     setSelectedCategories([]);
     resetCaps();
   }, [resetCaps]);
@@ -155,16 +155,16 @@ function GraphRoute() {
     },
     [resetCaps],
   );
-  const changeMinLevel de confianza = useCallback(
+  const changeMinConfidence = useCallback(
     (pct: number) => {
-      setMinLevel de confianzaPct(Math.min(100, Math.max(0, pct)));
+      setMinConfidencePct(Math.min(100, Math.max(0, pct)));
       resetCaps();
     },
     [resetCaps],
   );
   const changeUnknownPolicy = useCallback(
     (p: "include" | "exclude") => {
-      setUnknownLevel de confianzaPolicy(p);
+      setUnknownConfidencePolicy(p);
       resetCaps();
     },
     [resetCaps],
@@ -172,14 +172,14 @@ function GraphRoute() {
   const clearTrustFilters = useCallback(() => {
     setSelectedProvenances([]);
     setSelectedStatuses([]);
-    setMinLevel de confianzaPct(0);
-    setUnknownLevel de confianzaPolicy("include");
+    setMinConfidencePct(0);
+    setUnknownConfidencePolicy("include");
     resetCaps();
   }, [resetCaps]);
 
   const graph = query.data;
 
-  const nodeTipos = useMemo(
+  const nodeTypes = useMemo(
     () => uniqueSorted((graph?.nodes ?? []).map((n) => n.type)),
     [graph?.nodes],
   );
@@ -193,9 +193,9 @@ function GraphRoute() {
   );
 
   const filteredNodes = useMemo<KnowledgeObject[]>(() => {
-    if (!filters.nodeTipo) return canonicalNodes;
-    return canonicalNodes.filter((n) => n.type === filters.nodeTipo);
-  }, [canonicalNodes, filters.nodeTipo]);
+    if (!filters.nodeType) return canonicalNodes;
+    return canonicalNodes.filter((n) => n.type === filters.nodeType);
+  }, [canonicalNodes, filters.nodeType]);
 
   // Normalize wire edges → canonical Relationships once. Identity is stable
   // across filter changes so `memo(GraphEdgeItem)` stays effective.
@@ -216,7 +216,7 @@ function GraphRoute() {
   // Trust summary drives the visibility of the trust filter surface and
   // the trust panel. Computed from the FULL dataset (see comment above
   // for the same reason as the ontology summary).
-  const trustResumen = useMemo(
+  const trustSummary = useMemo(
     () => summarizeRelationshipTrust(canonicalRelationships),
     [canonicalRelationships],
   );
@@ -225,10 +225,10 @@ function GraphRoute() {
   const ontologyPredicate = useMemo(
     () =>
       buildRelationshipOntologyPredicate({
-        typeIds: selectedTipoIds,
+        typeIds: selectedTypeIds,
         categories: selectedCategories,
       }),
-    [selectedTipoIds, selectedCategories],
+    [selectedTypeIds, selectedCategories],
   );
 
   const trustPredicate = useMemo(
@@ -236,10 +236,10 @@ function GraphRoute() {
       buildRelationshipTrustPredicate({
         provenances: selectedProvenances,
         statuses: selectedStatuses,
-        minLevel de confianza: minLevel de confianzaPct / 100,
-        unknownLevel de confianzaPolicy,
+        minConfidence: minConfidencePct / 100,
+        unknownConfidencePolicy,
       }),
-    [selectedProvenances, selectedStatuses, minLevel de confianzaPct, unknownLevel de confianzaPolicy],
+    [selectedProvenances, selectedStatuses, minConfidencePct, unknownConfidencePolicy],
   );
 
   const filteredRelationships = useMemo<Relationship[]>(() => {
@@ -259,7 +259,7 @@ function GraphRoute() {
     });
   }, [canonicalRelationships, filters.resolution, ontologyPredicate, trustPredicate]);
 
-  const filteredResumen = useMemo(
+  const filteredSummary = useMemo(
     () => summarizeRelationships(filteredRelationships),
     [filteredRelationships],
   );
@@ -288,31 +288,31 @@ function GraphRoute() {
   const showMoreNodes = useCallback(() => setNodeLimit((n) => n + RENDER_CAP_STEP), []);
   const showMoreEdges = useCallback(() => setEdgeLimit((n) => n + RENDER_CAP_STEP), []);
 
-  const ontologyActive = selectedTipoIds.length > 0 || selectedCategories.length > 0;
+  const ontologyActive = selectedTypeIds.length > 0 || selectedCategories.length > 0;
   const trustActive =
-    selectedProvenances.length > 0 || selectedStatuses.length > 0 || minLevel de confianzaPct > 0;
+    selectedProvenances.length > 0 || selectedStatuses.length > 0 || minConfidencePct > 0;
   const filtersActive =
-    filters.nodeTipo !== "" || filters.resolution !== "all" || ontologyActive || trustActive;
+    filters.nodeType !== "" || filters.resolution !== "all" || ontologyActive || trustActive;
   const activeFilterCount =
-    (filters.nodeTipo !== "" ? 1 : 0) +
+    (filters.nodeType !== "" ? 1 : 0) +
     (filters.resolution !== "all" ? 1 : 0) +
-    selectedTipoIds.length +
+    selectedTypeIds.length +
     selectedCategories.length +
     selectedProvenances.length +
     selectedStatuses.length +
-    (minLevel de confianzaPct > 0 ? 1 : 0);
+    (minConfidencePct > 0 ? 1 : 0);
 
   // Canonical projection: every mapped Graph filter dimension is exposed
   // as a single, normalized `SearchQuery`. This is the SAME model used by
   // Explorador — Graph does not maintain a parallel search abstraction, it
   // just projects its per-filter UI state into the canonical shape.
-  // `minLevel de confianzaPct` and `unknownLevel de confianzaPolicy` are trust-panel
+  // `minConfidencePct` and `unknownConfidencePolicy` are trust-panel
   // ancillary controls and are intentionally NOT part of SearchQuery: they
   // are not declared search dimensions in the current domain model.
   const derivedSearchQuery = useMemo<SearchQuery>(() => {
     const q: SearchQuery = {};
-    if (filters.nodeTipo) q.objectTipos = [filters.nodeTipo];
-    if (selectedTipoIds.length > 0) q.relationshipTipos = selectedTipoIds;
+    if (filters.nodeType) q.objectTypes = [filters.nodeType];
+    if (selectedTypeIds.length > 0) q.relationshipTypes = selectedTypeIds;
     if (selectedCategories.length > 0) q.categories = selectedCategories;
     if (selectedProvenances.length > 0) {
       q.provenance = selectedProvenances.filter((p) => p !== PROVENANCE_NOT_SPECIFIED);
@@ -323,9 +323,9 @@ function GraphRoute() {
     if (statusList.length > 0) q.status = statusList;
     return q;
   }, [
-    filters.nodeTipo,
+    filters.nodeType,
     filters.resolution,
-    selectedTipoIds,
+    selectedTypeIds,
     selectedCategories,
     selectedProvenances,
     selectedStatuses,
@@ -336,9 +336,9 @@ function GraphRoute() {
 
   // Active-filter tally sourced from the canonical Search domain. The
   // legacy per-dimension tally (`activeFilterCount` above) is kept only
-  // for the existing `GraphRelationshipResumen` line; the top-level
+  // for the existing `GraphRelationshipSummary` line; the top-level
   // ActiveFiltersBar uses the domain count + the confidence extras.
-  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minLevel de confianzaPct > 0 ? 1 : 0);
+  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minConfidencePct > 0 ? 1 : 0);
 
   return (
     <>
@@ -358,7 +358,7 @@ function GraphRoute() {
 
             <GraphFilters
               values={filters}
-              options={{ nodeTipos }}
+              options={{ nodeTypes }}
               onChange={patchFilters}
               onClearAll={clearAllFilters}
               hasAnyActiveFilters={filtersActive}
@@ -372,33 +372,33 @@ function GraphRoute() {
 
             <RelationshipOntologyFilter
               summary={summary}
-              selectedTipoIds={selectedTipoIds}
+              selectedTypeIds={selectedTypeIds}
               selectedCategories={selectedCategories}
-              onToggleTipo={toggleTipo}
-              onToggleCategoría={toggleCategoría}
+              onToggleType={toggleType}
+              onToggleCategory={toggleCategory}
               onClear={clearOntologyFilters}
             />
 
             <RelationshipTrustFilter
-              summary={trustResumen}
+              summary={trustSummary}
               selectedProvenances={selectedProvenances}
               selectedStatuses={selectedStatuses}
-              minLevel de confianzaPct={minLevel de confianzaPct}
-              unknownLevel de confianzaPolicy={unknownLevel de confianzaPolicy}
+              minConfidencePct={minConfidencePct}
+              unknownConfidencePolicy={unknownConfidencePolicy}
               onToggleProvenance={toggleProvenance}
               onToggleStatus={toggleStatus}
-              onChangeMinLevel de confianza={changeMinLevel de confianza}
+              onChangeMinConfidence={changeMinConfidence}
               onChangeUnknownPolicy={changeUnknownPolicy}
               onClear={clearTrustFilters}
             />
 
-            <TrustPanel summary={trustResumen} />
+            <TrustPanel summary={trustSummary} />
 
-            <GraphRelationshipResumen
+            <GraphRelationshipSummary
               visible={filteredRelationships.length}
               total={canonicalRelationships.length}
-              visibleTipos={filteredResumen.types.length}
-              totalTipos={summary.types.length}
+              visibleTypes={filteredSummary.types.length}
+              totalTypes={summary.types.length}
               activeFilters={activeFilterCount}
             />
 
@@ -535,30 +535,30 @@ function ShowMore({ visible, total, onClick, label }: ShowMoreProps) {
   );
 }
 
-interface GraphRelationshipResumenProps {
+interface GraphRelationshipSummaryProps {
   visible: number;
   total: number;
-  visibleTipos: number;
-  totalTipos: number;
+  visibleTypes: number;
+  totalTypes: number;
   activeFilters: number;
 }
 
 /** Compact summary panel that reports how the current filter state
  *  reduces the full dataset. Numbers come from the same summarizer used
  *  by the legend, so counts are always consistent. */
-function GraphRelationshipResumen({
+function GraphRelationshipSummary({
   visible,
   total,
-  visibleTipos,
-  totalTipos,
+  visibleTypes,
+  totalTypes,
   activeFilters,
-}: GraphRelationshipResumenProps) {
+}: GraphRelationshipSummaryProps) {
   return (
     <p className="text-[11px] text-muted-foreground" aria-live="polite" role="status">
       <span className="font-mono text-foreground">{visible}</span> of{" "}
       <span className="font-mono text-foreground">{total}</span> relationships visible ·{" "}
-      <span className="font-mono text-foreground">{visibleTipos}</span> of{" "}
-      <span className="font-mono text-foreground">{totalTipos}</span> types ·{" "}
+      <span className="font-mono text-foreground">{visibleTypes}</span> of{" "}
+      <span className="font-mono text-foreground">{totalTypes}</span> types ·{" "}
       <span className="font-mono text-foreground">{activeFilters}</span> filter
       {activeFilters === 1 ? "" : "s"} active
     </p>
@@ -571,8 +571,8 @@ function GraphRelationshipResumen({
  * do not declare provenance/confidence. When the backend starts emitting
  * these fields, the panel lights up automatically.
  */
-function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipTrustResumen }) {
-  if (!summary.hasProvenance && !summary.hasLevel de confianza && !summary.hasMeaningfulStatus) return null;
+function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipTrustSummary }) {
+  if (!summary.hasProvenance && !summary.hasConfidence && !summary.hasMeaningfulStatus) return null;
   return (
     <section
       aria-labelledby="graph-trust-panel-heading"
@@ -585,15 +585,15 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
         Trust summary
       </h3>
       <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
-        {summary.hasLevel de confianza ? (
+        {summary.hasConfidence ? (
           <>
             <div className="inline-flex items-baseline gap-1.5">
               <dt className="uppercase tracking-wide">With confidence</dt>
-              <dd className="font-mono text-xs text-foreground">{summary.withLevel de confianza}</dd>
+              <dd className="font-mono text-xs text-foreground">{summary.withConfidence}</dd>
             </div>
             <div className="inline-flex items-baseline gap-1.5">
               <dt className="uppercase tracking-wide">Without</dt>
-              <dd className="font-mono text-xs text-foreground">{summary.withoutLevel de confianza}</dd>
+              <dd className="font-mono text-xs text-foreground">{summary.withoutConfidence}</dd>
             </div>
           </>
         ) : null}

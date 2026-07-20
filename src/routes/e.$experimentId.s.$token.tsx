@@ -145,11 +145,11 @@ function StimulusView({
   submit: (input: SubmitResponseRequest) => Promise<StimulusResponse>;
   onSubmitted: (last: boolean) => void | Promise<void>;
 }) {
-  const [observation, setObservación] = useState("");
-  const [attention, setElementos que llamaron la atención] = useState("");
-  const [feeling, setSensación] = useState("");
-  const [interpretation, setInterpretación] = useState("");
-  const [confidence, setLevel de confianza] = useState<number | null>(null);
+  const [observation, setObservation] = useState("");
+  const [attention, setAttention] = useState("");
+  const [feeling, setFeeling] = useState("");
+  const [interpretation, setInterpretation] = useState("");
+  const [confidence, setConfidence] = useState<number | null>(null);
   const [firstViewedAt] = useState(() => new Date().toISOString());
   const [error, setError] = useState<string | null>(null);
 
@@ -219,7 +219,7 @@ function StimulusView({
           <Textarea
             id="q-observation"
             value={observation}
-            onChange={(e) => setObservación(e.target.value)}
+            onChange={(e) => setObservation(e.target.value)}
             rows={3}
             required
           />
@@ -233,7 +233,7 @@ function StimulusView({
           <Textarea
             id="q-attention"
             value={attention}
-            onChange={(e) => setElementos que llamaron la atención(e.target.value)}
+            onChange={(e) => setAttention(e.target.value)}
             rows={2}
             required
           />
@@ -243,7 +243,7 @@ function StimulusView({
           <Textarea
             id="q-feeling"
             value={feeling}
-            onChange={(e) => setSensación(e.target.value)}
+            onChange={(e) => setFeeling(e.target.value)}
             rows={2}
             required
           />
@@ -257,7 +257,7 @@ function StimulusView({
           <Textarea
             id="q-interpretation"
             value={interpretation}
-            onChange={(e) => setInterpretación(e.target.value)}
+            onChange={(e) => setInterpretation(e.target.value)}
             rows={2}
             required
           />
@@ -277,7 +277,7 @@ function StimulusView({
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => setLevel de confianza(active ? null : n)}
+                  onClick={() => setConfidence(active ? null : n)}
                   className={`h-9 flex-1 rounded-md border text-sm transition-colors ${
                     active
                       ? "border-primary bg-primary/15 text-primary"

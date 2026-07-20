@@ -2,12 +2,12 @@ import { memo, useMemo } from "react";
 
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
 import {
-  groupInsightsByCategoría,
+  groupInsightsByCategory,
   groupInsightsByPriority,
   rankInsights,
   toInsightViewModel,
   type DescubrimientosInsight,
-  type InsightCategoría,
+  type InsightCategory,
   type InsightPriority,
 } from "@/lib/domain/discovery";
 
@@ -39,7 +39,7 @@ function DescubrimientosFeedImpl({
       return { kind: "priority" as const, buckets: groupInsightsByPriority(insights) };
     }
     if (grouping === "category") {
-      return { kind: "category" as const, buckets: groupInsightsByCategoría(insights) };
+      return { kind: "category" as const, buckets: groupInsightsByCategory(insights) };
     }
     return null;
   }, [grouping, insights]);
@@ -50,9 +50,9 @@ function DescubrimientosFeedImpl({
 
   if (grouped) {
     // Selectors already emit buckets in deterministic order — we only iterate.
-    const entries: Array<[InsightPriority | InsightCategoría, DescubrimientosInsight[]]> = [];
+    const entries: Array<[InsightPriority | InsightCategory, DescubrimientosInsight[]]> = [];
     grouped.buckets.forEach((bucket, key) => {
-      entries.push([key as InsightPriority | InsightCategoría, bucket]);
+      entries.push([key as InsightPriority | InsightCategory, bucket]);
     });
     return (
       <div className="flex flex-col gap-6">

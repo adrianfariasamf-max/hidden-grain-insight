@@ -27,10 +27,10 @@ import { ApiError } from "@/lib/api/errors";
 import { createRelationshipMutation } from "@/lib/api/mutations";
 import { objectListQuery } from "@/lib/api/queries";
 import { CreateRelationshipRequestSchema } from "@/lib/api/schemas";
-import type { CreateRelationshipRequest, KnowledgeObjectResumen } from "@/lib/api/types";
+import type { CreateRelationshipRequest, KnowledgeObjectSummary } from "@/lib/api/types";
 import {
-  compareRelationshipTipos,
-  listRelationshipTipos,
+  compareRelationshipTypes,
+  listRelationshipTypes,
 } from "@/lib/domain/relationship-ontology";
 
 type FieldErrors = Partial<
@@ -83,15 +83,15 @@ function CreateRelationshipForm({
   const qc = useQueryClient();
   const mutation = useMutation(createRelationshipMutation(qc));
 
-  const ontology = useMemo(() => [...listRelationshipTipos()].sort(compareRelationshipTipos), []);
+  const ontology = useMemo(() => [...listRelationshipTypes()].sort(compareRelationshipTypes), []);
 
   const [targetQuery, setTargetQuery] = useState("");
   const [targetObjectId, setTargetObjectId] = useState<string>("");
   const [targetLabel, setTargetLabel] = useState<string>("");
-  const [type, setTipo] = useState<string>("");
+  const [type, setType] = useState<string>("");
   const [description, setDescription] = useState("");
   const [provenance, setProvenance] = useState("");
-  const [confidence, setLevel de confianza] = useState<string>("");
+  const [confidence, setConfidence] = useState<string>("");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -105,7 +105,7 @@ function CreateRelationshipForm({
 
   const results = search.data?.items ?? [];
 
-  const pickTarget = (obj: KnowledgeObjectResumen) => {
+  const pickTarget = (obj: KnowledgeObjectSummary) => {
     setTargetObjectId(obj.id);
     setTargetLabel(obj.title);
     setTargetQuery(obj.title);
@@ -235,7 +235,7 @@ function CreateRelationshipForm({
         <Label htmlFor="rel-type">
           Tipo <span className="text-destructive">*</span>
         </Label>
-        <Select value={type} onValueChange={setTipo} disabled={disabled}>
+        <Select value={type} onValueChange={setType} disabled={disabled}>
           <SelectTrigger id="rel-type">
             <SelectValue placeholder="Select a relationship type…" />
           </SelectTrigger>
@@ -285,7 +285,7 @@ function CreateRelationshipForm({
           <Input
             id="rel-conf"
             value={confidence}
-            onChange={(e) => setLevel de confianza(e.target.value)}
+            onChange={(e) => setConfidence(e.target.value)}
             disabled={disabled}
             inputMode="decimal"
             placeholder="0.0 – 1.0"
@@ -337,9 +337,9 @@ function TargetResults({
   enabled: boolean;
   isLoading: boolean;
   isError: boolean;
-  results: readonly KnowledgeObjectResumen[];
+  results: readonly KnowledgeObjectSummary[];
   excludeId: string;
-  onPick: (obj: KnowledgeObjectResumen) => void;
+  onPick: (obj: KnowledgeObjectSummary) => void;
 }) {
   if (!enabled) {
     return <p className="text-[11px] text-muted-foreground">Tipo to search Objetos de conocimiento.</p>;

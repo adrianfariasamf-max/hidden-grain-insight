@@ -2,13 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { ResolutionBadge } from "@/components/shared/ResolutionBadge";
-import { Nivel de confianzaBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
+import { ConfidenceBadge, ProvenanceBadge } from "@/components/shared/TrustBadges";
 import type { KnowledgeObjectId } from "@/lib/api/types";
 import {
   getRelatedEndpointId,
   getRelationshipDirectionIcon,
   getRelationshipDirectionLabel,
-  getRelationshipTipoDescriptor,
+  getRelationshipTypeDescriptor,
   isRelatedEndpointNavigable,
   type Relationship,
 } from "@/lib/domain";
@@ -43,7 +43,7 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
   const isSelfReference = resolved && Boolean(relatedId) && relatedId === currentId;
   const isNavigable = isRelatedEndpointNavigable(rel, currentId);
   const description = rel.metadata.description;
-  const typeDescriptor = getRelationshipTipoDescriptor(rel.type);
+  const typeDescriptor = getRelationshipTypeDescriptor(rel.type);
 
   const relatedNode = (
     <span className="inline-flex min-w-0 items-center gap-1">
@@ -69,7 +69,7 @@ export function RelationshipItem({ relationship, currentId }: RelationshipItemPr
         {directionLabel ? <span>{directionLabel}</span> : null}
         <ResolutionBadge resolved={resolved} />
         <ProvenanceBadge relationship={rel} />
-        <Nivel de confianzaBadge relationship={rel} />
+        <ConfidenceBadge relationship={rel} />
       </div>
 
       <div className="min-w-0 text-sm">

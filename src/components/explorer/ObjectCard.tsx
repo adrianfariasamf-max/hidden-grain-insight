@@ -15,7 +15,7 @@ interface ObjectCardProps {
  * The whole card links to /objects/:id.
  */
 export function ObjectCard({ object }: ObjectCardProps) {
-  const hasEtiquetas = object.tags.length > 0;
+  const hasTags = object.tags.length > 0;
   const version = getDisplayVersion(object);
   const relCount = getRelationshipCount(object);
 
@@ -56,7 +56,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
             {relCount}
           </span>
         ) : null}
-        {hasEtiquetas ? (
+        {hasTags ? (
           <span className="ml-auto flex flex-wrap gap-1">
             {object.tags.slice(0, 4).map((t) => (
               <span

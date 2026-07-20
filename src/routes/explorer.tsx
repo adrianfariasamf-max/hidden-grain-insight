@@ -61,7 +61,7 @@ function searchQueryFromUrl(input: ExploradorSearch): SearchQuery {
     pagination: { offset: input.offset, limit: normalizeLimit(input.limit) },
   };
   if (input.q) q.text = input.q;
-  if (input.type) q.objectTipos = [input.type];
+  if (input.type) q.objectTypes = [input.type];
   if (input.category) q.categories = [input.category];
   if (input.status) q.status = [input.status];
   return q;

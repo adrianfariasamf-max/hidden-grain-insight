@@ -20,25 +20,25 @@ import { Check, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
-  getLevel de confianzaClassLabel,
+  getConfidenceClassLabel,
   PROVENANCE_NOT_SPECIFIED,
   type ProvenanceFilterValue,
   type RelationshipStatus,
-  type RelationshipTrustResumen,
+  type RelationshipTrustSummary,
 } from "@/lib/domain";
 
 interface RelationshipTrustFilterProps {
-  summary: RelationshipTrustResumen;
+  summary: RelationshipTrustSummary;
   selectedProvenances: readonly ProvenanceFilterValue[];
   selectedStatuses: readonly RelationshipStatus[];
   /** Minimum confidence in percentage points (0..100). 0 = no threshold. */
-  minLevel de confianzaPct: number;
+  minConfidencePct: number;
   /** How relationships without a declared confidence are treated when
    *  the threshold is > 0. */
-  unknownLevel de confianzaPolicy: "include" | "exclude";
+  unknownConfidencePolicy: "include" | "exclude";
   onToggleProvenance: (id: ProvenanceFilterValue) => void;
   onToggleStatus: (id: RelationshipStatus) => void;
-  onChangeMinLevel de confianza: (pct: number) => void;
+  onChangeMinConfidence: (pct: number) => void;
   onChangeUnknownPolicy: (policy: "include" | "exclude") => void;
   onClear: () => void;
 }
@@ -47,11 +47,11 @@ export function RelationshipTrustFilter({
   summary,
   selectedProvenances,
   selectedStatuses,
-  minLevel de confianzaPct,
-  unknownLevel de confianzaPolicy,
+  minConfidencePct,
+  unknownConfidencePolicy,
   onToggleProvenance,
   onToggleStatus,
-  onChangeMinLevel de confianza,
+  onChangeMinConfidence,
   onChangeUnknownPolicy,
   onClear,
 }: RelationshipTrustFilterProps) {
@@ -61,7 +61,7 @@ export function RelationshipTrustFilter({
 
   const showProvenance = summary.hasProvenance;
   const showStatus = summary.hasMeaningfulStatus;
-  const showLevel de confianza = summary.hasLevel de confianza;
+  const showConfidence = summary.hasConfidence;
 
   const handleProvenance = useCallback(
     (id: ProvenanceFilterValue) => () => onToggleProvenance(id),
@@ -72,9 +72,9 @@ export function RelationshipTrustFilter({
     [onToggleStatus],
   );
 
-  if (!showProvenance && !showStatus && !showLevel de confianza) return null;
+  if (!showProvenance && !showStatus && !showConfidence) return null;
 
-  const thresholdActive = minLevel de confianzaPct > 0;
+  const thresholdActive = minConfidencePct > 0;
   const hasSelection = provSet.size > 0 || statusSet.size > 0 || thresholdActive;
 
   return (
@@ -206,7 +206,7 @@ export function RelationshipTrustFilter({
         </fieldset>
       ) : null}
 
-      {showLevel de confianza ? (
+      {showConfidence ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Minimum confidence · AND
@@ -218,19 +218,19 @@ export function RelationshipTrustFilter({
               min={0}
               max={100}
               step={5}
-              value={minLevel de confianzaPct}
-              onChange={(e) => onChangeMinLevel de confianza(Number(e.target.value))}
+              value={minConfidencePct}
+              onChange={(e) => onChangeMinConfidence(Number(e.target.value))}
               className="h-1 flex-1 min-w-[10rem] cursor-pointer accent-primary"
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-valuenow={minLevel de confianzaPct}
-              aria-valuetext={`${minLevel de confianzaPct}% minimum confidence`}
+              aria-valuenow={minConfidencePct}
+              aria-valuetext={`${minConfidencePct}% minimum confidence`}
             />
-            <span className="font-mono text-xs text-foreground">≥ {minLevel de confianzaPct}%</span>
-            {minLevel de confianzaPct > 0 ? (
+            <span className="font-mono text-xs text-foreground">≥ {minConfidencePct}%</span>
+            {minConfidencePct > 0 ? (
               <span className="font-mono text-[10px] text-muted-foreground">
-                {getLevel de confianzaClassLabel(
-                  minLevel de confianzaPct >= 85 ? "high" : minLevel de confianzaPct >= 60 ? "medium" : "low",
+                {getConfidenceClassLabel(
+                  minConfidencePct >= 85 ? "high" : minConfidencePct >= 60 ? "medium" : "low",
                 )}{" "}
                 threshold
               </span>
@@ -238,25 +238,25 @@ export function RelationshipTrustFilter({
               <span className="text-[10px] text-muted-foreground">No threshold</span>
             )}
           </label>
-          {thresholdActive && summary.withoutLevel de confianza > 0 ? (
+          {thresholdActive && summary.withoutConfidence > 0 ? (
             <fieldset
               className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
               aria-label="How to treat relationships without confidence"
             >
               <legend className="sr-only">How to treat relationships without confidence</legend>
               <span>
-                {summary.withoutLevel de confianza} relationship
-                {summary.withoutLevel de confianza === 1 ? "" : "s"} without confidence:
+                {summary.withoutConfidence} relationship
+                {summary.withoutConfidence === 1 ? "" : "s"} without confidence:
               </span>
               <PolicyOption
                 value="include"
-                current={unknownLevel de confianzaPolicy}
+                current={unknownConfidencePolicy}
                 onSelect={onChangeUnknownPolicy}
                 label="Include"
               />
               <PolicyOption
                 value="exclude"
-                current={unknownLevel de confianzaPolicy}
+                current={unknownConfidencePolicy}
                 onSelect={onChangeUnknownPolicy}
                 label="Exclude"
               />

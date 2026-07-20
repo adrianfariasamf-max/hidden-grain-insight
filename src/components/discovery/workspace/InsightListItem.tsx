@@ -2,7 +2,7 @@ import { memo } from "react";
 
 import { cn } from "@/lib/utils";
 import type { DescubrimientosInsight } from "@/lib/domain/discovery";
-import { getInsightTipoDescriptor } from "@/lib/domain/discovery";
+import { getInsightTypeDescriptor } from "@/lib/domain/discovery";
 
 const PRIORITY_DOT: Record<DescubrimientosInsight["priority"], string> = {
   critical: "bg-destructive",
@@ -19,7 +19,7 @@ export interface InsightListItemProps {
 }
 
 function InsightListItemImpl({ insight, selected, onSelect }: InsightListItemProps) {
-  const descriptor = getInsightTipoDescriptor(insight.type);
+  const descriptor = getInsightTypeDescriptor(insight.type);
   const Icon = descriptor.icon;
   return (
     <li>

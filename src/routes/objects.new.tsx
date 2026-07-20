@@ -46,12 +46,12 @@ function NewObjectRoute() {
   const mutation = useMutation(createObjectMutation(qc));
 
   const [title, setTitle] = useState("");
-  const [type, setTipo] = useState("");
-  const [category, setCategoría] = useState("");
+  const [type, setType] = useState("");
+  const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
-  const [summary, setResumen] = useState("");
-  const [keywords, setPalabras clave] = useState("");
-  const [tags, setEtiquetas] = useState("");
+  const [summary, setSummary] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [tags, setTags] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -146,7 +146,7 @@ function NewObjectRoute() {
               <Input
                 id="type"
                 value={type}
-                onChange={(e) => setTipo(e.target.value)}
+                onChange={(e) => setType(e.target.value)}
                 disabled={disabled}
                 placeholder="ej. documento"
               />
@@ -155,7 +155,7 @@ function NewObjectRoute() {
               <Input
                 id="category"
                 value={category}
-                onChange={(e) => setCategoría(e.target.value)}
+                onChange={(e) => setCategory(e.target.value)}
                 disabled={disabled}
                 placeholder="ej. arquitectura"
               />
@@ -181,7 +181,7 @@ function NewObjectRoute() {
             <Textarea
               id="summary"
               value={summary}
-              onChange={(e) => setResumen(e.target.value)}
+              onChange={(e) => setSummary(e.target.value)}
               maxLength={2000}
               rows={4}
               disabled={disabled}
@@ -198,7 +198,7 @@ function NewObjectRoute() {
               <Input
                 id="keywords"
                 value={keywords}
-                onChange={(e) => setPalabras clave(e.target.value)}
+                onChange={(e) => setKeywords(e.target.value)}
                 disabled={disabled}
                 placeholder="graph, ontology"
               />
@@ -207,7 +207,7 @@ function NewObjectRoute() {
               <Input
                 id="tags"
                 value={tags}
-                onChange={(e) => setEtiquetas(e.target.value)}
+                onChange={(e) => setTags(e.target.value)}
                 disabled={disabled}
                 placeholder="core, draft"
               />

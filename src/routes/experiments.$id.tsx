@@ -48,7 +48,7 @@ function ExperimentEditor({
 }: {
   detail: ExperimentDetail;
   experimentId: string;
-  qc: ReturnTipo<typeof useQueryClient>;
+  qc: ReturnType<typeof useQueryClient>;
 }) {
   const { experiment, stimuli, sessionCount, responseCount, publishReadiness } = detail;
   const isPublished = experiment.status !== "draft";
@@ -141,7 +141,7 @@ function MetadataCard({
 }: {
   detail: ExperimentDetail;
   experimentId: string;
-  qc: ReturnTipo<typeof useQueryClient>;
+  qc: ReturnType<typeof useQueryClient>;
   readOnly: boolean;
 }) {
   const e = detail.experiment;
