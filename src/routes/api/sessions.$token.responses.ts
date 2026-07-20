@@ -5,6 +5,15 @@ import { submitResponseSchema } from "@/lib/perception/schemas";
 export const Route = createFileRoute("/api/sessions/$token/responses")({
   server: {
     handlers: {
+      GET: async ({ params }) => {
+        try {
+          const { getSessionResponses } = await import("@/lib/server/experiments-repo.server");
+          const items = await getSessionResponses(params.token);
+          return Response.json({ items });
+        } catch (err) {
+          return Response.json({ error: (err as Error).message }, { status: 422 });
+        }
+      },
       POST: async ({ params, request }) => {
         let raw: unknown;
         try {
