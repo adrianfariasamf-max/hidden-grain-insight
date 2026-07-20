@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
@@ -7,7 +7,29 @@ import {
   experimentDetailQuery,
   sessionResponsesQuery,
 } from "@/lib/perception/client";
-import type { ParticipantSession, StimulusResponse } from "@/lib/perception/types";
+import type { ExperimentStimulus, ParticipantSession } from "@/lib/perception/types";
+
+function formatDurationMs(ms: number | null): string {
+  if (ms == null || !Number.isFinite(ms) || ms < 0) return "—";
+  const totalSeconds = Math.round(ms / 1000);
+  if (totalSeconds < 60) return `${totalSeconds} s`;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes < 60) return `${minutes} min ${seconds} s`;
+  const hours = Math.floor(minutes / 60);
+  const remMinutes = minutes % 60;
+  return `${hours} h ${remMinutes} min ${seconds} s`;
+}
+
+function sessionDurationMs(s: ParticipantSession): number | null {
+  const start = s.startedAt ?? s.createdAt;
+  const end = s.completedAt;
+  if (!start || !end) return null;
+  const a = new Date(start).getTime();
+  const b = new Date(end).getTime();
+  if (Number.isNaN(a) || Number.isNaN(b)) return null;
+  return b - a;
+}
 
 interface Props {
   experimentId: string;
@@ -85,22 +107,16 @@ function SessionResponses({
 }: {
   token: string;
   session: ParticipantSession;
-  stimuli: { id: string; position: number; altText: string }[];
+  stimuli: ExperimentStimulus[];
 }) {
   const rq = useQuery(sessionResponsesQuery(token));
   const responses = rq.data?.items ?? [];
-  const byId = new Map(stimuli.map((s) => [s.id, s]));
+  const byId = useMemo(() => new Map(stimuli.map((s) => [s.id, s])), [stimuli]);
+  const totalDurationMs = sessionDurationMs(session);
 
   return (
     <div className="mt-2 grid gap-3 rounded-md border border-border/60 bg-background/40 p-3">
-      <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
-        <span>
-          Consentimiento: <SafeTimestamp value={session.consentAcceptedAt} />
-        </span>
-        <span>
-          Completado: <SafeTimestamp value={session.completedAt} />
-        </span>
-      </div>
+      <ParticipantSummary session={session} totalDurationMs={totalDurationMs} />
       {rq.isLoading ? (
         <p className="text-xs text-muted-foreground">Cargando respuestas…</p>
       ) : responses.length === 0 ? (
@@ -108,31 +124,75 @@ function SessionResponses({
       ) : (
         responses.map((r) => {
           const stim = byId.get(r.stimulusId);
+          const durationLabel =
+            r.responseTimeMs != null ? formatDurationMs(r.responseTimeMs) : "—";
           return (
             <article key={r.id} className="rounded border border-border/60 bg-card p-3">
-              <header className="mb-2 flex items-baseline justify-between text-[11px] text-muted-foreground">
-                <span className="font-mono">
-                  Estímulo {stim?.position ?? "?"}
-                  {stim?.altText ? ` — ${stim.altText}` : ""}
-                </span>
-                <span className="font-mono">
-                  {r.responseTimeMs != null ? `${(r.responseTimeMs / 1000).toFixed(1)}s` : "—"}
-                </span>
+              <header className="mb-3 flex items-start gap-3">
+                {stim?.imageUrl ? (
+                  <img
+                    src={stim.imageUrl}
+                    alt={stim.altText || `Estímulo ${stim.position}`}
+                    className="h-16 w-16 flex-shrink-0 rounded border border-border/60 bg-black object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="h-16 w-16 flex-shrink-0 rounded border border-border/60 bg-muted" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-[11px] text-muted-foreground">
+                    Estímulo {stim?.position ?? "?"}
+                  </p>
+                  {stim?.altText ? (
+                    <p className="truncate text-xs text-foreground">{stim.altText}</p>
+                  ) : null}
+                </div>
               </header>
               <dl className="grid gap-1.5 text-xs">
                 <Row k="Observación" v={r.observation} />
+                <Row k="Interpretación" v={r.interpretation} />
                 <Row k="Elementos que llamaron la atención" v={r.attention} />
                 <Row k="Sensación" v={r.feeling} />
-                <Row k="Interpretación" v={r.interpretation} />
                 <Row
                   k="Confianza"
                   v={r.confidence == null ? "—" : `${Math.round(r.confidence * 5)}/5`}
                 />
+                <Row k="Tiempo" v={durationLabel} />
               </dl>
             </article>
           );
         })
       )}
+    </div>
+  );
+}
+
+function ParticipantSummary({
+  session,
+  totalDurationMs,
+}: {
+  session: ParticipantSession;
+  totalDurationMs: number | null;
+}) {
+  const alias = session.participantAlias?.trim() || "Sin alias";
+  return (
+    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 rounded border border-border/60 bg-card p-3 text-[11px] sm:grid-cols-4">
+      <SummaryItem k="Alias" v={alias} />
+      <SummaryItem
+        k="Fecha"
+        v={<SafeTimestamp value={session.startedAt ?? session.createdAt} />}
+      />
+      <SummaryItem k="Duración total" v={formatDurationMs(totalDurationMs)} />
+      <SummaryItem k="Estado" v={<StatusChip status={session.status} />} />
+    </dl>
+  );
+}
+
+function SummaryItem({ k, v }: { k: string; v: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-muted-foreground">{k}</dt>
+      <dd className="mt-0.5 truncate text-foreground">{v}</dd>
     </div>
   );
 }

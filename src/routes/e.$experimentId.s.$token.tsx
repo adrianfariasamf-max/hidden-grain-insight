@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -63,7 +63,7 @@ function ParticipantSession() {
   const completed = answered.length >= stimuliSorted.length && stimuliSorted.length > 0;
 
   if (stage === "complete" || completed) {
-    return <ThankYou experimentId={experimentId} />;
+    return <ThankYou />;
   }
 
   if (stage === "instructions") {
@@ -306,19 +306,13 @@ function StimulusView({
   );
 }
 
-function ThankYou({ experimentId: _ }: { experimentId: string }) {
+function ThankYou() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-4 py-10 text-center">
       <h1 className="text-2xl font-semibold text-foreground">Gracias</h1>
       <p className="mt-3 text-sm text-muted-foreground">
         Tus respuestas se registraron correctamente. Ya puedes cerrar esta página.
       </p>
-      <Link
-        to="/"
-        className="mt-6 text-xs text-muted-foreground underline-offset-4 hover:underline"
-      >
-        Inicio
-      </Link>
     </div>
   );
 }
