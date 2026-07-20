@@ -87,12 +87,32 @@ export interface CreateExperimentRequest {
   instructions?: string;
 }
 
+export interface UpdateExperimentRequest {
+  title?: string;
+  description?: string;
+  hiddenTarget?: string;
+  instructions?: string;
+}
+
 export interface CreateStimulusRequest {
   position: 1 | 2 | 3;
   imageUrl: string;
   imagePath: string;
   altText?: string;
   displayDurationSeconds?: number | null;
+}
+
+export interface UpdateStimulusRequest {
+  altText?: string;
+  imageUrl?: string;
+  imagePath?: string;
+}
+
+export interface SignUploadResponse {
+  uploadUrl: string;
+  imagePath: string;
+  imageUrl: string;
+  token: string;
 }
 
 export interface CreateSessionRequest {
