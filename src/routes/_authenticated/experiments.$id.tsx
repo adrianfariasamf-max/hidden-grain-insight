@@ -103,16 +103,16 @@ function ExperimentEditor({
             <Copy className="mr-1.5 h-3.5 w-3.5" />
             {duplicate.isPending ? "Duplicando…" : "Duplicar"}
           </Button>
-          <a
-            href={`/e/${experimentId}/?preview=1`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/e/$experimentId"
+            params={{ experimentId }}
+            search={{ preview: 1 }}
             className="inline-flex h-8 items-center rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-            title="Abre el flujo del participante sin crear datos"
+            title="Abre el flujo del participante en esta pestaña sin crear datos"
           >
             <Eye className="mr-1.5 h-3.5 w-3.5" />
             Vista previa del participante
-          </a>
+          </Link>
         </div>
       </div>
       {duplicate.error ? (
