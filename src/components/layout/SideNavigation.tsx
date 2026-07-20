@@ -1,5 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Compass, Network, LayoutDashboard, Activity, Sparkles } from "lucide-react";
+import {
+  Compass,
+  Network,
+  LayoutDashboard,
+  Activity,
+  Sparkles,
+  FlaskConical,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,6 +19,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Overview", to: "/", icon: LayoutDashboard, exact: true },
+  { label: "Experiments", to: "/experiments", icon: FlaskConical },
   { label: "Explorer", to: "/explorer", icon: Compass },
   { label: "Knowledge Graph", to: "/graph", icon: Network },
   { label: "Discovery", to: "/discover", icon: Sparkles },
@@ -36,7 +44,7 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold">Hidden Grain</span>
-          <span className="text-[11px] text-muted-foreground">Knowledge OS</span>
+          <span className="text-[11px] text-muted-foreground">Perception Studio</span>
         </div>
       </div>
 
@@ -67,7 +75,9 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
       </ul>
 
       <div className="px-4 py-3 text-[11px] text-muted-foreground">
-        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono">read-only</span>
+        <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono">
+          perception mvp
+        </span>
       </div>
     </nav>
   );
