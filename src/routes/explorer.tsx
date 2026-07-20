@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo } from "react";
 import { z } from "zod";
 
@@ -14,6 +14,7 @@ import { SearchInput } from "@/components/search/SearchInput";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
+import { Button } from "@/components/ui/button";
 import { useSearch } from "@/hooks/use-search";
 import { objectListQuery } from "@/lib/api/queries";
 import { getFacets, recordFacets } from "@/lib/api/facets";
@@ -177,6 +178,14 @@ function ExplorerRoute() {
         eyebrow="Explorer"
         title="Knowledge Objects"
         description="Search, filter and paginate the read-only object index. Filters send q, type, category and status to the API."
+        actions={
+          <Button asChild size="sm">
+            <Link to="/objects/new">
+              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+              New Object
+            </Link>
+          </Button>
+        }
       />
       <section className="flex flex-col gap-6 px-4 py-6 sm:px-8">
         <div className="flex flex-col gap-3">
