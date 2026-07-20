@@ -407,7 +407,7 @@ function PublishChecklist({
           </Button>
         </>
       ) : (
-        <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
+        <p className="mt-4 text-xs text-muted-foreground">Este estudio ya está cerrado.</p>
       )}
       {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
       {closeError ? <p className="mt-2 text-xs text-destructive">{closeError}</p> : null}
