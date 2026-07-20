@@ -64,19 +64,37 @@ export function SessionsPanel({ experimentId }: Props) {
   const sessionsQ = useQuery(experimentSessionsQuery(experimentId));
   const detailQ = useQuery(experimentDetailQuery(experimentId));
   const [openToken, setOpenToken] = useState<string | null>(null);
+  // RR-006 · Empty sessions (0 responses) are treated as discarded and
+  // hidden by default so they never mix with real research data. Historical
+  // rows from before the new lifecycle can still be inspected via toggle.
+  const [showEmpty, setShowEmpty] = useState(false);
 
-  const items = sessionsQ.data?.items ?? [];
+  const rawItems = sessionsQ.data?.items ?? [];
+  const emptyCount = rawItems.filter((it) => it.responseCount === 0).length;
+  const items = showEmpty ? rawItems : rawItems.filter((it) => it.responseCount > 0);
 
   return (
     <section className="rounded-lg border border-border bg-card p-5">
-      <div className="mb-3 flex items-baseline justify-between gap-3">
-        <div>
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">Sesiones de participantes</h3>
           <p className="text-xs text-muted-foreground">
-            Datos crudos de participantes. Ordenados por hora de creación.
+            Datos crudos de participantes. Las sesiones vacías (0 respuestas) se ocultan por
+            defecto.
           </p>
         </div>
-        <span className="font-mono text-[11px] text-muted-foreground">{items.length}</span>
+        <div className="flex items-center gap-3 text-[11px]">
+          {emptyCount > 0 ? (
+            <button
+              type="button"
+              onClick={() => setShowEmpty((v) => !v)}
+              className="rounded border border-border px-2 py-1 font-mono text-muted-foreground hover:text-foreground"
+            >
+              {showEmpty ? "ocultar" : "mostrar"} vacías ({emptyCount})
+            </button>
+          ) : null}
+          <span className="font-mono text-muted-foreground">{items.length}</span>
+        </div>
       </div>
 
       {sessionsQ.isLoading ? (
