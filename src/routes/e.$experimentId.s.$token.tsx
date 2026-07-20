@@ -23,10 +23,7 @@ import { EmptyState } from "@/components/state/EmptyState";
 export const Route = createFileRoute("/e/$experimentId/s/$token")({
   component: ParticipantSession,
   head: () => ({
-    meta: [
-      { title: "Sesión del estudio de percepción" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Sesión del estudio de percepción" }, { name: "robots", content: "noindex" }],
   }),
 });
 
@@ -36,9 +33,7 @@ function ParticipantSession() {
   const snapshot = useQuery(sessionSnapshotQuery(token));
   const responsesQ = useQuery(sessionResponsesQuery(token));
 
-  const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">(
-    "instructions",
-  );
+  const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">("instructions");
 
   const answered = responsesQ.data?.items ?? [];
   const stimuliSorted = useMemo(() => {
@@ -58,7 +53,8 @@ function ParticipantSession() {
   }, [snapshot.data, responsesQ.data, answered.length, stimuliSorted.length]);
 
   if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Cargando…" />;
-  if (snapshot.error) return <ErrorState error={snapshot.error} onRetry={() => snapshot.refetch()} />;
+  if (snapshot.error)
+    return <ErrorState error={snapshot.error} onRetry={() => snapshot.refetch()} />;
   if (!snapshot.data) return <EmptyState title="Sesión no encontrada" />;
 
   const exp = snapshot.data.experiment;
@@ -123,7 +119,8 @@ function InstructionsView({
         Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
       </p>
       <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm text-foreground">
-        {instructions || "Observa cada imagen con atención y responde las preguntas a continuación."}
+        {instructions ||
+          "Observa cada imagen con atención y responde las preguntas a continuación."}
       </div>
       <Button type="button" className="mt-6" onClick={onBegin}>
         Start
@@ -174,13 +171,10 @@ function StimulusView({
         <span>
           Imagen {index + 1} de {total}
         </span>
-        <div
-          aria-hidden
-          className="h-1 w-32 overflow-hidden rounded-full bg-muted"
-        >
+        <div aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-muted">
           <div
             className="h-full bg-primary transition-all"
-            style={{ width: `${((index) / total) * 100}%` }}
+            style={{ width: `${(index / total) * 100}%` }}
           />
         </div>
       </div>

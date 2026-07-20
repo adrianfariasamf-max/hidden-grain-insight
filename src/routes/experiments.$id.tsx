@@ -76,14 +76,20 @@ function ExperimentEditor({
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-6">
-          <MetadataCard detail={detail} experimentId={experimentId} qc={qc} readOnly={isPublished} />
+          <MetadataCard
+            detail={detail}
+            experimentId={experimentId}
+            qc={qc}
+            readOnly={isPublished}
+          />
 
           <section className="rounded-lg border border-border bg-card p-5">
             <div className="mb-3 flex items-baseline justify-between gap-3">
               <div>
                 <h3 className="text-sm font-semibold text-foreground">Estímulos</h3>
                 <p className="text-xs text-muted-foreground">
-                  Se requieren exactamente tres imágenes. El texto alternativo es obligatorio para cada una.
+                  Se requieren exactamente tres imágenes. El texto alternativo es obligatorio para
+                  cada una.
                 </p>
               </div>
               <span className="font-mono text-[11px] text-muted-foreground">
@@ -209,7 +215,8 @@ function MetadataCard({
           id="exp-hidden"
           label={
             <span className="inline-flex items-center gap-1.5">
-              <EyeOff className="h-3 w-3" /> Objetivo oculto — nunca se muestra a las personas participantes
+              <EyeOff className="h-3 w-3" /> Objetivo oculto — nunca se muestra a las personas
+              participantes
             </span>
           }
         >

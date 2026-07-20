@@ -31,10 +31,7 @@ const publicExperimentQuery = (id: string) =>
 export const Route = createFileRoute("/e/$experimentId")({
   component: ParticipantLanding,
   head: () => ({
-    meta: [
-      { title: "Estudio de percepción" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Estudio de percepción" }, { name: "robots", content: "noindex" }],
   }),
 });
 

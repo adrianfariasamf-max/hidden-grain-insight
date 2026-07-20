@@ -48,7 +48,8 @@ function SystemRoute() {
                 role="status"
                 className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning"
               >
-                Mostrando el último estado conocido — falló la actualización. Reintentando automáticamente.
+                Mostrando el último estado conocido — falló la actualización. Reintentando
+                automáticamente.
               </div>
             ) : null}
             <section aria-labelledby="health-heading" className="flex flex-col gap-3">

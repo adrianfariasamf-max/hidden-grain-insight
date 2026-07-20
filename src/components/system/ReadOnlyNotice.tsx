@@ -14,8 +14,8 @@ export function ReadOnlyNotice({ variant = "default" }: ReadOnlyNoticeProps) {
       <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
         <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
         <p>
-          Sólo lectura projection. Canonical Objetos de conocimiento are authored outside this interface — no
-          create, edit, delete, approve or publish actions exist by design.
+          Sólo lectura projection. Canonical Objetos de conocimiento are authored outside this
+          interface — no create, edit, delete, approve or publish actions exist by design.
         </p>
       </div>
     );

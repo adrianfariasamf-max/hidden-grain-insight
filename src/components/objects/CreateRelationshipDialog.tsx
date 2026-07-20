@@ -342,7 +342,9 @@ function TargetResults({
   onPick: (obj: KnowledgeObjectSummary) => void;
 }) {
   if (!enabled) {
-    return <p className="text-[11px] text-muted-foreground">Tipo to search Objetos de conocimiento.</p>;
+    return (
+      <p className="text-[11px] text-muted-foreground">Tipo to search Objetos de conocimiento.</p>
+    );
   }
   if (isLoading) {
     return <p className="text-[11px] text-muted-foreground">Searching…</p>;

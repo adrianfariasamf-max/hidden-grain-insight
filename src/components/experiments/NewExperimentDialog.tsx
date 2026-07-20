@@ -102,7 +102,8 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="new-exp-hidden">
-              Objetivo oculto <span className="text-muted-foreground">(sólo para el investigador)</span>
+              Objetivo oculto{" "}
+              <span className="text-muted-foreground">(sólo para el investigador)</span>
             </Label>
             <Input
               id="new-exp-hidden"

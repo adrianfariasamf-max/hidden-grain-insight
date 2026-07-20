@@ -26,8 +26,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
     setAltText(stimulus?.altText ?? "");
   }, [stimulus?.id, stimulus?.altText]);
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
+  const invalidate = () => qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
 
   async function uploadFile(file: File) {
     setError(null);
@@ -133,7 +132,9 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
             disabled={readOnly}
           />
           {showAltMissing ? (
-            <p className="text-[11px] text-warning">Texto alternativo is required before publishing.</p>
+            <p className="text-[11px] text-warning">
+              Texto alternativo is required before publishing.
+            </p>
           ) : null}
           <p className="truncate font-mono text-[10px] text-muted-foreground">
             {stimulus.imagePath}
