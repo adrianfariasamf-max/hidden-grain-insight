@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { createRelationship } from "@/lib/server/relationships-repo.server";
-
 const CreateSchema = z.object({
   sourceObjectId: z.string().uuid(),
   targetObjectId: z.string().uuid(),
@@ -30,6 +28,9 @@ export const Route = createFileRoute("/api/relationships")({
           );
         }
         try {
+          const { createRelationship } = await import(
+            "@/lib/server/relationships-repo.server"
+          );
           const created = await createRelationship(parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {
