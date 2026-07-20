@@ -1,11 +1,7 @@
 // DB row → wire contract mappers. Server-only.
 // Keeps the domain decoupled from Supabase specifics.
 
-import type {
-  GraphEdge,
-  GraphNode,
-  KnowledgeObjectSummary,
-} from "@/lib/api/types";
+import type { GraphEdge, GraphNode, KnowledgeObjectSummary } from "@/lib/api/types";
 
 export interface ObjectRow {
   id: string;
@@ -36,10 +32,7 @@ export interface RelationshipRow {
   updated_at: string;
 }
 
-export function toObjectSummary(
-  row: ObjectRow,
-  relationshipCount: number,
-): KnowledgeObjectSummary {
+export function toObjectSummary(row: ObjectRow, relationshipCount: number): KnowledgeObjectSummary {
   return {
     id: row.id,
     title: row.title,

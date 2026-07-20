@@ -12,7 +12,10 @@ export async function getGraph(): Promise<GraphResponse> {
   if (nErr) throw nErr;
   if (eErr) throw eErr;
 
-  const nodeRows = (nodes ?? []) as unknown as Pick<ObjectRow, "id" | "title" | "type" | "category">[];
+  const nodeRows = (nodes ?? []) as unknown as Pick<
+    ObjectRow,
+    "id" | "title" | "type" | "category"
+  >[];
   const edgeRows = (edges ?? []) as unknown as RelationshipRow[];
 
   const mappedEdges = edgeRows.map(toGraphEdge);

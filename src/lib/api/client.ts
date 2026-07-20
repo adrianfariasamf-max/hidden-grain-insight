@@ -225,8 +225,14 @@ export const api = {
   listObjects: (params?: ObjectsQueryParams, signal?: AbortSignal) => Promise<ObjectsListResponse>;
   getObject: (id: string, signal?: AbortSignal) => Promise<ObjectDetailResponse>;
   graph: (params?: GraphQueryParams, signal?: AbortSignal) => Promise<GraphResponse>;
-  createObject: (body: CreateKnowledgeObjectRequest, signal?: AbortSignal) => Promise<CreateKnowledgeObjectResponse>;
-  createRelationship: (body: CreateRelationshipRequest, signal?: AbortSignal) => Promise<CreateRelationshipResponse>;
+  createObject: (
+    body: CreateKnowledgeObjectRequest,
+    signal?: AbortSignal,
+  ) => Promise<CreateKnowledgeObjectResponse>;
+  createRelationship: (
+    body: CreateRelationshipRequest,
+    signal?: AbortSignal,
+  ) => Promise<CreateRelationshipResponse>;
 };
 
 export type Api = typeof api;

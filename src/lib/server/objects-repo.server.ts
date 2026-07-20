@@ -24,13 +24,12 @@ async function countRelationships(ids: string[]): Promise<Map<string, number>> {
   const { data, error } = await supabaseAdmin
     .from("relationships")
     .select("source_object_id,target_object_id")
-    .or(
-      `source_object_id.in.(${ids.join(",")}),target_object_id.in.(${ids.join(",")})`,
-    );
+    .or(`source_object_id.in.(${ids.join(",")}),target_object_id.in.(${ids.join(",")})`);
   if (error) throw error;
   const set = new Set(ids);
   for (const r of data ?? []) {
-    if (set.has(r.source_object_id)) counts.set(r.source_object_id, (counts.get(r.source_object_id) ?? 0) + 1);
+    if (set.has(r.source_object_id))
+      counts.set(r.source_object_id, (counts.get(r.source_object_id) ?? 0) + 1);
     if (set.has(r.target_object_id) && r.target_object_id !== r.source_object_id) {
       counts.set(r.target_object_id, (counts.get(r.target_object_id) ?? 0) + 1);
     }
@@ -42,9 +41,7 @@ export async function listObjects(params: ObjectsQueryParams): Promise<ObjectsLi
   const limit = Math.min(Math.max(params.limit ?? 20, 1), 100);
   const offset = Math.max(params.offset ?? 0, 0);
 
-  let query = supabaseAdmin
-    .from("knowledge_objects")
-    .select(OBJECT_COLUMNS, { count: "exact" });
+  let query = supabaseAdmin.from("knowledge_objects").select(OBJECT_COLUMNS, { count: "exact" });
 
   if (params.type) query = query.eq("type", params.type);
   if (params.category) query = query.eq("category", params.category);
@@ -61,7 +58,9 @@ export async function listObjects(params: ObjectsQueryParams): Promise<ObjectsLi
   if (error) throw error;
   const rows = (data ?? []) as unknown as ObjectRow[];
   const relCounts = await countRelationships(rows.map((r) => r.id));
-  const items: KnowledgeObjectSummary[] = rows.map((r) => toObjectSummary(r, relCounts.get(r.id) ?? 0));
+  const items: KnowledgeObjectSummary[] = rows.map((r) =>
+    toObjectSummary(r, relCounts.get(r.id) ?? 0),
+  );
   return { total: count ?? items.length, offset, limit, items };
 }
 
@@ -83,7 +82,9 @@ export async function getObject(id: string): Promise<ObjectDetailResponse | null
   const relationshipRows = (rels ?? []) as unknown as RelationshipRow[];
 
   const outgoing = relationshipRows.filter((r) => r.source_object_id === id).map(toGraphEdge);
-  const incoming = relationshipRows.filter((r) => r.target_object_id === id && r.source_object_id !== id).map(toGraphEdge);
+  const incoming = relationshipRows
+    .filter((r) => r.target_object_id === id && r.source_object_id !== id)
+    .map(toGraphEdge);
 
   const summary = toObjectSummary(objectRow, relationshipRows.length);
   return {

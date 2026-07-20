@@ -28,9 +28,7 @@ export const Route = createFileRoute("/api/relationships")({
           );
         }
         try {
-          const { createRelationship } = await import(
-            "@/lib/server/relationships-repo.server"
-          );
+          const { createRelationship } = await import("@/lib/server/relationships-repo.server");
           const created = await createRelationship(parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {

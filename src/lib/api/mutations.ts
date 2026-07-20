@@ -6,10 +6,7 @@ import { type QueryClient } from "@tanstack/react-query";
 
 import { api } from "./client";
 import { hgKeys } from "./queries";
-import type {
-  CreateKnowledgeObjectRequest,
-  CreateRelationshipRequest,
-} from "./types";
+import type { CreateKnowledgeObjectRequest, CreateRelationshipRequest } from "./types";
 
 export const createObjectMutation = (qc: QueryClient) => ({
   mutationKey: [...hgKeys.objects(), "create"] as const,
