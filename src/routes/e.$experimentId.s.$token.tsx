@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   experimentKeys,
   experimentsApi,
+  experimentDetailQuery,
   sessionResponsesQuery,
   sessionSnapshotQuery,
 } from "@/lib/perception/client";
@@ -20,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { EmptyState } from "@/components/state/EmptyState";
+import { PreviewBanner, usePreviewMode } from "@/components/experiments/PreviewBanner";
 
 export const Route = createFileRoute("/e/$experimentId/s/$token")({
   component: ParticipantSession,
@@ -30,6 +32,10 @@ export const Route = createFileRoute("/e/$experimentId/s/$token")({
 
 function ParticipantSession() {
   const { experimentId, token } = Route.useParams();
+  const preview = usePreviewMode();
+  if (preview) {
+    return <PreviewSession experimentId={experimentId} />;
+  }
   const qc = useQueryClient();
   const snapshot = useQuery(sessionSnapshotQuery(token));
   const responsesQ = useQuery(sessionResponsesQuery(token));
@@ -91,6 +97,79 @@ function ParticipantSession() {
       }}
       submit={(input) => experimentsApi.submitResponse(token, input)}
     />
+  );
+}
+
+/**
+ * Preview flow for the investigator. Identical UI to the real participant
+ * runner, but no session, response or metric is persisted. All state lives
+ * in memory and disappears when the tab closes.
+ */
+function PreviewSession({ experimentId }: { experimentId: string }) {
+  const detail = useQuery(experimentDetailQuery(experimentId));
+  const [answered, setAnswered] = useState(0);
+  const stimuliSorted = useMemo(() => {
+    const stimuli = detail.data?.stimuli ?? [];
+    return [...stimuli].sort((a, b) => a.position - b.position);
+  }, [detail.data?.stimuli]);
+
+  if (detail.isLoading) return <LoadingState label="Cargando…" />;
+  if (detail.error)
+    return <ErrorState error={detail.error} onRetry={() => detail.refetch()} />;
+  if (!detail.data) return <EmptyState title="Experimento no encontrado" />;
+
+  const total = stimuliSorted.length;
+  const currentStimulus = stimuliSorted[Math.min(answered, total - 1)];
+  const completed = total > 0 && answered >= total;
+
+  if (completed) {
+    return (
+      <>
+        <PreviewBanner active />
+        <ThankYou />
+      </>
+    );
+  }
+  if (!currentStimulus) {
+    return (
+      <>
+        <PreviewBanner active />
+        <EmptyState title="No hay estímulos disponibles" />
+      </>
+    );
+  }
+  return (
+    <>
+      <PreviewBanner active />
+      <StimulusView
+        key={currentStimulus.id}
+        stimulus={currentStimulus}
+        index={answered}
+        total={total}
+        submit={async (_input) => {
+          // No-op: preview never persists responses.
+          return {
+            id: "preview",
+            sessionId: "preview",
+            stimulusId: currentStimulus.id,
+            firstViewedAt: null,
+            submittedAt: new Date().toISOString(),
+            responseTimeMs: null,
+            observation: "",
+            attention: "",
+            feeling: "",
+            interpretation: "",
+            discoveredHiddenElement: false,
+            discoveredText: null,
+            confidence: null,
+            metadata: {},
+          } satisfies StimulusResponse;
+        }}
+        onSubmitted={() => {
+          setAnswered((n) => n + 1);
+        }}
+      />
+    </>
   );
 }
 
