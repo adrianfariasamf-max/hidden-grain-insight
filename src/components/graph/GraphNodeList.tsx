@@ -6,12 +6,12 @@ import { GraphNodeItem } from "./GraphNodeItem";
 interface GraphNodeListProps {
   nodes: KnowledgeObject[];
   vacíoLabel: string;
-  vacíoDescripción?: string;
+  vacíoDescription?: string;
 }
 
-export function GraphNodeList({ nodes, vacíoLabel, vacíoDescripción }: GraphNodeListProps) {
+export function GraphNodeList({ nodes, vacíoLabel, vacíoDescription }: GraphNodeListProps) {
   if (nodes.length === 0) {
-    return <EmptyState title={vacíoLabel} description={vacíoDescripción} />;
+    return <EmptyState title={vacíoLabel} description={vacíoDescription} />;
   }
   return (
     <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">

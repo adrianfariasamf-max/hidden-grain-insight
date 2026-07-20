@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
-import { SistemaEstadoCard } from "@/components/system/SistemaEstadoCard";
+import { SistemaStatusCard } from "@/components/system/SistemaStatusCard";
 import { EjecuciónInfo } from "@/components/system/EjecuciónInfo";
 import { RepositoryMetrics } from "@/components/system/RepositoryMetrics";
 import { ReadOnlyNotice } from "@/components/system/ReadOnlyNotice";
@@ -55,7 +55,7 @@ function SistemaRoute() {
               <h2 id="health-heading" className="text-sm font-semibold text-foreground">
                 Estado
               </h2>
-              <SistemaEstadoCard health={query.data} isRefreshing={isRefreshing} />
+              <SistemaStatusCard health={query.data} isRefreshing={isRefreshing} />
             </section>
 
             <section aria-labelledby="runtime-heading" className="flex flex-col gap-3">

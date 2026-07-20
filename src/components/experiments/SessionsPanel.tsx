@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import {
-  experimentSesionesQuery,
+  experimentSessionsQuery,
   experimentDetailQuery,
   sessionRespuestasQuery,
 } from "@/lib/perception/client";
@@ -13,8 +13,8 @@ interface Props {
   experimentId: string;
 }
 
-export function SesionesPanel({ experimentId }: Props) {
-  const sessionsQ = useQuery(experimentSesionesQuery(experimentId));
+export function SessionsPanel({ experimentId }: Props) {
+  const sessionsQ = useQuery(experimentSessionsQuery(experimentId));
   const detailQ = useQuery(experimentDetailQuery(experimentId));
   const [openToken, setOpenToken] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ export function SesionesPanel({ experimentId }: Props) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{label}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      <EstadoChip status={s.status} /> · {it.responseCount} response
+                      <StatusChip status={s.status} /> · {it.responseCount} response
                       {it.responseCount === 1 ? "" : "s"} · started{" "}
                       <SafeTimestamp value={s.startedAt ?? s.createdAt} />
                     </p>
@@ -147,7 +147,7 @@ function Row({ k, v }: { k: string; v: string | number | null }) {
   );
 }
 
-function EstadoChip({ status }: { status: string }) {
+function StatusChip({ status }: { status: string }) {
   const tone: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
     in_progress: "bg-primary/15 text-primary",

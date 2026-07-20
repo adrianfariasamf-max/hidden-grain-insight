@@ -1,8 +1,8 @@
 import { MetricCard } from "@/components/shared/MetricCard";
-import type { EstadoResponse } from "@/lib/api/types";
+import type { StatusResponse } from "@/lib/api/types";
 
 interface RepositoryMetricsProps {
-  health: Pick<EstadoResponse, "objects" | "nodes" | "edges" | "schemaVersion">;
+  health: Pick<StatusResponse, "objects" | "nodes" | "edges" | "schemaVersion">;
   includeSchema?: boolean;
 }
 

@@ -45,10 +45,10 @@ function NewObjectRoute() {
   const qc = useQueryClient();
   const mutation = useMutation(createObjectMutation(qc));
 
-  const [title, setTítulo] = useState("");
+  const [title, setTitle] = useState("");
   const [type, setTipo] = useState("");
   const [category, setCategoría] = useState("");
-  const [status, setEstado] = useState("");
+  const [status, setStatus] = useState("");
   const [summary, setResumen] = useState("");
   const [keywords, setPalabras clave] = useState("");
   const [tags, setEtiquetas] = useState("");
@@ -134,7 +134,7 @@ function NewObjectRoute() {
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTítulo(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
               disabled={disabled}
               autoFocus
@@ -166,7 +166,7 @@ function NewObjectRoute() {
             <Input
               id="status"
               value={status}
-              onChange={(e) => setEstado(e.target.value)}
+              onChange={(e) => setStatus(e.target.value)}
               disabled={disabled}
               placeholder="ej. borrador, estable"
             />

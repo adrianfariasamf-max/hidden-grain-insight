@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Link2 } from "lucide-react";
 
-import { EstadoBadge } from "@/components/shared/EstadoBadge";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import type { KnowledgeObject } from "@/lib/domain";
 import { getDisplayVersion, getRelationshipCount } from "@/lib/domain";
 
@@ -35,7 +35,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
           <h3 className="truncate text-sm font-semibold text-foreground">{object.title}</h3>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {object.status ? <EstadoBadge status={object.status} /> : null}
+          {object.status ? <StatusBadge status={object.status} /> : null}
           <ArrowUpRight
             className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground"
             aria-hidden

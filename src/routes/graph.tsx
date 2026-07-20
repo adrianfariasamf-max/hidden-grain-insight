@@ -28,7 +28,7 @@ import {
   type ProvenanceFilterValue,
   type Relationship,
   type RelationshipCategoría,
-  type RelationshipEstado,
+  type RelationshipStatus,
 } from "@/lib/domain";
 import { countActiveFilters, toGraphQueryParams, type SearchQuery } from "@/lib/domain/search";
 
@@ -85,9 +85,9 @@ function GraphRoute() {
   const [selectedTipoIds, setSelectedTipoIds] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<RelationshipCategoría[]>([]);
   const [selectedProvenances, setSelectedProvenances] = useState<ProvenanceFilterValue[]>([]);
-  const [selectedEstadoes, setSelectedEstadoes] = useState<RelationshipEstado[]>([]);
-  const [minNivel de confianzaPct, setMinNivel de confianzaPct] = useState(0);
-  const [unknownNivel de confianzaPolicy, setUnknownNivel de confianzaPolicy] = useState<"include" | "exclude">(
+  const [selectedStatuses, setSelectedStatuses] = useState<RelationshipStatus[]>([]);
+  const [minLevel de confianzaPct, setMinLevel de confianzaPct] = useState(0);
+  const [unknownLevel de confianzaPolicy, setUnknownLevel de confianzaPolicy] = useState<"include" | "exclude">(
     "include",
   );
   const [nodeLimit, setNodeLimit] = useState(RENDER_CAP_INITIAL);
@@ -108,9 +108,9 @@ function GraphRoute() {
     setSelectedTipoIds([]);
     setSelectedCategories([]);
     setSelectedProvenances([]);
-    setSelectedEstadoes([]);
-    setMinNivel de confianzaPct(0);
-    setUnknownNivel de confianzaPolicy("include");
+    setSelectedStatuses([]);
+    setMinLevel de confianzaPct(0);
+    setUnknownLevel de confianzaPolicy("include");
     setNodeLimit(RENDER_CAP_INITIAL);
     setEdgeLimit(RENDER_CAP_INITIAL);
   }, []);
@@ -146,34 +146,34 @@ function GraphRoute() {
     },
     [resetCaps],
   );
-  const toggleEstado = useCallback(
-    (id: RelationshipEstado) => {
-      setSelectedEstadoes((prev) =>
+  const toggleStatus = useCallback(
+    (id: RelationshipStatus) => {
+      setSelectedStatuses((prev) =>
         prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
       );
       resetCaps();
     },
     [resetCaps],
   );
-  const changeMinNivel de confianza = useCallback(
+  const changeMinLevel de confianza = useCallback(
     (pct: number) => {
-      setMinNivel de confianzaPct(Math.min(100, Math.max(0, pct)));
+      setMinLevel de confianzaPct(Math.min(100, Math.max(0, pct)));
       resetCaps();
     },
     [resetCaps],
   );
   const changeUnknownPolicy = useCallback(
     (p: "include" | "exclude") => {
-      setUnknownNivel de confianzaPolicy(p);
+      setUnknownLevel de confianzaPolicy(p);
       resetCaps();
     },
     [resetCaps],
   );
   const clearTrustFilters = useCallback(() => {
     setSelectedProvenances([]);
-    setSelectedEstadoes([]);
-    setMinNivel de confianzaPct(0);
-    setUnknownNivel de confianzaPolicy("include");
+    setSelectedStatuses([]);
+    setMinLevel de confianzaPct(0);
+    setUnknownLevel de confianzaPolicy("include");
     resetCaps();
   }, [resetCaps]);
 
@@ -235,15 +235,15 @@ function GraphRoute() {
     () =>
       buildRelationshipTrustPredicate({
         provenances: selectedProvenances,
-        statuses: selectedEstadoes,
-        minNivel de confianza: minNivel de confianzaPct / 100,
-        unknownNivel de confianzaPolicy,
+        statuses: selectedStatuses,
+        minLevel de confianza: minLevel de confianzaPct / 100,
+        unknownLevel de confianzaPolicy,
       }),
-    [selectedProvenances, selectedEstadoes, minNivel de confianzaPct, unknownNivel de confianzaPolicy],
+    [selectedProvenances, selectedStatuses, minLevel de confianzaPct, unknownLevel de confianzaPolicy],
   );
 
   const filteredRelationships = useMemo<Relationship[]>(() => {
-    const wantEstado =
+    const wantStatus =
       filters.resolution === "resolved"
         ? "resolved"
         : filters.resolution === "unresolved"
@@ -252,7 +252,7 @@ function GraphRoute() {
     // AND across filter groups:
     //   resolution AND ontology(types/categories) AND trust(prov/status/conf).
     return canonicalRelationships.filter((r) => {
-      if (wantEstado !== null && r.status !== wantEstado) return false;
+      if (wantStatus !== null && r.status !== wantStatus) return false;
       if (!ontologyPredicate(r)) return false;
       if (!trustPredicate(r)) return false;
       return true;
@@ -290,7 +290,7 @@ function GraphRoute() {
 
   const ontologyActive = selectedTipoIds.length > 0 || selectedCategories.length > 0;
   const trustActive =
-    selectedProvenances.length > 0 || selectedEstadoes.length > 0 || minNivel de confianzaPct > 0;
+    selectedProvenances.length > 0 || selectedStatuses.length > 0 || minLevel de confianzaPct > 0;
   const filtersActive =
     filters.nodeTipo !== "" || filters.resolution !== "all" || ontologyActive || trustActive;
   const activeFilterCount =
@@ -299,14 +299,14 @@ function GraphRoute() {
     selectedTipoIds.length +
     selectedCategories.length +
     selectedProvenances.length +
-    selectedEstadoes.length +
-    (minNivel de confianzaPct > 0 ? 1 : 0);
+    selectedStatuses.length +
+    (minLevel de confianzaPct > 0 ? 1 : 0);
 
   // Canonical projection: every mapped Graph filter dimension is exposed
   // as a single, normalized `SearchQuery`. This is the SAME model used by
   // Explorador — Graph does not maintain a parallel search abstraction, it
   // just projects its per-filter UI state into the canonical shape.
-  // `minNivel de confianzaPct` and `unknownNivel de confianzaPolicy` are trust-panel
+  // `minLevel de confianzaPct` and `unknownLevel de confianzaPolicy` are trust-panel
   // ancillary controls and are intentionally NOT part of SearchQuery: they
   // are not declared search dimensions in the current domain model.
   const derivedSearchQuery = useMemo<SearchQuery>(() => {
@@ -318,7 +318,7 @@ function GraphRoute() {
       q.provenance = selectedProvenances.filter((p) => p !== PROVENANCE_NOT_SPECIFIED);
       if (q.provenance.length === 0) delete q.provenance;
     }
-    const statusList: string[] = [...selectedEstadoes];
+    const statusList: string[] = [...selectedStatuses];
     if (filters.resolution !== "all") statusList.push(filters.resolution);
     if (statusList.length > 0) q.status = statusList;
     return q;
@@ -328,7 +328,7 @@ function GraphRoute() {
     selectedTipoIds,
     selectedCategories,
     selectedProvenances,
-    selectedEstadoes,
+    selectedStatuses,
   ]);
 
   // Prepared for the day `/graph` accepts filters. Computed but not sent.
@@ -338,7 +338,7 @@ function GraphRoute() {
   // legacy per-dimension tally (`activeFilterCount` above) is kept only
   // for the existing `GraphRelationshipResumen` line; the top-level
   // ActiveFiltersBar uses the domain count + the confidence extras.
-  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minNivel de confianzaPct > 0 ? 1 : 0);
+  const searchActiveCount = countActiveFilters(derivedSearchQuery) + (minLevel de confianzaPct > 0 ? 1 : 0);
 
   return (
     <>
@@ -382,12 +382,12 @@ function GraphRoute() {
             <RelationshipTrustFilter
               summary={trustResumen}
               selectedProvenances={selectedProvenances}
-              selectedEstadoes={selectedEstadoes}
-              minNivel de confianzaPct={minNivel de confianzaPct}
-              unknownNivel de confianzaPolicy={unknownNivel de confianzaPolicy}
+              selectedStatuses={selectedStatuses}
+              minLevel de confianzaPct={minLevel de confianzaPct}
+              unknownLevel de confianzaPolicy={unknownLevel de confianzaPolicy}
               onToggleProvenance={toggleProvenance}
-              onToggleEstado={toggleEstado}
-              onChangeMinNivel de confianza={changeMinNivel de confianza}
+              onToggleStatus={toggleStatus}
+              onChangeMinLevel de confianza={changeMinLevel de confianza}
               onChangeUnknownPolicy={changeUnknownPolicy}
               onClear={clearTrustFilters}
             />
@@ -426,7 +426,7 @@ function GraphRoute() {
                       ? "No nodes match the current filters"
                       : "No nodes to display"
                 }
-                vacíoDescripción={
+                vacíoDescription={
                   graph.nodeCount === 0
                     ? "The projection is currently vacío."
                     : filtersActive
@@ -463,7 +463,7 @@ function GraphRoute() {
                       ? "No relationships match the current filters"
                       : "No relationships to display"
                 }
-                vacíoDescripción={
+                vacíoDescription={
                   graph.edgeCount === 0
                     ? "The projection has no edges yet."
                     : filtersActive
@@ -572,7 +572,7 @@ function GraphRelationshipResumen({
  * these fields, the panel lights up automatically.
  */
 function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipTrustResumen }) {
-  if (!summary.hasProvenance && !summary.hasNivel de confianza && !summary.hasMeaningfulEstado) return null;
+  if (!summary.hasProvenance && !summary.hasLevel de confianza && !summary.hasMeaningfulStatus) return null;
   return (
     <section
       aria-labelledby="graph-trust-panel-heading"
@@ -585,15 +585,15 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
         Trust summary
       </h3>
       <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
-        {summary.hasNivel de confianza ? (
+        {summary.hasLevel de confianza ? (
           <>
             <div className="inline-flex items-baseline gap-1.5">
               <dt className="uppercase tracking-wide">With confidence</dt>
-              <dd className="font-mono text-xs text-foreground">{summary.withNivel de confianza}</dd>
+              <dd className="font-mono text-xs text-foreground">{summary.withLevel de confianza}</dd>
             </div>
             <div className="inline-flex items-baseline gap-1.5">
               <dt className="uppercase tracking-wide">Without</dt>
-              <dd className="font-mono text-xs text-foreground">{summary.withoutNivel de confianza}</dd>
+              <dd className="font-mono text-xs text-foreground">{summary.withoutLevel de confianza}</dd>
             </div>
           </>
         ) : null}
@@ -611,7 +611,7 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
             <dd className="font-mono text-xs text-foreground">{summary.withoutProvenance}</dd>
           </div>
         ) : null}
-        {summary.hasMeaningfulEstado
+        {summary.hasMeaningfulStatus
           ? summary.statuses.map((s) => (
               <div key={s.descriptor.id} className="inline-flex items-baseline gap-1.5">
                 <dt className="uppercase tracking-wide">{s.descriptor.displayName}</dt>

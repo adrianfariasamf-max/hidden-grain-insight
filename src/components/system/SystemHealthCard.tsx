@@ -1,12 +1,12 @@
 import { Loader2 } from "lucide-react";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
-import type { EstadoResponse } from "@/lib/api/types";
+import type { StatusResponse } from "@/lib/api/types";
 
-import { EstadoEstadoIndicator } from "./EstadoEstadoIndicator";
+import { StatusStatusIndicator } from "./StatusStatusIndicator";
 
-interface SistemaEstadoCardProps {
-  health: EstadoResponse;
+interface SistemaStatusCardProps {
+  health: StatusResponse;
   isRefreshing?: boolean;
 }
 
@@ -14,7 +14,7 @@ interface SistemaEstadoCardProps {
  * Compact summary of /health for Inicio and Sistema. Only fields that
  * exist in the contract are rendered — nothing is inferred.
  */
-export function SistemaEstadoCard({ health, isRefreshing }: SistemaEstadoCardProps) {
+export function SistemaStatusCard({ health, isRefreshing }: SistemaStatusCardProps) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card px-4 py-4">
       <div className="flex items-start justify-between gap-3">
@@ -32,7 +32,7 @@ export function SistemaEstadoCard({ health, isRefreshing }: SistemaEstadoCardPro
               refreshing
             </span>
           ) : null}
-          <EstadoEstadoIndicator status={health.status} />
+          <StatusStatusIndicator status={health.status} />
         </div>
       </div>
 

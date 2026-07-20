@@ -71,7 +71,7 @@ function ExperimentosPage() {
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h2 className="text-base font-semibold text-foreground">{e.title}</h2>
-                      <EstadoPill status={e.status} />
+                      <StatusPill status={e.status} />
                     </div>
                     {e.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
@@ -96,7 +96,7 @@ function ExperimentosPage() {
   );
 }
 
-function EstadoPill({ status }: { status: string }) {
+function StatusPill({ status }: { status: string }) {
   const tone: Record<string, string> = {
     draft: "bg-muted text-muted-foreground",
     published: "bg-primary/15 text-primary",

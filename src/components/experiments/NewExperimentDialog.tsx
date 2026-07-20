@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescripción,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTítulo,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -22,8 +22,8 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [title, setTítulo] = useState("");
-  const [description, setDescripción] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [instructions, setInstructions] = useState("");
   const [hiddenTarget, setHiddenTarget] = useState("");
   const [issues, setIssues] = useState<string[]>([]);
@@ -33,8 +33,8 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
     onSuccess: (exp) => {
       qc.invalidateQueries({ queryKey: experimentKeys.list() });
       setOpen(false);
-      setTítulo("");
-      setDescripción("");
+      setTitle("");
+      setDescription("");
       setInstructions("");
       setHiddenTarget("");
       setIssues([]);
@@ -63,10 +63,10 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTítulo>Nuevo experimento</DialogTítulo>
-          <DialogDescripción>
+          <DialogTitle>Nuevo experimento</DialogTitle>
+          <DialogDescription>
             Crea un estudio de percepción. Podrás editar cada campo después.
-          </DialogDescripción>
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-1.5">
@@ -74,7 +74,7 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
             <Input
               id="new-exp-title"
               value={title}
-              onChange={(e) => setTítulo(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Estudio de percepción #1"
               required
               autoFocus
@@ -85,7 +85,7 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
             <Textarea
               id="new-exp-desc"
               value={description}
-              onChange={(e) => setDescripción(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="Resumen breve para tus propios registros."
             />

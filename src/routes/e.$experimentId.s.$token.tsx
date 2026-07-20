@@ -76,7 +76,7 @@ function ParticipantSession() {
         title={exp.title}
         instructions={exp.instructions}
         total={stimuliSorted.length}
-        onComenzar={() => setStage("stimulus")}
+        onBegin={() => setStage("stimulus")}
       />
     );
   }
@@ -109,12 +109,12 @@ function InstructionsView({
   title,
   instructions,
   total,
-  onComenzar,
+  onBegin,
 }: {
   title: string;
   instructions: string;
   total: number;
-  onComenzar: () => void;
+  onBegin: () => void;
 }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-10">
@@ -125,7 +125,7 @@ function InstructionsView({
       <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm text-foreground">
         {instructions || "Observa cada imagen con atención y responde las preguntas a continuación."}
       </div>
-      <Button type="button" className="mt-6" onClick={onComenzar}>
+      <Button type="button" className="mt-6" onClick={onBegin}>
         Start
       </Button>
     </div>
@@ -149,7 +149,7 @@ function StimulusView({
   const [attention, setElementos que llamaron la atención] = useState("");
   const [feeling, setSensación] = useState("");
   const [interpretation, setInterpretación] = useState("");
-  const [confidence, setNivel de confianza] = useState<number | null>(null);
+  const [confidence, setLevel de confianza] = useState<number | null>(null);
   const [firstViewedAt] = useState(() => new Date().toISOString());
   const [error, setError] = useState<string | null>(null);
 
@@ -277,7 +277,7 @@ function StimulusView({
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => setNivel de confianza(active ? null : n)}
+                  onClick={() => setLevel de confianza(active ? null : n)}
                   className={`h-9 flex-1 rounded-md border text-sm transition-colors ${
                     active
                       ? "border-primary bg-primary/15 text-primary"

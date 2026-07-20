@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 
-import { Sheet, SheetContent, SheetTrigger, SheetTítulo } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 import { SideNavigation } from "./SideNavigation";
 
@@ -31,7 +31,7 @@ export function AppShell({ children }: AppShellProps) {
                 <Menu className="h-4 w-4" aria-hidden />
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
-                <SheetTítulo className="sr-only">Navigation</SheetTítulo>
+                <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <SideNavigation onNavigate={() => setOpen(false)} />
               </SheetContent>
             </Sheet>

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SharePanel } from "@/components/experiments/SharePanel";
 import { StimulusSlot } from "@/components/experiments/StimulusSlot";
-import { SesionesPanel } from "@/components/experiments/SesionesPanel";
+import { SessionsPanel } from "@/components/experiments/SessionsPanel";
 import { experimentDetailQuery, experimentKeys, experimentsApi } from "@/lib/perception/client";
 import type { ExperimentDetail } from "@/lib/perception/types";
 
@@ -71,7 +71,7 @@ function ExperimentEditor({
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageHeader title={experiment.title} description={experiment.description} />
-        <EstadoPill status={experiment.status} />
+        <StatusPill status={experiment.status} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -105,7 +105,7 @@ function ExperimentEditor({
 
           {isPublished ? <SharePanel experimentId={experimentId} /> : null}
 
-          {isPublished ? <SesionesPanel experimentId={experimentId} /> : null}
+          {isPublished ? <SessionsPanel experimentId={experimentId} /> : null}
         </div>
 
         <aside className="grid gap-4 lg:sticky lg:top-6 lg:self-start">
@@ -145,14 +145,14 @@ function MetadataCard({
   readOnly: boolean;
 }) {
   const e = detail.experiment;
-  const [title, setTítulo] = useState(e.title);
-  const [description, setDescripción] = useState(e.description);
+  const [title, setTitle] = useState(e.title);
+  const [description, setDescription] = useState(e.description);
   const [instructions, setInstructions] = useState(e.instructions);
   const [hiddenTarget, setHiddenTarget] = useState(e.hiddenTarget);
 
   useEffect(() => {
-    setTítulo(e.title);
-    setDescripción(e.description);
+    setTitle(e.title);
+    setDescription(e.description);
     setInstructions(e.instructions);
     setHiddenTarget(e.hiddenTarget);
   }, [e.id, e.title, e.description, e.instructions, e.hiddenTarget]);
@@ -183,7 +183,7 @@ function MetadataCard({
           <Input
             id="exp-title"
             value={title}
-            onChange={(ev) => setTítulo(ev.target.value)}
+            onChange={(ev) => setTitle(ev.target.value)}
             disabled={readOnly}
           />
         </Field>
@@ -191,7 +191,7 @@ function MetadataCard({
           <Textarea
             id="exp-desc"
             value={description}
-            onChange={(ev) => setDescripción(ev.target.value)}
+            onChange={(ev) => setDescription(ev.target.value)}
             rows={2}
             disabled={readOnly}
           />
@@ -353,7 +353,7 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function EstadoPill({ status }: { status: string }) {
+function StatusPill({ status }: { status: string }) {
   const tone: Record<string, string> = {
     draft: "bg-muted text-muted-foreground",
     published: "bg-primary/15 text-primary",

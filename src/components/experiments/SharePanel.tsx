@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function SharePanel({ experimentId }: { experimentId: string }) {
   const [origin, setOrigin] = useState("");
   const [qr, setQr] = useState<string | null>(null);
-  const [copied, setCopiado] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const shareUrl = origin ? `${origin}/e/${experimentId}` : "";
 
@@ -34,8 +34,8 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
     if (!shareUrl) return;
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 1600);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
     } catch {
       /* ignore */
     }

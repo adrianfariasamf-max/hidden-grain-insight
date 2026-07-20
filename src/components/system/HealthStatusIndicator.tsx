@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { HEALTH_DOT_CLASSES, HEALTH_TONE_CLASSES, classifyEstado } from "@/lib/health/status";
+import { HEALTH_DOT_CLASSES, HEALTH_TONE_CLASSES, classifyStatus } from "@/lib/health/status";
 
-interface EstadoEstadoIndicatorProps {
+interface StatusStatusIndicatorProps {
   status: string;
   className?: string;
 }
@@ -10,8 +10,8 @@ interface EstadoEstadoIndicatorProps {
  * Text + color badge for a health status. Original text is always shown;
  * unknown values collapse to a neutral tone rather than being invented.
  */
-export function EstadoEstadoIndicator({ status, className }: EstadoEstadoIndicatorProps) {
-  const tone = classifyEstado(status);
+export function StatusStatusIndicator({ status, className }: StatusStatusIndicatorProps) {
+  const tone = classifyStatus(status);
   return (
     <span
       className={cn(

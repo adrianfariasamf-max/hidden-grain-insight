@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { RepositoryMetrics } from "@/components/system/RepositoryMetrics";
-import { SistemaEstadoCard } from "@/components/system/SistemaEstadoCard";
+import { SistemaStatusCard } from "@/components/system/SistemaStatusCard";
 import { ReadOnlyNotice } from "@/components/system/ReadOnlyNotice";
 import { healthQuery } from "@/lib/api/queries";
 
@@ -104,7 +104,7 @@ function InicioRoute() {
             <ErrorState error={query.error} onRetry={() => query.refetch()} />
           ) : query.data ? (
             <div className="flex flex-col gap-4">
-              <SistemaEstadoCard health={query.data} isRefreshing={isRefreshing} />
+              <SistemaStatusCard health={query.data} isRefreshing={isRefreshing} />
               <RepositoryMetrics health={query.data} includeSchema />
             </div>
           ) : null}

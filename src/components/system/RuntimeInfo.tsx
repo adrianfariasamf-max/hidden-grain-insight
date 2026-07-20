@@ -1,8 +1,8 @@
 import { API_BASE } from "@/lib/api/client";
-import type { EstadoResponse } from "@/lib/api/types";
+import type { StatusResponse } from "@/lib/api/types";
 
 interface EjecuciónInfoProps {
-  health: Pick<EstadoResponse, "service" | "schemaVersion">;
+  health: Pick<StatusResponse, "service" | "schemaVersion">;
 }
 
 /**

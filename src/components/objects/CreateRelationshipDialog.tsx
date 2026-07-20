@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescripción,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTítulo,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -39,10 +39,10 @@ type FieldErrors = Partial<
 
 interface Props {
   sourceObjectId: string;
-  sourceTítulo: string;
+  sourceTitle: string;
 }
 
-export function CreateRelationshipDialog({ sourceObjectId, sourceTítulo }: Props) {
+export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props) {
   const [open, setOpen] = useState(false);
   return (
     <Dialog
@@ -59,11 +59,11 @@ export function CreateRelationshipDialog({ sourceObjectId, sourceTítulo }: Prop
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTítulo>Create Relationship</DialogTítulo>
-          <DialogDescripción>
-            Link <span className="font-medium text-foreground">{sourceTítulo}</span> to another
+          <DialogTitle>Create Relationship</DialogTitle>
+          <DialogDescription>
+            Link <span className="font-medium text-foreground">{sourceTitle}</span> to another
             Knowledge Object.
-          </DialogDescripción>
+          </DialogDescription>
         </DialogHeader>
         {open ? (
           <CreateRelationshipForm sourceObjectId={sourceObjectId} onClose={() => setOpen(false)} />
@@ -89,9 +89,9 @@ function CreateRelationshipForm({
   const [targetObjectId, setTargetObjectId] = useState<string>("");
   const [targetLabel, setTargetLabel] = useState<string>("");
   const [type, setTipo] = useState<string>("");
-  const [description, setDescripción] = useState("");
+  const [description, setDescription] = useState("");
   const [provenance, setProvenance] = useState("");
-  const [confidence, setNivel de confianza] = useState<string>("");
+  const [confidence, setLevel de confianza] = useState<string>("");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -261,7 +261,7 @@ function CreateRelationshipForm({
         <Textarea
           id="rel-desc"
           value={description}
-          onChange={(e) => setDescripción(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           rows={2}
           maxLength={500}
           disabled={disabled}
@@ -285,7 +285,7 @@ function CreateRelationshipForm({
           <Input
             id="rel-conf"
             value={confidence}
-            onChange={(e) => setNivel de confianza(e.target.value)}
+            onChange={(e) => setLevel de confianza(e.target.value)}
             disabled={disabled}
             inputMode="decimal"
             placeholder="0.0 – 1.0"

@@ -20,25 +20,25 @@ import { Check, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
-  getNivel de confianzaClassLabel,
+  getLevel de confianzaClassLabel,
   PROVENANCE_NOT_SPECIFIED,
   type ProvenanceFilterValue,
-  type RelationshipEstado,
+  type RelationshipStatus,
   type RelationshipTrustResumen,
 } from "@/lib/domain";
 
 interface RelationshipTrustFilterProps {
   summary: RelationshipTrustResumen;
   selectedProvenances: readonly ProvenanceFilterValue[];
-  selectedEstadoes: readonly RelationshipEstado[];
+  selectedStatuses: readonly RelationshipStatus[];
   /** Minimum confidence in percentage points (0..100). 0 = no threshold. */
-  minNivel de confianzaPct: number;
+  minLevel de confianzaPct: number;
   /** How relationships without a declared confidence are treated when
    *  the threshold is > 0. */
-  unknownNivel de confianzaPolicy: "include" | "exclude";
+  unknownLevel de confianzaPolicy: "include" | "exclude";
   onToggleProvenance: (id: ProvenanceFilterValue) => void;
-  onToggleEstado: (id: RelationshipEstado) => void;
-  onChangeMinNivel de confianza: (pct: number) => void;
+  onToggleStatus: (id: RelationshipStatus) => void;
+  onChangeMinLevel de confianza: (pct: number) => void;
   onChangeUnknownPolicy: (policy: "include" | "exclude") => void;
   onClear: () => void;
 }
@@ -46,35 +46,35 @@ interface RelationshipTrustFilterProps {
 export function RelationshipTrustFilter({
   summary,
   selectedProvenances,
-  selectedEstadoes,
-  minNivel de confianzaPct,
-  unknownNivel de confianzaPolicy,
+  selectedStatuses,
+  minLevel de confianzaPct,
+  unknownLevel de confianzaPolicy,
   onToggleProvenance,
-  onToggleEstado,
-  onChangeMinNivel de confianza,
+  onToggleStatus,
+  onChangeMinLevel de confianza,
   onChangeUnknownPolicy,
   onClear,
 }: RelationshipTrustFilterProps) {
   const sliderId = useId();
   const provSet = new Set<string>(selectedProvenances);
-  const statusSet = new Set<string>(selectedEstadoes);
+  const statusSet = new Set<string>(selectedStatuses);
 
   const showProvenance = summary.hasProvenance;
-  const showEstado = summary.hasMeaningfulEstado;
-  const showNivel de confianza = summary.hasNivel de confianza;
+  const showStatus = summary.hasMeaningfulStatus;
+  const showLevel de confianza = summary.hasLevel de confianza;
 
   const handleProvenance = useCallback(
     (id: ProvenanceFilterValue) => () => onToggleProvenance(id),
     [onToggleProvenance],
   );
-  const handleEstado = useCallback(
-    (id: RelationshipEstado) => () => onToggleEstado(id),
-    [onToggleEstado],
+  const handleStatus = useCallback(
+    (id: RelationshipStatus) => () => onToggleStatus(id),
+    [onToggleStatus],
   );
 
-  if (!showProvenance && !showEstado && !showNivel de confianza) return null;
+  if (!showProvenance && !showStatus && !showLevel de confianza) return null;
 
-  const thresholdActive = minNivel de confianzaPct > 0;
+  const thresholdActive = minLevel de confianzaPct > 0;
   const hasSelection = provSet.size > 0 || statusSet.size > 0 || thresholdActive;
 
   return (
@@ -164,7 +164,7 @@ export function RelationshipTrustFilter({
         </fieldset>
       ) : null}
 
-      {showEstado ? (
+      {showStatus ? (
         <fieldset className="flex flex-col gap-1.5">
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Estado · OR within group
@@ -177,7 +177,7 @@ export function RelationshipTrustFilter({
                 <li key={stat.descriptor.id}>
                   <button
                     type="button"
-                    onClick={handleEstado(stat.descriptor.id)}
+                    onClick={handleStatus(stat.descriptor.id)}
                     aria-pressed={selected}
                     title={stat.descriptor.description}
                     aria-label={stat.descriptor.accessibleLabel}
@@ -206,7 +206,7 @@ export function RelationshipTrustFilter({
         </fieldset>
       ) : null}
 
-      {showNivel de confianza ? (
+      {showLevel de confianza ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Minimum confidence · AND
@@ -218,19 +218,19 @@ export function RelationshipTrustFilter({
               min={0}
               max={100}
               step={5}
-              value={minNivel de confianzaPct}
-              onChange={(e) => onChangeMinNivel de confianza(Number(e.target.value))}
+              value={minLevel de confianzaPct}
+              onChange={(e) => onChangeMinLevel de confianza(Number(e.target.value))}
               className="h-1 flex-1 min-w-[10rem] cursor-pointer accent-primary"
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-valuenow={minNivel de confianzaPct}
-              aria-valuetext={`${minNivel de confianzaPct}% minimum confidence`}
+              aria-valuenow={minLevel de confianzaPct}
+              aria-valuetext={`${minLevel de confianzaPct}% minimum confidence`}
             />
-            <span className="font-mono text-xs text-foreground">≥ {minNivel de confianzaPct}%</span>
-            {minNivel de confianzaPct > 0 ? (
+            <span className="font-mono text-xs text-foreground">≥ {minLevel de confianzaPct}%</span>
+            {minLevel de confianzaPct > 0 ? (
               <span className="font-mono text-[10px] text-muted-foreground">
-                {getNivel de confianzaClassLabel(
-                  minNivel de confianzaPct >= 85 ? "high" : minNivel de confianzaPct >= 60 ? "medium" : "low",
+                {getLevel de confianzaClassLabel(
+                  minLevel de confianzaPct >= 85 ? "high" : minLevel de confianzaPct >= 60 ? "medium" : "low",
                 )}{" "}
                 threshold
               </span>
@@ -238,25 +238,25 @@ export function RelationshipTrustFilter({
               <span className="text-[10px] text-muted-foreground">No threshold</span>
             )}
           </label>
-          {thresholdActive && summary.withoutNivel de confianza > 0 ? (
+          {thresholdActive && summary.withoutLevel de confianza > 0 ? (
             <fieldset
               className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
               aria-label="How to treat relationships without confidence"
             >
               <legend className="sr-only">How to treat relationships without confidence</legend>
               <span>
-                {summary.withoutNivel de confianza} relationship
-                {summary.withoutNivel de confianza === 1 ? "" : "s"} without confidence:
+                {summary.withoutLevel de confianza} relationship
+                {summary.withoutLevel de confianza === 1 ? "" : "s"} without confidence:
               </span>
               <PolicyOption
                 value="include"
-                current={unknownNivel de confianzaPolicy}
+                current={unknownLevel de confianzaPolicy}
                 onSelect={onChangeUnknownPolicy}
                 label="Include"
               />
               <PolicyOption
                 value="exclude"
-                current={unknownNivel de confianzaPolicy}
+                current={unknownLevel de confianzaPolicy}
                 onSelect={onChangeUnknownPolicy}
                 label="Exclude"
               />

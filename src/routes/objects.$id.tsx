@@ -6,7 +6,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CreateRelationshipDialog } from "@/components/objects/CreateRelationshipDialog";
 import { RelationshipList } from "@/components/objects/RelationshipList";
-import { EstadoBadge } from "@/components/shared/EstadoBadge";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
@@ -211,7 +211,7 @@ function ObjectDetailBody({
               {category}
             </span>
           ) : null}
-          {object.status ? <EstadoBadge status={object.status} /> : null}
+          {object.status ? <StatusBadge status={object.status} /> : null}
           {version ? (
             <span className="font-mono text-[11px] text-muted-foreground">{version}</span>
           ) : null}
@@ -234,7 +234,7 @@ function ObjectDetailBody({
             <span className="font-mono text-[11px] text-muted-foreground">
               {relationshipCount ?? 0} total
             </span>
-            <CreateRelationshipDialog sourceObjectId={object.id} sourceTítulo={object.title} />
+            <CreateRelationshipDialog sourceObjectId={object.id} sourceTitle={object.title} />
           </div>
         </header>
         <RelationshipsResumen summary={summary} />
