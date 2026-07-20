@@ -15,6 +15,7 @@ import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExperimentsIndexRouteImport } from './routes/experiments.index'
 import { Route as ObjectsNewRouteImport } from './routes/objects.new'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
 import { Route as ExperimentsIdRouteImport } from './routes/experiments.$id'
@@ -68,6 +69,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsIndexRoute = ExperimentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ExperimentsRoute,
 } as any)
 const ObjectsNewRoute = ObjectsNewRouteImport.update({
   id: '/objects/new',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
+  '/experiments/': typeof ExperimentsIndexRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
@@ -224,7 +231,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
-  '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -237,6 +243,7 @@ export interface FileRoutesByTo {
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
+  '/experiments': typeof ExperimentsIndexRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
@@ -269,6 +276,7 @@ export interface FileRoutesById {
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
+  '/experiments/': typeof ExperimentsIndexRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
@@ -302,6 +310,7 @@ export interface FileRouteTypes {
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
+    | '/experiments/'
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
@@ -320,7 +329,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/discover'
-    | '/experiments'
     | '/explorer'
     | '/graph'
     | '/system'
@@ -333,6 +341,7 @@ export interface FileRouteTypes {
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
+    | '/experiments'
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
+    | '/experiments/'
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
@@ -442,6 +452,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/experiments/': {
+      id: '/experiments/'
+      path: '/'
+      fullPath: '/experiments/'
+      preLoaderRoute: typeof ExperimentsIndexRouteImport
+      parentRoute: typeof ExperimentsRoute
     }
     '/objects/new': {
       id: '/objects/new'
@@ -609,10 +626,12 @@ declare module '@tanstack/react-router' {
 
 interface ExperimentsRouteChildren {
   ExperimentsIdRoute: typeof ExperimentsIdRoute
+  ExperimentsIndexRoute: typeof ExperimentsIndexRoute
 }
 
 const ExperimentsRouteChildren: ExperimentsRouteChildren = {
   ExperimentsIdRoute: ExperimentsIdRoute,
+  ExperimentsIndexRoute: ExperimentsIndexRoute,
 }
 
 const ExperimentsRouteWithChildren = ExperimentsRoute._addFileChildren(

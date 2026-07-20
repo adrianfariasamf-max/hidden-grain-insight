@@ -90,9 +90,9 @@ function ParticipantLanding() {
               Antes de comenzar
             </h2>
             <p className="text-sm text-muted-foreground">
-              You will view three images in sequence and answer a few short questions about each.
-              Your responses are recorded anonymously and used only for research purposes. You may
-              stop at any time by closing this page.
+              Verás tres imágenes en secuencia y responderás algunas preguntas breves sobre cada
+              una. Tus respuestas se registran de forma anónima y se usan sólo con fines de
+              investigación. Puedes detenerte en cualquier momento cerrando esta página.
             </p>
           </section>
 

@@ -238,7 +238,7 @@ function MetadataCard({
           >
             {save.isPending ? "Guardando…" : dirty ? "Guardar cambios" : "Guardado"}
           </Button>
-          {readOnly ? (
+              {readOnly ? (
             <span className="text-[11px] text-muted-foreground">
               Los experimentos publicados no se pueden editar.
             </span>
@@ -366,11 +366,16 @@ function StatusPill({ status }: { status: string }) {
     published: "bg-primary/15 text-primary",
     closed: "bg-secondary text-secondary-foreground",
   };
+  const label: Record<string, string> = {
+    draft: "borrador",
+    published: "publicado",
+    closed: "cerrado",
+  };
   return (
     <span
       className={`rounded px-2 py-0.5 font-mono text-[11px] ${tone[status] ?? "bg-muted text-muted-foreground"}`}
     >
-      {status}
+      {label[status] ?? status}
     </span>
   );
 }

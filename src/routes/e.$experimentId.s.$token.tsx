@@ -123,7 +123,7 @@ function InstructionsView({
           "Observa cada imagen con atención y responde las preguntas a continuación."}
       </div>
       <Button type="button" className="mt-6" onClick={onBegin}>
-        Start
+        Comenzar
       </Button>
     </div>
   );
@@ -183,7 +183,7 @@ function StimulusView({
         {/* Full-image display, no thumbnails, preserve aspect ratio */}
         <img
           src={stimulus.imageUrl}
-          alt={stimulus.altText || `Image ${index + 1}`}
+          alt={stimulus.altText || `Imagen ${index + 1}`}
           className="mx-auto block max-h-[70vh] w-full object-contain"
         />
       </div>
@@ -259,10 +259,10 @@ function StimulusView({
 
         <fieldset className="grid gap-2">
           <legend className="text-sm font-medium text-foreground">
-            Confianza in your response{" "}
+            Confianza en tu respuesta{" "}
             <span className="text-xs text-muted-foreground">(opcional)</span>
           </legend>
-          <div className="flex gap-2" role="radiogroup" aria-label="Confianza level">
+          <div className="flex gap-2" role="radiogroup" aria-label="Nivel de confianza">
             {[1, 2, 3, 4, 5].map((n) => {
               const active = confidence === n;
               return (
