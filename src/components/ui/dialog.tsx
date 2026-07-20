@@ -66,29 +66,29 @@ const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 );
 DialogFooter.displayName = "DialogFooter";
 
-const DialogTítulo = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Título>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Título>
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Título
+  <DialogPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ));
-DialogTítulo.displayName = DialogPrimitive.Título.displayName;
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescripción = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Descripción>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Descripción>
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Descripción
+  <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
-DialogDescripción.displayName = DialogPrimitive.Descripción.displayName;
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
@@ -99,6 +99,6 @@ export {
   DialogContent,
   DialogHeader,
   DialogFooter,
-  DialogTítulo,
-  DialogDescripción,
+  DialogTitle,
+  DialogDescription,
 };

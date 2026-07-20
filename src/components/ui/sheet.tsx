@@ -84,29 +84,29 @@ const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 );
 SheetFooter.displayName = "SheetFooter";
 
-const SheetTítulo = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Título>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Título>
+const SheetTitle = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Título
+  <SheetPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold text-foreground", className)}
     {...props}
   />
 ));
-SheetTítulo.displayName = SheetPrimitive.Título.displayName;
+SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
-const SheetDescripción = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Descripción>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Descripción>
+const SheetDescription = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Descripción
+  <SheetPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
-SheetDescripción.displayName = SheetPrimitive.Descripción.displayName;
+SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
   Sheet,
@@ -117,6 +117,6 @@ export {
   SheetContent,
   SheetHeader,
   SheetFooter,
-  SheetTítulo,
-  SheetDescripción,
+  SheetTitle,
+  SheetDescription,
 };

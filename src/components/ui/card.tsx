@@ -20,7 +20,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardHeader.displayName = "CardHeader";
 
-const CardTítulo = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
@@ -29,14 +29,14 @@ const CardTítulo = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
     />
   ),
 );
-CardTítulo.displayName = "CardTítulo";
+CardTitle.displayName = "CardTitle";
 
-const CardDescripción = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
   ),
 );
-CardDescripción.displayName = "CardDescripción";
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -52,4 +52,4 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTítulo, CardDescripción, CardContent };
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
