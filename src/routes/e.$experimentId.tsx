@@ -21,16 +21,10 @@ const publicExperimentQuery = (id: string) =>
   queryOptions({
     queryKey: ["perception", "public-experiment", id],
     queryFn: async ({ signal }) => {
-      const res = await fetch(`${API_BASE}/experiments/${id}`, { signal });
+      const res = await fetch(`${API_BASE}/public/experiments/${id}`, { signal });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const body = (await res.json()) as { experiment: PublicExperiment & { status: string } };
-      // Defensive: never let hiddenTarget cross into UI state.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { hiddenTarget: _drop, ...safe } = body.experiment as unknown as {
-        hiddenTarget?: string;
-      } & PublicExperiment;
-      return { ...body, experiment: safe as PublicExperiment & { status: string } };
+      return (await res.json()) as { experiment: PublicExperiment };
     },
   });
 
