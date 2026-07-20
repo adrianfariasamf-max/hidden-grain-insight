@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -123,13 +124,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const isParticipantRoute = useRouterState({
+    select: (s) => s.location.pathname.startsWith("/e/"),
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Shared shell mounted once; nested routes render inside <Outlet />. */}
-      <AppShell>
-        <Outlet />
-      </AppShell>
+      {isParticipantRoute ? (
+        // Participant surface: no researcher chrome, full-viewport neutral canvas.
+        <div className="min-h-screen bg-background text-foreground">
+          <Outlet />
+        </div>
+      ) : (
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      )}
     </QueryClientProvider>
   );
 }
