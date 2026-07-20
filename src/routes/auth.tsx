@@ -18,7 +18,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const session = useSession();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [mode, setMode] = useState<"signin" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,23 +46,6 @@ function AuthPage() {
       navigate({ to: "/experiments", replace: true });
       return;
     }
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      setLoading(false);
-      if (error) {
-        setError(error.message);
-        return;
-      }
-      setNotice(
-        "Cuenta creada. Si el email es válido para esta instalación, ya puedes iniciar sesión.",
-      );
-      setMode("signin");
-      return;
-    }
     // forgot
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -72,15 +55,12 @@ function AuthPage() {
       setError(error.message);
       return;
     }
-    setNotice("Si el correo existe, recibirás un enlace para restablecer la contraseña.");
+    setNotice(
+      "Si el correo existe, recibirás un enlace para restablecer la contraseña. Nota: la entrega de correo depende de la infraestructura de email institucional, aún no configurada en el piloto.",
+    );
   };
 
-  const title =
-    mode === "signin"
-      ? "Acceso investigador"
-      : mode === "signup"
-        ? "Crear cuenta inicial"
-        : "Recuperar contraseña";
+  const title = mode === "signin" ? "Acceso investigador" : "Recuperar contraseña";
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
@@ -88,10 +68,8 @@ function AuthPage() {
         <h1 className="text-lg font-semibold text-foreground">{title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "signin"
-            ? "Introduce tus credenciales institucionales."
-            : mode === "signup"
-              ? "Solo la cuenta OWNER autorizada puede completar el registro."
-              : "Te enviaremos un enlace para restablecer la contraseña."}
+            ? "Introduce tus credenciales institucionales. El registro público está deshabilitado; el alta de nuevos investigadores se realiza por invitación del OWNER."
+            : "Te enviaremos un enlace para restablecer la contraseña."}
         </p>
         <form className="mt-6 space-y-4" onSubmit={submit}>
           <div>
@@ -116,11 +94,10 @@ function AuthPage() {
             <input
               id="password"
               type="password"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              minLength={mode === "signup" ? 10 : undefined}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
@@ -140,33 +117,18 @@ function AuthPage() {
             disabled={loading}
             className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
           >
-            {loading
-              ? "Procesando…"
-              : mode === "signin"
-                ? "Iniciar sesión"
-                : mode === "signup"
-                  ? "Crear cuenta"
-                  : "Enviar enlace"}
+            {loading ? "Procesando…" : mode === "signin" ? "Iniciar sesión" : "Enviar enlace"}
           </button>
         </form>
         <div className="mt-6 flex flex-col gap-2 text-xs text-muted-foreground">
           {mode === "signin" && (
-            <>
-              <button
+            <button
                 type="button"
                 onClick={() => { setMode("forgot"); setError(null); setNotice(null); }}
                 className="text-left text-primary hover:underline"
               >
                 ¿Olvidaste tu contraseña?
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode("signup"); setError(null); setNotice(null); }}
-                className="text-left text-primary hover:underline"
-              >
-                Crear cuenta inicial del OWNER
-              </button>
-            </>
+            </button>
           )}
           {mode !== "signin" && (
             <button
