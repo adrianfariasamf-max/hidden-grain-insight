@@ -196,7 +196,7 @@ function ParticipantLanding() {
     <>
     <PreviewBanner active={preview} />
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mb-2 flex items-center justify-between gap-6">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-4 sm:gap-6">
         <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
         <BrandingLogo className="flex shrink-0 items-center" size="lg" />
       </div>
@@ -320,7 +320,7 @@ function InstructionsStage({
 }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mb-1 flex items-center justify-between gap-6">
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-4 sm:gap-6">
         <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{title}</h1>
         <BrandingLogo className="flex shrink-0 items-center" size="lg" />
       </div>
