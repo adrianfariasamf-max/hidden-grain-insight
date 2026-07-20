@@ -15,6 +15,10 @@ export const Route = createFileRoute("/api/public/experiments/$id")({
         const { hiddenTarget: _drop, ...safeExperiment } = detail.experiment;
         return Response.json({
           experiment: safeExperiment,
+          // Stimuli are needed by the participant landing to preload the
+          // first image BEFORE the session is created (RR-006). URLs are
+          // short-lived signed reads; imagePath/imageUrl are safe to expose.
+          stimuli: detail.stimuli,
         });
       },
     },
