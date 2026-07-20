@@ -15,6 +15,7 @@ import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
+import { Route as ApiObjectsRouteImport } from './routes/api/objects'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 
 const SystemRoute = SystemRouteImport.update({
@@ -47,6 +48,11 @@ const ObjectsIdRoute = ObjectsIdRouteImport.update({
   path: '/objects/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiObjectsRoute = ApiObjectsRouteImport.update({
+  id: '/api/objects',
+  path: '/api/objects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/objects': typeof ApiObjectsRoute
   '/objects/$id': typeof ObjectsIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/objects': typeof ApiObjectsRoute
   '/objects/$id': typeof ObjectsIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/objects': typeof ApiObjectsRoute
   '/objects/$id': typeof ObjectsIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/system'
     | '/api/health'
+    | '/api/objects'
     | '/objects/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/system'
     | '/api/health'
+    | '/api/objects'
     | '/objects/$id'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/system'
     | '/api/health'
+    | '/api/objects'
     | '/objects/$id'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   GraphRoute: typeof GraphRoute
   SystemRoute: typeof SystemRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiObjectsRoute: typeof ApiObjectsRoute
   ObjectsIdRoute: typeof ObjectsIdRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ObjectsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/objects': {
+      id: '/api/objects'
+      path: '/api/objects'
+      fullPath: '/api/objects'
+      preLoaderRoute: typeof ApiObjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/health': {
       id: '/api/health'
       path: '/api/health'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   GraphRoute: GraphRoute,
   SystemRoute: SystemRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiObjectsRoute: ApiObjectsRoute,
   ObjectsIdRoute: ObjectsIdRoute,
 }
 export const routeTree = rootRouteImport
