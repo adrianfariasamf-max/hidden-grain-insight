@@ -87,13 +87,13 @@ function DiscoverRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Discovery"
+        eyebrow="Descubrimientos"
         title="Espacio de descubrimiento"
-        description="Deterministic insights derived from the Grafo de conocimiento — no AI, no probabilistic ranking."
+        description="Descubrimientos deterministas derivados del Grafo de conocimiento — sin IA, sin ranking probabilístico."
       />
       <section className="flex flex-col gap-4 px-4 py-6 sm:px-8">
         {query.isPending ? (
-          <LoadingState label="Analyzing graph…" />
+          <LoadingState label="Analizando el grafo…" />
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
         ) : insights.length === 0 ? (
