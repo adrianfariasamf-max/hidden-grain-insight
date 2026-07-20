@@ -56,17 +56,20 @@ function sessionDurationMs(s: ParticipantSession): number | null {
   return b - a;
 }
 
-// RR-010 · Derive an outcome status independent of the raw DB `status`.
-// Rules:
-//   - responseCount === 0 → "discarded" (never opened a stimulus).
-//   - session.status === "completed" → "completed".
-//   - otherwise (has responses but did not reach the end) → "abandoned".
+// RR-018 · Clasificación oficial de sesiones — sólo tres estados:
+//   - DESCARTADA: sesiones de prueba (automatizadas o marcadas ?test=1) y
+//     exclusiones metodológicas.
+//   - COMPLETADA: recorrió los tres estímulos y finalizó el estudio.
+//   - ABANDONADA: expuesta al primer estímulo (RR-016) pero no completó
+//     el estudio, sin importar cuántas respuestas dejó (0, 1, 2).
+// El estado crudo `in_progress` en la base ya no se muestra: si la sesión
+// no fue completada, se considera abandono a efectos de investigación.
 type SessionOutcome = "discarded" | "completed" | "abandoned";
 function classifyOutcome(item: {
   session: ParticipantSession;
   responseCount: number;
 }): SessionOutcome {
-  if (item.responseCount === 0) return "discarded";
+  if (isTestSession(item.session)) return "discarded";
   if (item.session.status === "completed") return "completed";
   return "abandoned";
 }
@@ -90,14 +93,9 @@ export function SessionsPanel({ experimentId }: Props) {
   const sessionsQ = useQuery(experimentSessionsQuery(experimentId));
   const detailQ = useQuery(experimentDetailQuery(experimentId));
   const [openToken, setOpenToken] = useState<string | null>(null);
-  // RR-006 · Empty sessions (0 responses) are treated as discarded and
-  // hidden by default so they never mix with real research data. Historical
-  // rows from before the new lifecycle can still be inspected via toggle.
-  const [showEmpty, setShowEmpty] = useState(false);
-
-  const rawItems = sessionsQ.data?.items ?? [];
-  const emptyCount = rawItems.filter((it) => it.responseCount === 0).length;
-  const items = showEmpty ? rawItems : rawItems.filter((it) => it.responseCount > 0);
+  // RR-016 · Toda sesión que haya visualizado el primer estímulo es una
+  // participación válida (aunque haya cero respuestas). No se ocultan.
+  const items = sessionsQ.data?.items ?? [];
 
   return (
     <section className="rounded-lg border border-border bg-card p-5">
@@ -105,20 +103,11 @@ export function SessionsPanel({ experimentId }: Props) {
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">Sesiones de participantes</h3>
           <p className="text-xs text-muted-foreground">
-            Datos crudos de participantes. Las sesiones sin respuestas (descartadas) se ocultan
-            por defecto. Las sesiones abandonadas conservan sus respuestas parciales.
+            Cada sesión nace al visualizar el primer estímulo. Clasificación oficial:
+            completada, abandonada o descartada (pruebas).
           </p>
         </div>
         <div className="flex items-center gap-3 text-[11px]">
-          {emptyCount > 0 ? (
-            <button
-              type="button"
-              onClick={() => setShowEmpty((v) => !v)}
-              className="rounded border border-border px-2 py-1 font-mono text-muted-foreground hover:text-foreground"
-            >
-              {showEmpty ? "ocultar" : "mostrar"} vacías ({emptyCount})
-            </button>
-          ) : null}
           <span className="font-mono text-muted-foreground">{items.length}</span>
         </div>
       </div>
@@ -136,6 +125,9 @@ export function SessionsPanel({ experimentId }: Props) {
             const open = openToken === s.publicToken;
             const outcome = classifyOutcome(it);
             const durationLabel = formatDurationMs(it.durationMs);
+            // RR-016 · Una sesión existe porque el primer estímulo cargó.
+            // Aunque no haya respuestas, el participante alcanzó el estímulo 1.
+            const reached = it.lastPositionReached ?? (outcome === "completed" ? 3 : 1);
             return (
               <li key={s.id} className="py-2">
                 <button
@@ -152,7 +144,7 @@ export function SessionsPanel({ experimentId }: Props) {
                       >
                         {OUTCOME_LABEL[outcome]}
                       </span>
-                      {test ? (
+                      {test && outcome !== "discarded" ? (
                         <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] text-amber-400">
                           sesión de prueba
                         </span>
@@ -161,8 +153,8 @@ export function SessionsPanel({ experimentId }: Props) {
                     <p className="text-[11px] text-muted-foreground">
                       Edad {readAgeRange(s)} · {it.responseCount}/3 respuesta
                       {it.responseCount === 1 ? "" : "s"}
-                      {outcome === "abandoned" && it.lastPositionReached
-                        ? ` · abandonó tras estímulo ${it.lastPositionReached}`
+                      {outcome === "abandoned"
+                        ? ` · abandonó en el estímulo ${reached}`
                         : ""}
                       {" · "}
                       duración {durationLabel} · iniciada{" "}
@@ -179,6 +171,7 @@ export function SessionsPanel({ experimentId }: Props) {
                     session={s}
                     stimuli={detailQ.data?.stimuli ?? []}
                     totalDurationMs={it.durationMs}
+                    outcome={outcome}
                   />
                 ) : null}
               </li>
@@ -195,11 +188,13 @@ function SessionResponses({
   session,
   stimuli,
   totalDurationMs,
+  outcome,
 }: {
   token: string;
   session: ParticipantSession;
   stimuli: ExperimentStimulus[];
   totalDurationMs: number | null;
+  outcome: SessionOutcome;
 }) {
   const rq = useQuery(sessionResponsesQuery(token));
   const responses = rq.data?.items ?? [];
@@ -209,7 +204,7 @@ function SessionResponses({
 
   return (
     <div className="mt-2 grid gap-3 rounded-md border border-border/60 bg-background/40 p-3">
-      <ParticipantSummary session={session} totalDurationMs={effectiveDuration} />
+      <ParticipantSummary session={session} totalDurationMs={effectiveDuration} outcome={outcome} />
       {rq.isLoading ? (
         <p className="text-xs text-muted-foreground">Cargando respuestas…</p>
       ) : responses.length === 0 ? (
@@ -327,12 +322,13 @@ function SecurityMeter({ level }: { level: number | null }) {
 function ParticipantSummary({
   session,
   totalDurationMs,
+  outcome,
 }: {
   session: ParticipantSession;
   totalDurationMs: number | null;
+  outcome: SessionOutcome;
 }) {
   const age = readAgeRange(session);
-  const test = isTestSession(session);
   return (
     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 rounded border border-border/60 bg-card p-3 text-[11px] sm:grid-cols-4">
       <SummaryItem k="Edad" v={age} />
@@ -344,13 +340,10 @@ function ParticipantSummary({
       <SummaryItem
         k="Estado"
         v={
-          <span className="inline-flex items-center gap-1.5">
-            <StatusChip status={session.status} />
-            {test ? (
-              <span className="rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] text-amber-400">
-                prueba
-              </span>
-            ) : null}
+          <span
+            className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${OUTCOME_TONE[outcome]}`}
+          >
+            {OUTCOME_LABEL[outcome]}
           </span>
         }
       />
@@ -367,26 +360,5 @@ function SummaryItem({ k, v }: { k: string; v: React.ReactNode }) {
   );
 }
 
-function StatusChip({ status }: { status: string }) {
-  const tone: Record<string, string> = {
-    pending: "bg-muted text-muted-foreground",
-    in_progress: "bg-primary/15 text-primary",
-    completed: "bg-primary/25 text-primary",
-    abandoned: "bg-destructive/15 text-destructive",
-  };
-  const label: Record<string, string> = {
-    pending: "pendiente",
-    in_progress: "en progreso",
-    completed: "completada",
-    abandoned: "abandonada",
-  };
-  return (
-    <span
-      className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${
-        tone[status] ?? "bg-muted text-muted-foreground"
-      }`}
-    >
-      {label[status] ?? status}
-    </span>
-  );
-}
+// RR-018 · StatusChip eliminado. El único estado mostrado al investigador
+// es el outcome oficial (descartada / abandonada / completada).
