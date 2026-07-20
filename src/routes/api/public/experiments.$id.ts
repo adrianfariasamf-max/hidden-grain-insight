@@ -8,7 +8,10 @@ export const Route = createFileRoute("/api/public/experiments/$id")({
         const { getExperimentDetail } = await import("@/lib/server/experiments-repo.server");
         const detail = await getExperimentDetail(params.id);
         if (!detail) return Response.json({ error: "not_found" }, { status: 404 });
-        if (detail.experiment.status !== "published") {
+        // RR-011/RR-012 · `closed` is a valid public state — the landing
+        // must show a "study has ended" screen instead of a generic 404.
+        // `draft` is never exposed publicly.
+        if (detail.experiment.status === "draft") {
           return Response.json({ error: "not_available" }, { status: 404 });
         }
 
