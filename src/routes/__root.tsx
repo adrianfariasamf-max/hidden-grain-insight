@@ -130,7 +130,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const chromeless = useRouterState({
     select: (s) =>
-      s.location.pathname.startsWith("/e/") || s.location.pathname === "/auth",
+      s.location.pathname.startsWith("/e/") ||
+      s.location.pathname === "/auth" ||
+      s.location.pathname === "/reset-password",
   });
 
   return (

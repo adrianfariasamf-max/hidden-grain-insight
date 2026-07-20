@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SystemRouteImport } from './routes/system'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as DiscoverRouteImport } from './routes/discover'
@@ -54,6 +55,11 @@ import { Route as ApiExperimentsIdStimuliStimulusIdRouteImport } from './routes/
 const SystemRoute = SystemRouteImport.update({
   id: '/system',
   path: '/system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GraphRoute = GraphRouteImport.update({
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/system': typeof SystemRoute
   '/experiments': typeof AuthenticatedExperimentsRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
@@ -315,6 +322,7 @@ export interface FileRoutesByTo {
   '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/system': typeof SystemRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/branding': typeof ApiBrandingRouteWithChildren
@@ -357,6 +365,7 @@ export interface FileRoutesById {
   '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/system': typeof SystemRoute
   '/_authenticated/experiments': typeof AuthenticatedExperimentsRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/explorer'
     | '/graph'
+    | '/reset-password'
     | '/system'
     | '/experiments'
     | '/settings'
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/explorer'
     | '/graph'
+    | '/reset-password'
     | '/system'
     | '/settings'
     | '/api/branding'
@@ -484,6 +495,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/explorer'
     | '/graph'
+    | '/reset-password'
     | '/system'
     | '/_authenticated/experiments'
     | '/_authenticated/settings'
@@ -528,6 +540,7 @@ export interface RootRouteChildren {
   DiscoverRoute: typeof DiscoverRoute
   ExplorerRoute: typeof ExplorerRoute
   GraphRoute: typeof GraphRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SystemRoute: typeof SystemRoute
   ApiBrandingRoute: typeof ApiBrandingRouteWithChildren
   ApiExperimentsRoute: typeof ApiExperimentsRouteWithChildren
@@ -551,6 +564,13 @@ declare module '@tanstack/react-router' {
       path: '/system'
       fullPath: '/system'
       preLoaderRoute: typeof SystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/graph': {
@@ -993,6 +1013,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverRoute: DiscoverRoute,
   ExplorerRoute: ExplorerRoute,
   GraphRoute: GraphRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SystemRoute: SystemRoute,
   ApiBrandingRoute: ApiBrandingRouteWithChildren,
   ApiExperimentsRoute: ApiExperimentsRouteWithChildren,

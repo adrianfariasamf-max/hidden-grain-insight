@@ -18,10 +18,12 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const session = useSession();
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (session.status === "authenticated") {
@@ -32,22 +34,64 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setNotice(null);
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (mode === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      navigate({ to: "/experiments", replace: true });
+      return;
+    }
+    if (mode === "signup") {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setNotice(
+        "Cuenta creada. Si el email es válido para esta instalación, ya puedes iniciar sesión.",
+      );
+      setMode("signin");
+      return;
+    }
+    // forgot
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
     setLoading(false);
     if (error) {
       setError(error.message);
       return;
     }
-    navigate({ to: "/experiments", replace: true });
+    setNotice("Si el correo existe, recibirás un enlace para restablecer la contraseña.");
   };
+
+  const title =
+    mode === "signin"
+      ? "Acceso investigador"
+      : mode === "signup"
+        ? "Crear cuenta inicial"
+        : "Recuperar contraseña";
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
       <div className="rounded-lg border border-border/60 bg-card p-6 shadow-sm">
-        <h1 className="text-lg font-semibold text-foreground">Acceso investigador</h1>
+        <h1 className="text-lg font-semibold text-foreground">{title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Introduce tus credenciales institucionales.
+          {mode === "signin"
+            ? "Introduce tus credenciales institucionales."
+            : mode === "signup"
+              ? "Solo la cuenta OWNER autorizada puede completar el registro."
+              : "Te enviaremos un enlace para restablecer la contraseña."}
         </p>
         <form className="mt-6 space-y-4" onSubmit={submit}>
           <div>
@@ -64,6 +108,7 @@ function AuthPage() {
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
+          {mode !== "forgot" && (
           <div>
             <label htmlFor="password" className="text-xs font-medium text-muted-foreground">
               Contraseña
@@ -71,16 +116,23 @@ function AuthPage() {
             <input
               id="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={mode === "signup" ? 10 : undefined}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
+          )}
           {error && (
             <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}
+            </p>
+          )}
+          {notice && (
+            <p className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">
+              {notice}
             </p>
           )}
           <button
@@ -88,13 +140,44 @@ function AuthPage() {
             disabled={loading}
             className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
           >
-            {loading ? "Ingresando…" : "Iniciar sesión"}
+            {loading
+              ? "Procesando…"
+              : mode === "signin"
+                ? "Iniciar sesión"
+                : mode === "signup"
+                  ? "Crear cuenta"
+                  : "Enviar enlace"}
           </button>
         </form>
-        <p className="mt-6 text-xs text-muted-foreground">
-          Este acceso está reservado. El registro público está deshabilitado; solicita
-          una cuenta al OWNER de la instalación.
-        </p>
+        <div className="mt-6 flex flex-col gap-2 text-xs text-muted-foreground">
+          {mode === "signin" && (
+            <>
+              <button
+                type="button"
+                onClick={() => { setMode("forgot"); setError(null); setNotice(null); }}
+                className="text-left text-primary hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode("signup"); setError(null); setNotice(null); }}
+                className="text-left text-primary hover:underline"
+              >
+                Crear cuenta inicial del OWNER
+              </button>
+            </>
+          )}
+          {mode !== "signin" && (
+            <button
+              type="button"
+              onClick={() => { setMode("signin"); setError(null); setNotice(null); }}
+              className="text-left text-primary hover:underline"
+            >
+              ← Volver a iniciar sesión
+            </button>
+          )}
+        </div>
         <div className="mt-6 border-t border-border/60 pt-4">
           <Link to="/" className="text-xs text-primary hover:underline">
             ← Volver al inicio
