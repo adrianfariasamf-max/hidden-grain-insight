@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { createObject, listObjects } from "@/lib/server/objects-repo.server";
-
 const CreateSchema = z.object({
   title: z.string().min(1).max(200),
   type: z.string().min(1),
@@ -17,6 +15,7 @@ export const Route = createFileRoute("/api/objects")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const { listObjects } = await import("@/lib/server/objects-repo.server");
         const url = new URL(request.url);
         const p = url.searchParams;
         const result = await listObjects({
@@ -45,6 +44,7 @@ export const Route = createFileRoute("/api/objects")({
           );
         }
         try {
+          const { createObject } = await import("@/lib/server/objects-repo.server");
           const created = await createObject(parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {
