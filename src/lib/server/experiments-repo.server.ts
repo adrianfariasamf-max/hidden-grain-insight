@@ -65,6 +65,7 @@ interface ResponseRow {
   submitted_at: string;
   response_time_ms: number | null;
   observation: string;
+  attention: string;
   feeling: string;
   interpretation: string;
   discovered_hidden_element: boolean;
@@ -118,6 +119,7 @@ const toResponse = (r: ResponseRow): StimulusResponse => ({
   submittedAt: r.submitted_at,
   responseTimeMs: r.response_time_ms,
   observation: r.observation,
+  attention: r.attention ?? "",
   feeling: r.feeling,
   interpretation: r.interpretation,
   discoveredHiddenElement: r.discovered_hidden_element,
