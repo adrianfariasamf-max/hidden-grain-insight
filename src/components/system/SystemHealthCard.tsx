@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import type { StatusResponse } from "@/lib/api/types";
 
-import { StatusStatusIndicator } from "./StatusStatusIndicator";
+import { HealthStatusIndicator } from "./HealthStatusIndicator";
 
 interface SystemHealthCardProps {
   health: StatusResponse;
@@ -32,7 +32,7 @@ export function SystemStatusCard({ health, isRefreshing }: SystemHealthCardProps
               refreshing
             </span>
           ) : null}
-          <StatusStatusIndicator status={health.status} />
+          <HealthStatusIndicator status={health.status} />
         </div>
       </div>
 
