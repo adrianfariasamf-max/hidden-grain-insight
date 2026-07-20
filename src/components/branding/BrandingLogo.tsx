@@ -9,15 +9,25 @@ import { publicBrandingQuery } from "@/lib/branding/client";
  * pantalla de estímulos. No renderiza nada si no hay logo configurado
  * o el investigador lo tiene oculto.
  */
-export function BrandingLogo({ className }: { className?: string }) {
+export function BrandingLogo({
+  className,
+  size = "sm",
+}: {
+  className?: string;
+  size?: "sm" | "lg";
+}) {
   const { data } = useQuery(publicBrandingQuery());
   if (!data?.logoVisible || !data.logoUrl) return null;
+  const imgClass =
+    size === "lg"
+      ? "h-16 w-auto max-w-[240px] object-contain sm:h-20 sm:max-w-[320px]"
+      : "h-8 w-auto max-w-[120px] object-contain sm:h-10 sm:max-w-[160px]";
   return (
     <div className={className ?? "mb-4 flex items-center sm:mb-6"}>
       <img
         src={data.logoUrl}
         alt="Logo institucional"
-        className="h-8 w-auto max-w-[120px] object-contain sm:h-10 sm:max-w-[160px]"
+        className={imgClass}
       />
     </div>
   );
