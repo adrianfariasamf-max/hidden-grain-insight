@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SCHEMA_VERSION, SERVICE_NAME, supabaseAdmin } from "@/lib/server/db.server";
-
 export const Route = createFileRoute("/api/health")({
   server: {
     handlers: {
       GET: async () => {
+        const { SCHEMA_VERSION, SERVICE_NAME, supabaseAdmin } = await import(
+          "@/lib/server/db.server"
+        );
         try {
           const [{ count: objects }, { count: edges }] = await Promise.all([
             supabaseAdmin.from("knowledge_objects").select("id", { count: "exact", head: true }),
