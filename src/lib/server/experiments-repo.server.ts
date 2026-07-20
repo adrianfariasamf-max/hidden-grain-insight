@@ -31,6 +31,25 @@ const toPublicExperiment = (e: PerceptionExperiment): PublicExperiment => {
   return safe;
 };
 
+// RR-013 · Methodological integrity guard. Once an experiment leaves the
+// `draft` status its stimuli, hidden target, instructions and copy become
+// immutable — otherwise the meaning of the collected responses changes
+// mid-flight and cross-participant comparability is lost.
+async function assertExperimentDraft(experimentId: string, action: string): Promise<void> {
+  const { data, error } = await supabaseAdmin
+    .from("perception_experiments")
+    .select("status")
+    .eq("id", experimentId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("Experiment not found.");
+  if ((data as { status: string }).status !== "draft") {
+    throw new Error(
+      `Cannot ${action}: experiment is ${(data as { status: string }).status}. Only draft experiments can be modified.`,
+    );
+  }
+}
+
 // ------------------- Mappers -------------------
 
 interface ExperimentRow {
@@ -231,6 +250,7 @@ export async function updateExperiment(
   id: string,
   input: UpdateExperimentRequest,
 ): Promise<PerceptionExperiment> {
+  await assertExperimentDraft(id, "update experiment");
   const patch: Partial<{
     title: string;
     description: string;
@@ -261,6 +281,7 @@ export async function updateStimulus(
   stimulusId: string,
   input: UpdateStimulusRequest,
 ): Promise<ExperimentStimulus> {
+  await assertExperimentDraft(experimentId, "update stimulus");
   const patch: Partial<{ alt_text: string; image_url: string; image_path: string }> = {};
   if (input.altText !== undefined) patch.alt_text = input.altText;
   if (input.imageUrl !== undefined) patch.image_url = input.imageUrl;
@@ -282,6 +303,7 @@ export async function deleteStimulus(
   experimentId: string,
   stimulusId: string,
 ): Promise<{ deleted: true }> {
+  await assertExperimentDraft(experimentId, "delete stimulus");
   const { data: existing, error: qe } = await supabaseAdmin
     .from("experiment_stimuli")
     .select("image_path")
@@ -308,6 +330,7 @@ export async function addStimulus(
   experimentId: string,
   input: CreateStimulusRequest,
 ): Promise<ExperimentStimulus> {
+  await assertExperimentDraft(experimentId, "add stimulus");
   // Guard: cannot add >3 or duplicate positions; unique constraint enforces
   // uniqueness, but we return a friendly error for the count case.
   const { count } = await supabaseAdmin
@@ -336,6 +359,9 @@ export async function addStimulus(
 export async function publishExperiment(id: string): Promise<PerceptionExperiment> {
   const detail = await getExperimentDetail(id);
   if (!detail) throw new Error("Experiment not found.");
+  if (detail.experiment.status !== "draft") {
+    throw new Error(`Only draft experiments can be published (current: ${detail.experiment.status}).`);
+  }
   if (!detail.publishReadiness.ready) {
     throw new Error(`Cannot publish: ${detail.publishReadiness.reasons.join(" ")}`);
   }
@@ -347,6 +373,88 @@ export async function publishExperiment(id: string): Promise<PerceptionExperimen
     .single();
   if (error) throw error;
   return toExperiment(data as ExperimentRow);
+}
+
+// RR-011 · Close a published experiment. Closing stops accepting new
+// participant sessions but preserves every collected response. Closing is
+// irreversible from the UI — a new run must be created via duplicate.
+export async function closeExperiment(id: string): Promise<PerceptionExperiment> {
+  const detail = await getExperimentDetail(id);
+  if (!detail) throw new Error("Experiment not found.");
+  if (detail.experiment.status !== "published") {
+    throw new Error(
+      `Only published experiments can be closed (current: ${detail.experiment.status}).`,
+    );
+  }
+  const { data, error } = await supabaseAdmin
+    .from("perception_experiments")
+    .update({ status: "closed" })
+    .eq("id", id)
+    .select("*")
+    .single();
+  if (error) throw error;
+  return toExperiment(data as ExperimentRow);
+}
+
+// RR-014 · Duplicate an experiment into a fresh draft. Copies title,
+// description, instructions and hidden target, and clones every stimulus
+// image object inside the private storage bucket so the original and the
+// copy stay independent. Sessions and responses are never copied.
+export async function duplicateExperiment(id: string): Promise<PerceptionExperiment> {
+  const { data: src, error: qe } = await supabaseAdmin
+    .from("perception_experiments")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (qe) throw qe;
+  if (!src) throw new Error("Experiment not found.");
+  const source = toExperiment(src as ExperimentRow);
+
+  const { data: created, error: ce } = await supabaseAdmin
+    .from("perception_experiments")
+    .insert({
+      title: `${source.title} (copia)`,
+      description: source.description,
+      hidden_target: source.hiddenTarget,
+      instructions: source.instructions,
+      status: "draft",
+    })
+    .select("*")
+    .single();
+  if (ce) throw ce;
+  const copy = toExperiment(created as ExperimentRow);
+
+  const { data: stimRows, error: se } = await supabaseAdmin
+    .from("experiment_stimuli")
+    .select("*")
+    .eq("experiment_id", id)
+    .order("position");
+  if (se) throw se;
+
+  for (const row of (stimRows ?? []) as StimulusRow[]) {
+    const oldPath = row.image_path;
+    const filename = oldPath.split("/").pop() ?? `${Date.now()}.bin`;
+    const newPath = `${copy.id}/${Date.now()}_${filename}`;
+    // Best-effort copy in the private bucket. If the object is missing we
+    // still create the row without an image so the researcher can re-upload.
+    if (oldPath) {
+      await supabaseAdmin.storage
+        .from("experiment-stimuli")
+        .copy(oldPath, newPath)
+        .catch(() => undefined);
+    }
+    const { error: ie } = await supabaseAdmin.from("experiment_stimuli").insert({
+      experiment_id: copy.id,
+      position: row.position,
+      image_url: "",
+      image_path: oldPath ? newPath : "",
+      alt_text: row.alt_text,
+      display_duration_seconds: row.display_duration_seconds,
+    });
+    if (ie) throw ie;
+  }
+
+  return copy;
 }
 
 // ------------------- Sessions -------------------
