@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
+import { CreateRelationshipDialog } from "@/components/objects/CreateRelationshipDialog";
 import { RelationshipList } from "@/components/objects/RelationshipList";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -229,9 +230,12 @@ function ObjectDetailBody({
       <section className="flex flex-col gap-6">
         <header className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-semibold text-foreground">Relationships</h2>
-          <span className="font-mono text-[11px] text-muted-foreground">
-            {relationshipCount ?? 0} total
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] text-muted-foreground">
+              {relationshipCount ?? 0} total
+            </span>
+            <CreateRelationshipDialog sourceObjectId={object.id} sourceTitle={object.title} />
+          </div>
         </header>
         <RelationshipsSummary summary={summary} />
         <RelationshipsFilter value={filter} onChange={setFilter} summary={summary} />
