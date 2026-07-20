@@ -5,9 +5,7 @@ export const Route = createFileRoute("/api/sessions/$token/complete")({
     handlers: {
       POST: async ({ params }) => {
         try {
-          const { completeSession } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { completeSession } = await import("@/lib/server/experiments-repo.server");
           return Response.json(await completeSession(params.token));
         } catch (err) {
           return Response.json({ error: (err as Error).message }, { status: 422 });

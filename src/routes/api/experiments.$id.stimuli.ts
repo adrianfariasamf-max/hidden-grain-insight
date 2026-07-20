@@ -20,9 +20,7 @@ export const Route = createFileRoute("/api/experiments/$id/stimuli")({
           );
         }
         try {
-          const { addStimulus } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { addStimulus } = await import("@/lib/server/experiments-repo.server");
           const created = await addStimulus(params.id, parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {

@@ -6,9 +6,7 @@ export const Route = createFileRoute("/api/experiments")({
   server: {
     handlers: {
       GET: async () => {
-        const { listExperiments } = await import(
-          "@/lib/server/experiments-repo.server"
-        );
+        const { listExperiments } = await import("@/lib/server/experiments-repo.server");
         return Response.json({ items: await listExperiments() });
       },
       POST: async ({ request }) => {
@@ -26,9 +24,7 @@ export const Route = createFileRoute("/api/experiments")({
           );
         }
         try {
-          const { createExperiment } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { createExperiment } = await import("@/lib/server/experiments-repo.server");
           const created = await createExperiment(parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {

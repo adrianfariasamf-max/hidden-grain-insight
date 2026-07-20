@@ -20,9 +20,7 @@ export const Route = createFileRoute("/api/experiments/$id/sessions")({
           );
         }
         try {
-          const { createSession } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { createSession } = await import("@/lib/server/experiments-repo.server");
           const created = await createSession(params.id, parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {

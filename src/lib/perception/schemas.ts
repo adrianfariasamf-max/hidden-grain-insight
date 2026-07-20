@@ -11,12 +11,7 @@ export const VALID_POSITIONS = [1, 2, 3] as const;
 export const positionSchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
 
 export const experimentStatusSchema = z.enum(["draft", "published", "closed"]);
-export const sessionStatusSchema = z.enum([
-  "pending",
-  "in_progress",
-  "completed",
-  "abandoned",
-]);
+export const sessionStatusSchema = z.enum(["pending", "in_progress", "completed", "abandoned"]);
 
 export const createExperimentSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -60,9 +55,7 @@ export const submitResponseSchema = z.object({
  * Compute the publish-readiness of an experiment given its current stimuli.
  * MVP rule: exactly 3 stimuli covering positions 1, 2, 3 (no repeats).
  */
-export function computePublishReadiness(
-  stimuli: ExperimentStimulus[],
-): PublishReadiness {
+export function computePublishReadiness(stimuli: ExperimentStimulus[]): PublishReadiness {
   const reasons: string[] = [];
   const positions = new Set(stimuli.map((s) => s.position));
   const missing = VALID_POSITIONS.filter((p) => !positions.has(p));
@@ -85,10 +78,7 @@ export function computePublishReadiness(
   };
 }
 
-export function assertPositionAvailable(
-  existing: ExperimentStimulus[],
-  position: number,
-): void {
+export function assertPositionAvailable(existing: ExperimentStimulus[], position: number): void {
   if (!VALID_POSITIONS.includes(position as 1 | 2 | 3)) {
     throw new Error(`Invalid position ${position}. Must be one of 1,2,3.`);
   }

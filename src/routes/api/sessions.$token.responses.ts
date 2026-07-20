@@ -20,9 +20,7 @@ export const Route = createFileRoute("/api/sessions/$token/responses")({
           );
         }
         try {
-          const { submitResponse } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { submitResponse } = await import("@/lib/server/experiments-repo.server");
           const created = await submitResponse(params.token, parsed.data);
           return Response.json(created, { status: 201 });
         } catch (err) {

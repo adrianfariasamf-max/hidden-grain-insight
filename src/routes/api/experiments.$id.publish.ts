@@ -5,9 +5,7 @@ export const Route = createFileRoute("/api/experiments/$id/publish")({
     handlers: {
       POST: async ({ params }) => {
         try {
-          const { publishExperiment } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { publishExperiment } = await import("@/lib/server/experiments-repo.server");
           const updated = await publishExperiment(params.id);
           return Response.json(updated);
         } catch (err) {

@@ -5,11 +5,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
-import {
-  experimentDetailQuery,
-  experimentKeys,
-  experimentsApi,
-} from "@/lib/perception/client";
+import { experimentDetailQuery, experimentKeys, experimentsApi } from "@/lib/perception/client";
 
 export const Route = createFileRoute("/experiments/$id")({
   component: ExperimentDetailPage,
@@ -19,18 +15,14 @@ export const Route = createFileRoute("/experiments/$id")({
       { name: "description", content: "Perception experiment configuration." },
     ],
   }),
-  errorComponent: ({ error, reset }) => (
-    <ErrorState error={error} onRetry={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <ErrorState error={error} onRetry={reset} />,
   notFoundComponent: () => <EmptyState title="Experiment not found" />,
 });
 
 function ExperimentDetailPage() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
-  const { data, isLoading, error, refetch } = useQuery(
-    experimentDetailQuery(id),
-  );
+  const { data, isLoading, error, refetch } = useQuery(experimentDetailQuery(id));
 
   const publish = useMutation({
     mutationFn: () => experimentsApi.publish(id),
@@ -41,10 +33,7 @@ function ExperimentDetailPage() {
   });
 
   if (isLoading) return <LoadingState label="Loading experiment…" />;
-  if (error)
-    return (
-      <ErrorState error={error} onRetry={() => refetch()} />
-    );
+  if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
   if (!data) return <EmptyState title="Experiment not found" />;
 
   const { experiment: e, stimuli, sessionCount, responseCount, publishReadiness } = data;
@@ -52,10 +41,7 @@ function ExperimentDetailPage() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8">
       <div className="mb-4">
-        <Link
-          to="/experiments"
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
+        <Link to="/experiments" className="text-xs text-muted-foreground hover:text-foreground">
           ← All experiments
         </Link>
       </div>
@@ -67,10 +53,7 @@ function ExperimentDetailPage() {
         <Field label="Stimuli" value={`${stimuli.length} / 3`} />
         <Field label="Sessions" value={String(sessionCount)} />
         <Field label="Responses" value={String(responseCount)} />
-        <Field
-          label="Publish ready"
-          value={publishReadiness.ready ? "yes" : "no"}
-        />
+        <Field label="Publish ready" value={publishReadiness.ready ? "yes" : "no"} />
       </section>
 
       {e.instructions ? (
@@ -93,9 +76,7 @@ function ExperimentDetailPage() {
                 key={s.id}
                 className="flex items-center gap-3 rounded border border-border/60 p-2 text-sm"
               >
-                <span className="font-mono text-xs text-muted-foreground">
-                  #{s.position}
-                </span>
+                <span className="font-mono text-xs text-muted-foreground">#{s.position}</span>
                 <span className="flex-1 truncate">{s.altText || s.imagePath}</span>
               </li>
             ))}
@@ -106,9 +87,7 @@ function ExperimentDetailPage() {
       <section className="mt-4 rounded-lg border border-border bg-card p-4">
         <h3 className="text-sm font-semibold">Publish readiness</h3>
         {publishReadiness.ready ? (
-          <p className="mt-2 text-sm text-primary">
-            Experiment is ready to publish.
-          </p>
+          <p className="mt-2 text-sm text-primary">Experiment is ready to publish.</p>
         ) : (
           <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
             {publishReadiness.reasons.map((r) => (
@@ -127,29 +106,17 @@ function ExperimentDetailPage() {
           </button>
         ) : null}
         {publish.error ? (
-          <p className="mt-2 text-xs text-destructive">
-            {(publish.error as Error).message}
-          </p>
+          <p className="mt-2 text-xs text-destructive">{(publish.error as Error).message}</p>
         ) : null}
       </section>
     </div>
   );
 }
 
-function Field({
-  label,
-  value,
-  mono,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
+function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </div>
+      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className={`mt-0.5 text-sm ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );

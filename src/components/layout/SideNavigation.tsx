@@ -1,12 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Compass,
-  Network,
-  LayoutDashboard,
-  Activity,
-  Sparkles,
-  FlaskConical,
-} from "lucide-react";
+import { Compass, Network, LayoutDashboard, Activity, Sparkles, FlaskConical } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 

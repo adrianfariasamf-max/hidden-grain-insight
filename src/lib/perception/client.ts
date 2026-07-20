@@ -32,13 +32,9 @@ export type ExperimentListItem = PerceptionExperiment & {
 
 export const experimentsApi = {
   list: async (signal?: AbortSignal) =>
-    json<{ items: ExperimentListItem[] }>(
-      await fetch(`${API_BASE}/experiments`, { signal }),
-    ),
+    json<{ items: ExperimentListItem[] }>(await fetch(`${API_BASE}/experiments`, { signal })),
   detail: async (id: string, signal?: AbortSignal) =>
-    json<ExperimentDetail>(
-      await fetch(`${API_BASE}/experiments/${id}`, { signal }),
-    ),
+    json<ExperimentDetail>(await fetch(`${API_BASE}/experiments/${id}`, { signal })),
   create: async (input: CreateExperimentRequest) =>
     json<PerceptionExperiment>(
       await fetch(`${API_BASE}/experiments`, {
@@ -90,9 +86,7 @@ export const experimentsApi = {
       await fetch(`${API_BASE}/sessions/${token}/complete`, { method: "POST" }),
     ),
   results: async (id: string, signal?: AbortSignal) =>
-    json<ExperimentResults>(
-      await fetch(`${API_BASE}/experiments/${id}/results`, { signal }),
-    ),
+    json<ExperimentResults>(await fetch(`${API_BASE}/experiments/${id}/results`, { signal })),
 };
 
 export const experimentKeys = {

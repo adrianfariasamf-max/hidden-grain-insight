@@ -14,14 +14,11 @@ export const Route = createFileRoute("/experiments")({
       { title: "Experiments — Hidden Grain" },
       {
         name: "description",
-        content:
-          "Design, run and analyse perception experiments in Hidden Grain.",
+        content: "Design, run and analyse perception experiments in Hidden Grain.",
       },
     ],
   }),
-  errorComponent: ({ error, reset }) => (
-    <ErrorState error={error} onRetry={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <ErrorState error={error} onRetry={reset} />,
   notFoundComponent: () => <EmptyState title="Not found" />,
 });
 
@@ -30,18 +27,12 @@ function ExperimentsPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8">
-      <PageHeader
-        title="Experiments"
-        description="Perception studies powered by Hidden Grain."
-      />
+      <PageHeader title="Experiments" description="Perception studies powered by Hidden Grain." />
       <div className="mt-6">
         {isLoading ? (
           <LoadingState label="Loading experiments…" />
         ) : error ? (
-          <ErrorState
-            error={error}
-            onRetry={() => refetch()}
-          />
+          <ErrorState error={error} onRetry={() => refetch()} />
         ) : !data?.items.length ? (
           <EmptyState
             title="No experiments yet"
@@ -59,9 +50,7 @@ function ExperimentsPage() {
                     className="block rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h2 className="text-base font-semibold text-foreground">
-                        {e.title}
-                      </h2>
+                      <h2 className="text-base font-semibold text-foreground">{e.title}</h2>
                       <StatusPill status={e.status} />
                     </div>
                     {e.description ? (

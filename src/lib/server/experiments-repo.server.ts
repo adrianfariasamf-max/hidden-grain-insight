@@ -139,14 +139,8 @@ export async function listExperiments(): Promise<
 
   const ids = experiments.map((e) => e.id);
   const [{ data: stim }, { data: sess }] = await Promise.all([
-    supabaseAdmin
-      .from("experiment_stimuli")
-      .select("experiment_id")
-      .in("experiment_id", ids),
-    supabaseAdmin
-      .from("participant_sessions")
-      .select("experiment_id")
-      .in("experiment_id", ids),
+    supabaseAdmin.from("experiment_stimuli").select("experiment_id").in("experiment_id", ids),
+    supabaseAdmin.from("participant_sessions").select("experiment_id").in("experiment_id", ids),
   ]);
   const stimCount = new Map<string, number>();
   for (const s of stim ?? [])
@@ -180,9 +174,7 @@ export async function createExperiment(
   return toExperiment(data as ExperimentRow);
 }
 
-export async function getExperimentDetail(
-  id: string,
-): Promise<ExperimentDetail | null> {
+export async function getExperimentDetail(id: string): Promise<ExperimentDetail | null> {
   const { data, error } = await supabaseAdmin
     .from("perception_experiments")
     .select("*")
@@ -192,25 +184,20 @@ export async function getExperimentDetail(
   if (!data) return null;
   const experiment = toExperiment(data as ExperimentRow);
 
-  const [{ data: stim, error: se }, { count: sc }, { count: rc }] =
-    await Promise.all([
-      supabaseAdmin
-        .from("experiment_stimuli")
-        .select("*")
-        .eq("experiment_id", id)
-        .order("position"),
-      supabaseAdmin
-        .from("participant_sessions")
-        .select("id", { count: "exact", head: true })
-        .eq("experiment_id", id),
-      supabaseAdmin
-        .from("stimulus_responses")
-        .select("id,session:participant_sessions!inner(experiment_id)", {
-          count: "exact",
-          head: true,
-        })
-        .eq("session.experiment_id", id),
-    ]);
+  const [{ data: stim, error: se }, { count: sc }, { count: rc }] = await Promise.all([
+    supabaseAdmin.from("experiment_stimuli").select("*").eq("experiment_id", id).order("position"),
+    supabaseAdmin
+      .from("participant_sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("experiment_id", id),
+    supabaseAdmin
+      .from("stimulus_responses")
+      .select("id,session:participant_sessions!inner(experiment_id)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("session.experiment_id", id),
+  ]);
   if (se) throw se;
   const stimuli = ((stim ?? []) as StimulusRow[]).map(toStimulus);
 
@@ -252,15 +239,11 @@ export async function addStimulus(
   return toStimulus(data as StimulusRow);
 }
 
-export async function publishExperiment(
-  id: string,
-): Promise<PerceptionExperiment> {
+export async function publishExperiment(id: string): Promise<PerceptionExperiment> {
   const detail = await getExperimentDetail(id);
   if (!detail) throw new Error("Experiment not found.");
   if (!detail.publishReadiness.ready) {
-    throw new Error(
-      `Cannot publish: ${detail.publishReadiness.reasons.join(" ")}`,
-    );
+    throw new Error(`Cannot publish: ${detail.publishReadiness.reasons.join(" ")}`);
   }
   const { data, error } = await supabaseAdmin
     .from("perception_experiments")
@@ -302,9 +285,7 @@ export async function createSession(
   return toSession(data as SessionRow);
 }
 
-export async function getSessionByToken(
-  token: string,
-): Promise<{
+export async function getSessionByToken(token: string): Promise<{
   session: ParticipantSession;
   experiment: PerceptionExperiment;
   stimuli: ExperimentStimulus[];
@@ -342,9 +323,7 @@ export async function acceptConsent(token: string): Promise<ParticipantSession> 
   return toSession(data as SessionRow);
 }
 
-export async function completeSession(
-  token: string,
-): Promise<ParticipantSession> {
+export async function completeSession(token: string): Promise<ParticipantSession> {
   const { data, error } = await supabaseAdmin
     .from("participant_sessions")
     .update({ completed_at: new Date().toISOString(), status: "completed" })
@@ -448,9 +427,7 @@ export async function signStimulusUpload(
     .from("experiment-stimuli")
     .createSignedUploadUrl(path);
   if (error) throw error;
-  const { data: pub } = supabaseAdmin.storage
-    .from("experiment-stimuli")
-    .getPublicUrl(path);
+  const { data: pub } = supabaseAdmin.storage.from("experiment-stimuli").getPublicUrl(path);
   return {
     uploadUrl: data.signedUrl,
     imagePath: path,

@@ -5,9 +5,7 @@ export const Route = createFileRoute("/api/sessions/$token/consent")({
     handlers: {
       POST: async ({ params }) => {
         try {
-          const { acceptConsent } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { acceptConsent } = await import("@/lib/server/experiments-repo.server");
           return Response.json(await acceptConsent(params.token));
         } catch (err) {
           return Response.json({ error: (err as Error).message }, { status: 422 });
