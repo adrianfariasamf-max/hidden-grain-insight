@@ -25,6 +25,7 @@ import { Route as ApiObjectsRouteImport } from './routes/api/objects'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiGraphRouteImport } from './routes/api/graph'
 import { Route as ApiExperimentsRouteImport } from './routes/api/experiments'
+import { Route as EExperimentIdIndexRouteImport } from './routes/e.$experimentId.index'
 import { Route as ApiSessionsTokenRouteImport } from './routes/api/sessions.$token'
 import { Route as ApiObjectsIdRouteImport } from './routes/api/objects.$id'
 import { Route as ApiExperimentsIdRouteImport } from './routes/api/experiments.$id'
@@ -119,6 +120,11 @@ const ApiExperimentsRoute = ApiExperimentsRouteImport.update({
   id: '/api/experiments',
   path: '/api/experiments',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EExperimentIdIndexRoute = EExperimentIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EExperimentIdRoute,
 } as any)
 const ApiSessionsTokenRoute = ApiSessionsTokenRouteImport.update({
   id: '/api/sessions/$token',
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
+  '/e/$experimentId/': typeof EExperimentIdIndexRoute
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
@@ -239,7 +246,6 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
-  '/e/$experimentId': typeof EExperimentIdRouteWithChildren
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -247,6 +253,7 @@ export interface FileRoutesByTo {
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
+  '/e/$experimentId': typeof EExperimentIdIndexRoute
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
@@ -280,6 +287,7 @@ export interface FileRoutesById {
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
   '/api/objects/$id': typeof ApiObjectsIdRoute
   '/api/sessions/$token': typeof ApiSessionsTokenRouteWithChildren
+  '/e/$experimentId/': typeof EExperimentIdIndexRoute
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
@@ -314,6 +322,7 @@ export interface FileRouteTypes {
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
+    | '/e/$experimentId/'
     | '/api/experiments/$id/publish'
     | '/api/experiments/$id/results'
     | '/api/experiments/$id/sessions'
@@ -337,7 +346,6 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
-    | '/e/$experimentId'
     | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
@@ -345,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
+    | '/e/$experimentId'
     | '/api/experiments/$id/publish'
     | '/api/experiments/$id/results'
     | '/api/experiments/$id/sessions'
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/api/experiments/$id'
     | '/api/objects/$id'
     | '/api/sessions/$token'
+    | '/e/$experimentId/'
     | '/api/experiments/$id/publish'
     | '/api/experiments/$id/results'
     | '/api/experiments/$id/sessions'
@@ -522,6 +532,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/experiments'
       preLoaderRoute: typeof ApiExperimentsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/e/$experimentId/': {
+      id: '/e/$experimentId/'
+      path: '/'
+      fullPath: '/e/$experimentId/'
+      preLoaderRoute: typeof EExperimentIdIndexRouteImport
+      parentRoute: typeof EExperimentIdRoute
     }
     '/api/sessions/$token': {
       id: '/api/sessions/$token'
@@ -698,10 +715,12 @@ const ApiObjectsRouteWithChildren = ApiObjectsRoute._addFileChildren(
 )
 
 interface EExperimentIdRouteChildren {
+  EExperimentIdIndexRoute: typeof EExperimentIdIndexRoute
   EExperimentIdSTokenRoute: typeof EExperimentIdSTokenRoute
 }
 
 const EExperimentIdRouteChildren: EExperimentIdRouteChildren = {
+  EExperimentIdIndexRoute: EExperimentIdIndexRoute,
   EExperimentIdSTokenRoute: EExperimentIdSTokenRoute,
 }
 
