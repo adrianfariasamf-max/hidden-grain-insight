@@ -1,0 +1,1 @@
+ALTER TABLE public.branding_settings RENAME TO system_settings;
