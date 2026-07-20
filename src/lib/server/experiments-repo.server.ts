@@ -564,11 +564,11 @@ export async function signStimulusUpload(
     .from("experiment-stimuli")
     .createSignedUploadUrl(path);
   if (error) throw error;
-  const viewUrl = await signStimulusReadUrl(path);
   return {
     uploadUrl: data.signedUrl,
     imagePath: path,
-    imageUrl: viewUrl,
+    // The object does not exist yet; read URL is re-signed on every detail fetch.
+    imageUrl: "",
     token: data.token,
   };
 }
