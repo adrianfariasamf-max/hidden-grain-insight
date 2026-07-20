@@ -20,7 +20,7 @@ export function BrandingLogo({
   if (!data?.logoVisible || !data.logoUrl) return null;
   const imgClass =
     size === "lg"
-      ? "h-28 w-auto max-w-[360px] object-contain sm:h-32 sm:max-w-[480px]"
+      ? "h-20 w-auto max-w-[200px] object-contain sm:h-32 sm:max-w-[480px]"
       : "h-8 w-auto max-w-[120px] object-contain sm:h-10 sm:max-w-[160px]";
   return (
     <div className={className ?? "mb-4 flex items-center sm:mb-6"}>
