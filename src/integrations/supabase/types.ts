@@ -14,7 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      knowledge_objects: {
+        Row: {
+          category: string
+          checksum: string
+          created_at: string
+          id: string
+          keywords: string[]
+          path: string
+          status: string
+          summary: string
+          tags: string[]
+          title: string
+          type: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          category: string
+          checksum?: string
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          path?: string
+          status: string
+          summary?: string
+          tags?: string[]
+          title: string
+          type: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          category?: string
+          checksum?: string
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          path?: string
+          status?: string
+          summary?: string
+          tags?: string[]
+          title?: string
+          type?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      relationships: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          description: string | null
+          id: string
+          provenance: string | null
+          resolved: boolean
+          source_object_id: string
+          target_object_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          provenance?: string | null
+          resolved?: boolean
+          source_object_id: string
+          target_object_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          provenance?: string | null
+          resolved?: boolean
+          source_object_id?: string
+          target_object_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relationships_source_object_id_fkey"
+            columns: ["source_object_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_objects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relationships_target_object_id_fkey"
+            columns: ["target_object_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
