@@ -1,16 +1,16 @@
 import { API_BASE } from "@/lib/api/client";
-import type { HealthResponse } from "@/lib/api/types";
+import type { EstadoResponse } from "@/lib/api/types";
 
-interface RuntimeInfoProps {
-  health: Pick<HealthResponse, "service" | "schemaVersion">;
+interface EjecuciónInfoProps {
+  health: Pick<EstadoResponse, "service" | "schemaVersion">;
 }
 
 /**
- * Runtime facts about the client/server pairing. API base is read from the
+ * Ejecución facts about the client/server pairing. API base is read from the
  * already-resolved client value so we never duplicate the resolution logic.
  * VITE_HG_API_BASE is a public frontend variable — no secret exposure.
  */
-export function RuntimeInfo({ health }: RuntimeInfoProps) {
+export function EjecuciónInfo({ health }: EjecuciónInfoProps) {
   const rows: Array<{ label: string; value: string; mono?: boolean }> = [
     { label: "API base", value: API_BASE, mono: true },
     { label: "Service", value: health.service, mono: true },

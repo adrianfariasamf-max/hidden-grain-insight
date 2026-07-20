@@ -4,17 +4,17 @@ import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DISCOVERY_ACTION_CATALOG,
-  countActiveDiscoveryFilters,
-  listInsightTypes,
-  type DiscoveryFilters,
-  type DiscoverySortMode,
-  type InsightCategory,
+  countActiveDescubrimientosFilters,
+  listInsightTipos,
+  type DescubrimientosFilters,
+  type DescubrimientosSortMode,
+  type InsightCategoría,
   type InsightPriority,
-  type InsightType,
+  type InsightTipo,
 } from "@/lib/domain/discovery";
 
 const PRIORITY_OPTIONS: InsightPriority[] = ["critical", "high", "medium", "low", "info"];
-const CATEGORY_OPTIONS: InsightCategory[] = [
+const CATEGORY_OPTIONS: InsightCategoría[] = [
   "connectivity",
   "structural",
   "quality",
@@ -22,18 +22,18 @@ const CATEGORY_OPTIONS: InsightCategory[] = [
   "custom",
 ];
 
-const SORT_OPTIONS: { value: DiscoverySortMode; label: string }[] = [
+const SORT_OPTIONS: { value: DescubrimientosSortMode; label: string }[] = [
   { value: "ranked", label: "Ranked" },
   { value: "score-desc", label: "Score ↓" },
   { value: "score-asc", label: "Score ↑" },
-  { value: "type", label: "Type" },
+  { value: "type", label: "Tipo" },
 ];
 
 export interface WorkspaceFiltersProps {
-  filters: DiscoveryFilters;
-  onFiltersChange: (next: DiscoveryFilters) => void;
-  sort: DiscoverySortMode;
-  onSortChange: (mode: DiscoverySortMode) => void;
+  filters: DescubrimientosFilters;
+  onFiltersChange: (next: DescubrimientosFilters) => void;
+  sort: DescubrimientosSortMode;
+  onSortChange: (mode: DescubrimientosSortMode) => void;
   /** Filtered result count for the counter. */
   filteredCount: number;
   totalCount: number;
@@ -54,8 +54,8 @@ function WorkspaceFiltersImpl({
   filteredCount,
   totalCount,
 }: WorkspaceFiltersProps) {
-  const activeCount = countActiveDiscoveryFilters(filters);
-  const typeCatalog = listInsightTypes();
+  const activeCount = countActiveDescubrimientosFilters(filters);
+  const typeCatalog = listInsightTipos();
 
   const handleQuery = useCallback(
     (value: string) => onFiltersChange({ ...filters, query: value }),
@@ -103,7 +103,7 @@ function WorkspaceFiltersImpl({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Category">
+      <FilterGroup label="Categoría">
         {CATEGORY_OPTIONS.map((c) => (
           <Chip
             key={c}
@@ -117,15 +117,15 @@ function WorkspaceFiltersImpl({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Type">
+      <FilterGroup label="Tipo">
         {typeCatalog.map((t) => (
           <Chip
             key={t.id}
-            active={filters.types.has(t.id as InsightType)}
+            active={filters.types.has(t.id as InsightTipo)}
             onClick={() =>
               onFiltersChange({
                 ...filters,
-                types: toggleSet(filters.types, t.id as InsightType),
+                types: toggleSet(filters.types, t.id as InsightTipo),
               })
             }
             title={t.description}

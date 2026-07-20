@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescripción,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTítulo,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -27,10 +27,10 @@ import { ApiError } from "@/lib/api/errors";
 import { createRelationshipMutation } from "@/lib/api/mutations";
 import { objectListQuery } from "@/lib/api/queries";
 import { CreateRelationshipRequestSchema } from "@/lib/api/schemas";
-import type { CreateRelationshipRequest, KnowledgeObjectSummary } from "@/lib/api/types";
+import type { CreateRelationshipRequest, KnowledgeObjectResumen } from "@/lib/api/types";
 import {
-  compareRelationshipTypes,
-  listRelationshipTypes,
+  compareRelationshipTipos,
+  listRelationshipTipos,
 } from "@/lib/domain/relationship-ontology";
 
 type FieldErrors = Partial<
@@ -39,10 +39,10 @@ type FieldErrors = Partial<
 
 interface Props {
   sourceObjectId: string;
-  sourceTitle: string;
+  sourceTítulo: string;
 }
 
-export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props) {
+export function CreateRelationshipDialog({ sourceObjectId, sourceTítulo }: Props) {
   const [open, setOpen] = useState(false);
   return (
     <Dialog
@@ -59,11 +59,11 @@ export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props)
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create Relationship</DialogTitle>
-          <DialogDescription>
-            Link <span className="font-medium text-foreground">{sourceTitle}</span> to another
+          <DialogTítulo>Create Relationship</DialogTítulo>
+          <DialogDescripción>
+            Link <span className="font-medium text-foreground">{sourceTítulo}</span> to another
             Knowledge Object.
-          </DialogDescription>
+          </DialogDescripción>
         </DialogHeader>
         {open ? (
           <CreateRelationshipForm sourceObjectId={sourceObjectId} onClose={() => setOpen(false)} />
@@ -83,15 +83,15 @@ function CreateRelationshipForm({
   const qc = useQueryClient();
   const mutation = useMutation(createRelationshipMutation(qc));
 
-  const ontology = useMemo(() => [...listRelationshipTypes()].sort(compareRelationshipTypes), []);
+  const ontology = useMemo(() => [...listRelationshipTipos()].sort(compareRelationshipTipos), []);
 
   const [targetQuery, setTargetQuery] = useState("");
   const [targetObjectId, setTargetObjectId] = useState<string>("");
   const [targetLabel, setTargetLabel] = useState<string>("");
-  const [type, setType] = useState<string>("");
-  const [description, setDescription] = useState("");
+  const [type, setTipo] = useState<string>("");
+  const [description, setDescripción] = useState("");
   const [provenance, setProvenance] = useState("");
-  const [confidence, setConfidence] = useState<string>("");
+  const [confidence, setNivel de confianza] = useState<string>("");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -105,7 +105,7 @@ function CreateRelationshipForm({
 
   const results = search.data?.items ?? [];
 
-  const pickTarget = (obj: KnowledgeObjectSummary) => {
+  const pickTarget = (obj: KnowledgeObjectResumen) => {
     setTargetObjectId(obj.id);
     setTargetLabel(obj.title);
     setTargetQuery(obj.title);
@@ -135,7 +135,7 @@ function CreateRelationshipForm({
     if (confidence.trim() !== "") {
       const n = Number(confidence);
       if (!Number.isFinite(n) || n < 0 || n > 1) {
-        errs.confidence = "Confidence must be a number between 0 and 1.";
+        errs.confidence = "Nivel de confianza must be a number between 0 and 1.";
       } else {
         confidenceNum = n;
       }
@@ -172,7 +172,7 @@ function CreateRelationshipForm({
       },
       onError: (err) => {
         if (err instanceof ApiError) setServerError(`${err.status} — ${err.message}`);
-        else setServerError((err as Error).message || "Unknown error");
+        else setServerError((err as Error).message || "Error desconocido");
       },
     });
   };
@@ -230,12 +230,12 @@ function CreateRelationshipForm({
         ) : null}
       </div>
 
-      {/* Type */}
+      {/* Tipo */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="rel-type">
-          Type <span className="text-destructive">*</span>
+          Tipo <span className="text-destructive">*</span>
         </Label>
-        <Select value={type} onValueChange={setType} disabled={disabled}>
+        <Select value={type} onValueChange={setTipo} disabled={disabled}>
           <SelectTrigger id="rel-type">
             <SelectValue placeholder="Select a relationship type…" />
           </SelectTrigger>
@@ -255,13 +255,13 @@ function CreateRelationshipForm({
         ) : null}
       </div>
 
-      {/* Description */}
+      {/* Descripción */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="rel-desc">Description</Label>
+        <Label htmlFor="rel-desc">Descripción</Label>
         <Textarea
           id="rel-desc"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => setDescripción(e.target.value)}
           rows={2}
           maxLength={500}
           disabled={disabled}
@@ -281,11 +281,11 @@ function CreateRelationshipForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="rel-conf">Confidence</Label>
+          <Label htmlFor="rel-conf">Nivel de confianza</Label>
           <Input
             id="rel-conf"
             value={confidence}
-            onChange={(e) => setConfidence(e.target.value)}
+            onChange={(e) => setNivel de confianza(e.target.value)}
             disabled={disabled}
             inputMode="decimal"
             placeholder="0.0 – 1.0"
@@ -309,13 +309,13 @@ function CreateRelationshipForm({
 
       <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose} disabled={disabled}>
-          Cancel
+          Cancelar
         </Button>
         <Button type="submit" disabled={disabled}>
           {disabled ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-              Saving…
+              Guardando…
             </>
           ) : (
             "Create Relationship"
@@ -337,12 +337,12 @@ function TargetResults({
   enabled: boolean;
   isLoading: boolean;
   isError: boolean;
-  results: readonly KnowledgeObjectSummary[];
+  results: readonly KnowledgeObjectResumen[];
   excludeId: string;
-  onPick: (obj: KnowledgeObjectSummary) => void;
+  onPick: (obj: KnowledgeObjectResumen) => void;
 }) {
   if (!enabled) {
-    return <p className="text-[11px] text-muted-foreground">Type to search Knowledge Objects.</p>;
+    return <p className="text-[11px] text-muted-foreground">Tipo to search Objetos de conocimiento.</p>;
   }
   if (isLoading) {
     return <p className="text-[11px] text-muted-foreground">Searching…</p>;

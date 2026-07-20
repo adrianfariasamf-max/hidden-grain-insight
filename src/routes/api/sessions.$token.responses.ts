@@ -7,8 +7,8 @@ export const Route = createFileRoute("/api/sessions/$token/responses")({
     handlers: {
       GET: async ({ params }) => {
         try {
-          const { getSessionResponses } = await import("@/lib/server/experiments-repo.server");
-          const items = await getSessionResponses(params.token);
+          const { getSessionRespuestas } = await import("@/lib/server/experiments-repo.server");
+          const items = await getSessionRespuestas(params.token);
           return Response.json({ items });
         } catch (err) {
           return Response.json({ error: (err as Error).message }, { status: 422 });

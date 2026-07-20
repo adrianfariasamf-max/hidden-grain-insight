@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 export type ResolutionFilter = "all" | "resolved" | "unresolved";
 
 export interface GraphFilterValues {
-  nodeType: string;
+  nodeTipo: string;
   resolution: ResolutionFilter;
 }
 
 export interface GraphFilterOptions {
-  nodeTypes: string[];
+  nodeTipos: string[];
 }
 
 interface GraphFiltersProps {
@@ -47,9 +47,9 @@ export function GraphFilters({
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
         <Select
           label="Node type"
-          value={values.nodeType}
-          options={options.nodeTypes}
-          onChange={(v) => onChange({ nodeType: v })}
+          value={values.nodeTipo}
+          options={options.nodeTipos}
+          onChange={(v) => onChange({ nodeTipo: v })}
         />
         <label className="flex min-w-[9rem] flex-col gap-1 text-xs">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">

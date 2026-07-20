@@ -60,29 +60,29 @@ const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 );
 DrawerFooter.displayName = "DrawerFooter";
 
-const DrawerTitle = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
+const DrawerTítulo = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Título>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Título>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Title
+  <DrawerPrimitive.Título
     ref={ref}
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ));
-DrawerTitle.displayName = DrawerPrimitive.Title.displayName;
+DrawerTítulo.displayName = DrawerPrimitive.Título.displayName;
 
-const DrawerDescription = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
+const DrawerDescripción = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Descripción>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Descripción>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Description
+  <DrawerPrimitive.Descripción
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
-DrawerDescription.displayName = DrawerPrimitive.Description.displayName;
+DrawerDescripción.displayName = DrawerPrimitive.Descripción.displayName;
 
 export {
   Drawer,
@@ -93,6 +93,6 @@ export {
   DrawerContent,
   DrawerHeader,
   DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
+  DrawerTítulo,
+  DrawerDescripción,
 };

@@ -2,12 +2,12 @@ import { memo, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
-import { getInsightTypeDescriptor, type DiscoveryInsight } from "@/lib/domain/discovery";
+import { getInsightTipoDescriptor, type DescubrimientosInsight } from "@/lib/domain/discovery";
 import type { Relationship } from "@/lib/domain";
-import { getRelationshipTypeDescriptor } from "@/lib/domain";
+import { getRelationshipTipoDescriptor } from "@/lib/domain";
 
 export interface InsightContextPanelProps {
-  insight: DiscoveryInsight | null;
+  insight: DescubrimientosInsight | null;
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type" | "category">>;
   /** Full relationship set — the panel derives the involved subset locally. */
   relationships: readonly Relationship[];
@@ -31,16 +31,16 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
       if (n.category) categories.set(n.category, (categories.get(n.category) ?? 0) + 1);
       if (n.type) types.set(n.type, (types.get(n.type) ?? 0) + 1);
     }
-    const relTypes = new Map<string, number>();
+    const relTipos = new Map<string, number>();
     for (const r of relSubset) {
-      relTypes.set(r.type, (relTypes.get(r.type) ?? 0) + 1);
+      relTipos.set(r.type, (relTipos.get(r.type) ?? 0) + 1);
     }
     return {
       relSubset,
       involvedIds: [...involvedIds],
       categories: [...categories.entries()].sort(([a], [b]) => a.localeCompare(b)),
       types: [...types.entries()].sort(([a], [b]) => a.localeCompare(b)),
-      relTypes: [...relTypes.entries()].sort(([a], [b]) => a.localeCompare(b)),
+      relTipos: [...relTipos.entries()].sort(([a], [b]) => a.localeCompare(b)),
     };
   }, [insight, nodesById, relationships]);
 
@@ -59,7 +59,7 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
 
   const primaryId = insight.objectIds[0];
   const primaryNode = primaryId ? nodesById?.get(primaryId) : undefined;
-  const descriptor = getInsightTypeDescriptor(insight.type);
+  const descriptor = getInsightTipoDescriptor(insight.type);
 
   return (
     <aside
@@ -71,14 +71,14 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
           Context
         </h3>
         <p className="text-xs text-muted-foreground">
-          Local summary derived from the Knowledge Graph — no full graph rendered.
+          Local summary derived from the Grafo de conocimiento — no full graph rendered.
         </p>
       </header>
 
       <div className="flex flex-col gap-4 p-3">
         <section className="flex flex-col gap-1 rounded-md border border-border/60 bg-background/40 p-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Primary object
+            Principal object
           </span>
           {primaryId ? (
             <>
@@ -150,8 +150,8 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
           ) : (
             <>
               <ul className="flex list-none flex-wrap gap-1 pb-2">
-                {derived.relTypes.map(([t, n]) => {
-                  const td = getRelationshipTypeDescriptor(t);
+                {derived.relTipos.map(([t, n]) => {
+                  const td = getRelationshipTipoDescriptor(t);
                   return (
                     <li key={t}>
                       <Tag title={td.description || td.displayName}>
@@ -169,7 +169,7 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
                     className="flex flex-col gap-0.5 bg-background/40 px-2 py-1.5 text-[11px]"
                   >
                     <span className="font-mono text-[10px] text-muted-foreground">
-                      {getRelationshipTypeDescriptor(r.type).displayName}
+                      {getRelationshipTipoDescriptor(r.type).displayName}
                     </span>
                     <div className="flex items-center gap-1 min-w-0">
                       <Link

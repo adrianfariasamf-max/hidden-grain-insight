@@ -1,20 +1,20 @@
 import { Loader2 } from "lucide-react";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
-import type { HealthResponse } from "@/lib/api/types";
+import type { EstadoResponse } from "@/lib/api/types";
 
-import { HealthStatusIndicator } from "./HealthStatusIndicator";
+import { EstadoEstadoIndicator } from "./EstadoEstadoIndicator";
 
-interface SystemHealthCardProps {
-  health: HealthResponse;
+interface SistemaEstadoCardProps {
+  health: EstadoResponse;
   isRefreshing?: boolean;
 }
 
 /**
- * Compact summary of /health for Overview and System. Only fields that
+ * Compact summary of /health for Inicio and Sistema. Only fields that
  * exist in the contract are rendered — nothing is inferred.
  */
-export function SystemHealthCard({ health, isRefreshing }: SystemHealthCardProps) {
+export function SistemaEstadoCard({ health, isRefreshing }: SistemaEstadoCardProps) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-card px-4 py-4">
       <div className="flex items-start justify-between gap-3">
@@ -32,7 +32,7 @@ export function SystemHealthCard({ health, isRefreshing }: SystemHealthCardProps
               refreshing
             </span>
           ) : null}
-          <HealthStatusIndicator status={health.status} />
+          <EstadoEstadoIndicator status={health.status} />
         </div>
       </div>
 
@@ -43,7 +43,7 @@ export function SystemHealthCard({ health, isRefreshing }: SystemHealthCardProps
         </div>
         <div className="flex flex-col gap-0.5">
           <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            Projection generated
+            Proyección generated
           </dt>
           <dd className="font-mono text-foreground break-all">
             <SafeTimestamp value={health.generatedAt} />

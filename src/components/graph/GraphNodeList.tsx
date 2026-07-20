@@ -5,13 +5,13 @@ import { GraphNodeItem } from "./GraphNodeItem";
 
 interface GraphNodeListProps {
   nodes: KnowledgeObject[];
-  emptyLabel: string;
-  emptyDescription?: string;
+  vacíoLabel: string;
+  vacíoDescripción?: string;
 }
 
-export function GraphNodeList({ nodes, emptyLabel, emptyDescription }: GraphNodeListProps) {
+export function GraphNodeList({ nodes, vacíoLabel, vacíoDescripción }: GraphNodeListProps) {
   if (nodes.length === 0) {
-    return <EmptyState title={emptyLabel} description={emptyDescription} />;
+    return <EmptyState title={vacíoLabel} description={vacíoDescripción} />;
   }
   return (
     <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">

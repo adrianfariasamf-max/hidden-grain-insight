@@ -17,8 +17,8 @@ import type { CreateKnowledgeObjectRequest } from "@/lib/api/types";
 export const Route = createFileRoute("/objects/new")({
   head: () => ({
     meta: [
-      { title: "New Object — Hidden Grain" },
-      { name: "description", content: "Create a Knowledge Object." },
+      { title: "Nuevo objeto — Hidden Grain" },
+      { name: "description", content: "Crea un Objeto de Conocimiento." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -45,13 +45,13 @@ function NewObjectRoute() {
   const qc = useQueryClient();
   const mutation = useMutation(createObjectMutation(qc));
 
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState("");
-  const [category, setCategory] = useState("");
-  const [status, setStatus] = useState("");
-  const [summary, setSummary] = useState("");
-  const [keywords, setKeywords] = useState("");
-  const [tags, setTags] = useState("");
+  const [title, setTítulo] = useState("");
+  const [type, setTipo] = useState("");
+  const [category, setCategoría] = useState("");
+  const [status, setEstado] = useState("");
+  const [summary, setResumen] = useState("");
+  const [keywords, setPalabras clave] = useState("");
+  const [tags, setEtiquetas] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
@@ -92,9 +92,9 @@ function NewObjectRoute() {
         if (err instanceof ApiError) {
           setServerError(`${err.status} — ${err.message}`);
         } else if (err instanceof z.ZodError) {
-          setServerError("Server returned an unexpected payload.");
+          setServerError("El servidor devolvió una respuesta inesperada.");
         } else {
-          setServerError((err as Error).message || "Unknown error");
+          setServerError((err as Error).message || "Error desconocido");
         }
       },
     });
@@ -105,14 +105,14 @@ function NewObjectRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Explorer"
-        title="New Knowledge Object"
-        description="Create a Knowledge Object persisted through the canonical API contract."
+        eyebrow="Explorador"
+        title="Nuevo Objeto de conocimiento"
+        description="Crea un Objeto de conocimiento persistido a través del contrato canónico de la API."
         actions={
           <Button asChild variant="ghost" size="sm">
             <Link to="/explorer">
               <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
-              Back to Explorer
+              Back to Explorador
             </Link>
           </Button>
         }
@@ -126,15 +126,15 @@ function NewObjectRoute() {
         >
           <Field
             id="title"
-            label="Title"
+            label="Título"
             required
             error={fieldErrors.title}
-            hint="1–200 characters."
+            hint="1–200 caracteres."
           >
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => setTítulo(e.target.value)}
               maxLength={200}
               disabled={disabled}
               autoFocus
@@ -142,46 +142,46 @@ function NewObjectRoute() {
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field id="type" label="Type" required error={fieldErrors.type}>
+            <Field id="type" label="Tipo" required error={fieldErrors.type}>
               <Input
                 id="type"
                 value={type}
-                onChange={(e) => setType(e.target.value)}
+                onChange={(e) => setTipo(e.target.value)}
                 disabled={disabled}
-                placeholder="e.g. document"
+                placeholder="ej. documento"
               />
             </Field>
-            <Field id="category" label="Category" required error={fieldErrors.category}>
+            <Field id="category" label="Categoría" required error={fieldErrors.category}>
               <Input
                 id="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => setCategoría(e.target.value)}
                 disabled={disabled}
-                placeholder="e.g. architecture"
+                placeholder="ej. arquitectura"
               />
             </Field>
           </div>
 
-          <Field id="status" label="Status" required error={fieldErrors.status}>
+          <Field id="status" label="Estado" required error={fieldErrors.status}>
             <Input
               id="status"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setEstado(e.target.value)}
               disabled={disabled}
-              placeholder="e.g. draft, stable"
+              placeholder="ej. borrador, estable"
             />
           </Field>
 
           <Field
             id="summary"
-            label="Summary"
+            label="Resumen"
             error={fieldErrors.summary}
-            hint="Optional. Up to 2000 characters."
+            hint="Opcional. Hasta 2000 caracteres."
           >
             <Textarea
               id="summary"
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e) => setResumen(e.target.value)}
               maxLength={2000}
               rows={4}
               disabled={disabled}
@@ -191,23 +191,23 @@ function NewObjectRoute() {
           <div className="grid gap-5 sm:grid-cols-2">
             <Field
               id="keywords"
-              label="Keywords"
+              label="Palabras clave"
               error={fieldErrors.keywords}
-              hint="Comma separated."
+              hint="Separadas por comas."
             >
               <Input
                 id="keywords"
                 value={keywords}
-                onChange={(e) => setKeywords(e.target.value)}
+                onChange={(e) => setPalabras clave(e.target.value)}
                 disabled={disabled}
                 placeholder="graph, ontology"
               />
             </Field>
-            <Field id="tags" label="Tags" error={fieldErrors.tags} hint="Comma separated.">
+            <Field id="tags" label="Etiquetas" error={fieldErrors.tags} hint="Separadas por comas.">
               <Input
                 id="tags"
                 value={tags}
-                onChange={(e) => setTags(e.target.value)}
+                onChange={(e) => setEtiquetas(e.target.value)}
                 disabled={disabled}
                 placeholder="core, draft"
               />
@@ -225,16 +225,16 @@ function NewObjectRoute() {
 
           <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
             <Button asChild type="button" variant="ghost" disabled={disabled}>
-              <Link to="/explorer">Cancel</Link>
+              <Link to="/explorer">Cancelar</Link>
             </Button>
             <Button type="submit" disabled={disabled}>
               {disabled ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  Saving…
+                  Guardando…
                 </>
               ) : (
-                "Create Object"
+                "Crear objeto"
               )}
             </Button>
           </div>

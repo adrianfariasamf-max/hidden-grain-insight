@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Compass, Network, LayoutDashboard, Activity, Sparkles, FlaskConical } from "lucide-react";
+import { Compass, Network, LayoutDashboard, Actividad, Sparkles, FlaskConical } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -11,12 +11,12 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Overview", to: "/", icon: LayoutDashboard, exact: true },
-  { label: "Experiments", to: "/experiments", icon: FlaskConical },
-  { label: "Explorer", to: "/explorer", icon: Compass },
-  { label: "Knowledge Graph", to: "/graph", icon: Network },
-  { label: "Discovery", to: "/discover", icon: Sparkles },
-  { label: "System", to: "/system", icon: Activity },
+  { label: "Inicio", to: "/", icon: LayoutDashboard, exact: true },
+  { label: "Experimentos", to: "/experiments", icon: FlaskConical },
+  { label: "Explorador", to: "/explorer", icon: Compass },
+  { label: "Grafo de conocimiento", to: "/graph", icon: Network },
+  { label: "Descubrimientos", to: "/discover", icon: Sparkles },
+  { label: "Sistema", to: "/system", icon: Actividad },
 ];
 
 interface SideNavigationProps {
@@ -28,7 +28,7 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
 
   return (
     <nav
-      aria-label="Primary"
+      aria-label="Principal"
       className="flex h-full w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
     >
       <div className="flex items-center gap-2 px-4 py-5">

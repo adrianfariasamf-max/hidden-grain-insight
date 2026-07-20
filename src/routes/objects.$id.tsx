@@ -6,7 +6,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CreateRelationshipDialog } from "@/components/objects/CreateRelationshipDialog";
 import { RelationshipList } from "@/components/objects/RelationshipList";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { EstadoBadge } from "@/components/shared/EstadoBadge";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
@@ -62,7 +62,7 @@ function ObjectDetailRoute() {
             className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Back to Explorer
+            Back to Explorador
           </Link>
         }
       />
@@ -94,7 +94,7 @@ function InvalidIdView({ id }: { id: string }) {
           className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground hover:bg-accent/20"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Back to Explorer
+          Back to Explorador
         </Link>
       }
     />
@@ -112,7 +112,7 @@ function NotFoundView({ id }: { id: string }) {
           className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground hover:bg-accent/20"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Back to Explorer
+          Back to Explorador
         </Link>
       }
     />
@@ -152,13 +152,13 @@ function ObjectDetailBody({
   graphView?: KnowledgeObject;
 }) {
   const { relationships } = data;
-  const hasTags = object.tags.length > 0;
+  const hasEtiquetas = object.tags.length > 0;
   const keywords = object.metadata.keywords;
-  const hasKeywords = keywords.length > 0;
+  const hasPalabras clave = keywords.length > 0;
   const version = getDisplayVersion(object);
   const category = object.metadata.category;
-  const graphCategory = graphView?.metadata.category;
-  const graphType = graphView?.type;
+  const graphCategoría = graphView?.metadata.category;
+  const graphTipo = graphView?.type;
   const checksum = object.metadata.checksum;
   const path = object.metadata.path ?? object.source;
   const relationshipCount = object.metadata.relationshipCount ?? data.object.relationshipCount;
@@ -211,7 +211,7 @@ function ObjectDetailBody({
               {category}
             </span>
           ) : null}
-          {object.status ? <StatusBadge status={object.status} /> : null}
+          {object.status ? <EstadoBadge status={object.status} /> : null}
           {version ? (
             <span className="font-mono text-[11px] text-muted-foreground">{version}</span>
           ) : null}
@@ -234,10 +234,10 @@ function ObjectDetailBody({
             <span className="font-mono text-[11px] text-muted-foreground">
               {relationshipCount ?? 0} total
             </span>
-            <CreateRelationshipDialog sourceObjectId={object.id} sourceTitle={object.title} />
+            <CreateRelationshipDialog sourceObjectId={object.id} sourceTítulo={object.title} />
           </div>
         </header>
-        <RelationshipsSummary summary={summary} />
+        <RelationshipsResumen summary={summary} />
         <RelationshipsFilter value={filter} onChange={setFilter} summary={summary} />
         {summary.total === 0 ? (
           <EmptyState
@@ -251,7 +251,7 @@ function ObjectDetailBody({
                 title="Outgoing"
                 relationships={outgoing}
                 currentId={object.id}
-                emptyLabel="No outgoing relationships"
+                vacíoLabel="No outgoing relationships"
               />
             ) : null}
             {showBacklinks ? (
@@ -259,7 +259,7 @@ function ObjectDetailBody({
                 title="Backlinks"
                 relationships={incoming}
                 currentId={object.id}
-                emptyLabel="No backlinks"
+                vacíoLabel="No backlinks"
               />
             ) : null}
           </div>
@@ -274,19 +274,19 @@ function ObjectDetailBody({
           {path ? <MetaRow label="Path" value={path} mono /> : null}
           {graphView ? (
             <>
-              {graphType ? <MetaRow label="Graph type" value={graphType} mono /> : null}
-              {graphCategory ? <MetaRow label="Graph category" value={graphCategory} mono /> : null}
+              {graphTipo ? <MetaRow label="Graph type" value={graphTipo} mono /> : null}
+              {graphCategoría ? <MetaRow label="Graph category" value={graphCategoría} mono /> : null}
             </>
           ) : null}
         </dl>
       </section>
 
-      {/* Tags & keywords */}
-      {hasTags || hasKeywords ? (
+      {/* Etiquetas & keywords */}
+      {hasEtiquetas || hasPalabras clave ? (
         <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold text-foreground">Tags &amp; keywords</h2>
-          {hasTags ? <TagCloud label="Tags" items={object.tags} /> : null}
-          {hasKeywords ? <TagCloud label="Keywords" items={keywords} /> : null}
+          <h2 className="text-lg font-semibold text-foreground">Etiquetas &amp; keywords</h2>
+          {hasEtiquetas ? <TagCloud label="Etiquetas" items={object.tags} /> : null}
+          {hasPalabras clave ? <TagCloud label="Palabras clave" items={keywords} /> : null}
         </section>
       ) : null}
 
@@ -323,7 +323,7 @@ function TagCloud({ label, items }: { label: string; items: readonly string[] })
   );
 }
 
-interface RelationshipsSummaryData {
+interface RelationshipsResumenData {
   outgoingCount: number;
   backlinksCount: number;
   total: number;
@@ -331,17 +331,17 @@ interface RelationshipsSummaryData {
   droppedDuplicates: number;
 }
 
-function RelationshipsSummary({ summary }: { summary: RelationshipsSummaryData }) {
+function RelationshipsResumen({ summary }: { summary: RelationshipsResumenData }) {
   return (
     <dl
       className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground"
       aria-label="Relationships summary"
     >
-      <SummaryChip label="Total" value={summary.total} />
-      <SummaryChip label="Outgoing" value={summary.outgoingCount} />
-      <SummaryChip label="Backlinks" value={summary.backlinksCount} />
+      <ResumenChip label="Total" value={summary.total} />
+      <ResumenChip label="Outgoing" value={summary.outgoingCount} />
+      <ResumenChip label="Backlinks" value={summary.backlinksCount} />
       {summary.unresolved > 0 ? (
-        <SummaryChip label="Unresolved" value={summary.unresolved} tone="warning" />
+        <ResumenChip label="Unresolved" value={summary.unresolved} tone="warning" />
       ) : null}
       {summary.droppedDuplicates > 0 ? (
         <span className="text-[10px] italic text-muted-foreground">
@@ -352,7 +352,7 @@ function RelationshipsSummary({ summary }: { summary: RelationshipsSummaryData }
   );
 }
 
-function SummaryChip({
+function ResumenChip({
   label,
   value,
   tone = "neutral",
@@ -379,7 +379,7 @@ function RelationshipsFilter({
 }: {
   value: RelationshipsFilterValue;
   onChange: (next: RelationshipsFilterValue) => void;
-  summary: RelationshipsSummaryData;
+  summary: RelationshipsResumenData;
 }) {
   const options: { key: RelationshipsFilterValue; label: string; count: number }[] = [
     { key: "all", label: "All", count: summary.total },

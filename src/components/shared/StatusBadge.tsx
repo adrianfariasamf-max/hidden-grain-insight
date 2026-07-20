@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface StatusBadgeProps {
+interface EstadoBadgeProps {
   status: string;
   className?: string;
 }
@@ -16,7 +16,7 @@ const TONE: Record<string, string> = {
   archived: "bg-muted text-muted-foreground border-border",
 };
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function EstadoBadge({ status, className }: EstadoBadgeProps) {
   const tone = TONE[status.toLowerCase()] ?? "bg-muted text-muted-foreground border-border";
   return (
     <span

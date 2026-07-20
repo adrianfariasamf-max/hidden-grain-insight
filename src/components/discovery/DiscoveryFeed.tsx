@@ -2,35 +2,35 @@ import { memo, useMemo } from "react";
 
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
 import {
-  groupInsightsByCategory,
+  groupInsightsByCategoría,
   groupInsightsByPriority,
   rankInsights,
   toInsightViewModel,
-  type DiscoveryInsight,
-  type InsightCategory,
+  type DescubrimientosInsight,
+  type InsightCategoría,
   type InsightPriority,
 } from "@/lib/domain/discovery";
 
-import { DiscoveryCard } from "./DiscoveryCard";
-import { DiscoveryEmptyState } from "./DiscoveryEmptyState";
+import { DescubrimientosCard } from "./DescubrimientosCard";
+import { DescubrimientosEmptyState } from "./DescubrimientosEmptyState";
 
-export type DiscoveryFeedGrouping = "none" | "priority" | "category";
+export type DescubrimientosFeedGrouping = "none" | "priority" | "category";
 
-export interface DiscoveryFeedProps {
-  insights: readonly DiscoveryInsight[];
+export interface DescubrimientosFeedProps {
+  insights: readonly DescubrimientosInsight[];
   /** Called for lookups only — never mutated. */
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
-  grouping?: DiscoveryFeedGrouping;
-  /** Drives the "no graph yet" vs "no insights" empty state. */
+  grouping?: DescubrimientosFeedGrouping;
+  /** Drives the "no graph yet" vs "no insights" vacío state. */
   hasGraph: boolean;
 }
 
-function DiscoveryFeedImpl({
+function DescubrimientosFeedImpl({
   insights,
   nodesById,
   grouping = "none",
   hasGraph,
-}: DiscoveryFeedProps) {
+}: DescubrimientosFeedProps) {
   // Ordering is delegated to `rankInsights` — never resorted in React.
   const ranked = useMemo(() => rankInsights(insights), [insights]);
 
@@ -39,20 +39,20 @@ function DiscoveryFeedImpl({
       return { kind: "priority" as const, buckets: groupInsightsByPriority(insights) };
     }
     if (grouping === "category") {
-      return { kind: "category" as const, buckets: groupInsightsByCategory(insights) };
+      return { kind: "category" as const, buckets: groupInsightsByCategoría(insights) };
     }
     return null;
   }, [grouping, insights]);
 
   if (ranked.length === 0) {
-    return <DiscoveryEmptyState hasGraph={hasGraph} />;
+    return <DescubrimientosEmptyState hasGraph={hasGraph} />;
   }
 
   if (grouped) {
     // Selectors already emit buckets in deterministic order — we only iterate.
-    const entries: Array<[InsightPriority | InsightCategory, DiscoveryInsight[]]> = [];
+    const entries: Array<[InsightPriority | InsightCategoría, DescubrimientosInsight[]]> = [];
     grouped.buckets.forEach((bucket, key) => {
-      entries.push([key as InsightPriority | InsightCategory, bucket]);
+      entries.push([key as InsightPriority | InsightCategoría, bucket]);
     });
     return (
       <div className="flex flex-col gap-6">
@@ -74,7 +74,7 @@ function DiscoveryFeedImpl({
             <ul className="grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
               {bucket.map((insight) => (
                 <li key={insight.id}>
-                  <DiscoveryCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
+                  <DescubrimientosCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
                 </li>
               ))}
             </ul>
@@ -88,11 +88,11 @@ function DiscoveryFeedImpl({
     <ul className="grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
       {ranked.map((insight) => (
         <li key={insight.id}>
-          <DiscoveryCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
+          <DescubrimientosCard insight={toInsightViewModel(insight)} nodesById={nodesById} />
         </li>
       ))}
     </ul>
   );
 }
 
-export const DiscoveryFeed = memo(DiscoveryFeedImpl);
+export const DescubrimientosFeed = memo(DescubrimientosFeedImpl);

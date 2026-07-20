@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import {
-  experimentSessionsQuery,
+  experimentSesionesQuery,
   experimentDetailQuery,
-  sessionResponsesQuery,
+  sessionRespuestasQuery,
 } from "@/lib/perception/client";
 import type { ParticipantSession, StimulusResponse } from "@/lib/perception/types";
 
@@ -13,8 +13,8 @@ interface Props {
   experimentId: string;
 }
 
-export function SessionsPanel({ experimentId }: Props) {
-  const sessionsQ = useQuery(experimentSessionsQuery(experimentId));
+export function SesionesPanel({ experimentId }: Props) {
+  const sessionsQ = useQuery(experimentSesionesQuery(experimentId));
   const detailQ = useQuery(experimentDetailQuery(experimentId));
   const [openToken, setOpenToken] = useState<string | null>(null);
 
@@ -24,18 +24,18 @@ export function SessionsPanel({ experimentId }: Props) {
     <section className="rounded-lg border border-border bg-card p-5">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Participant sessions</h3>
+          <h3 className="text-sm font-semibold text-foreground">Sesiones de participantes</h3>
           <p className="text-xs text-muted-foreground">
-            Raw participant data. Ordered by creation time.
+            Datos crudos de participantes. Ordenados por hora de creación.
           </p>
         </div>
         <span className="font-mono text-[11px] text-muted-foreground">{items.length}</span>
       </div>
 
       {sessionsQ.isLoading ? (
-        <p className="text-xs text-muted-foreground">Loading sessions…</p>
+        <p className="text-xs text-muted-foreground">Cargando sesiones…</p>
       ) : items.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No sessions yet.</p>
+        <p className="text-xs text-muted-foreground">Aún no hay sesiones.</p>
       ) : (
         <ul className="divide-y divide-border/60">
           {items.map((it, idx) => {
@@ -53,7 +53,7 @@ export function SessionsPanel({ experimentId }: Props) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{label}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      <StatusChip status={s.status} /> · {it.responseCount} response
+                      <EstadoChip status={s.status} /> · {it.responseCount} response
                       {it.responseCount === 1 ? "" : "s"} · started{" "}
                       <SafeTimestamp value={s.startedAt ?? s.createdAt} />
                     </p>
@@ -63,7 +63,7 @@ export function SessionsPanel({ experimentId }: Props) {
                   </span>
                 </button>
                 {open ? (
-                  <SessionResponses
+                  <SessionRespuestas
                     token={s.publicToken}
                     session={s}
                     stimuli={detailQ.data?.stimuli ?? []}
@@ -78,7 +78,7 @@ export function SessionsPanel({ experimentId }: Props) {
   );
 }
 
-function SessionResponses({
+function SessionRespuestas({
   token,
   session,
   stimuli,
@@ -87,7 +87,7 @@ function SessionResponses({
   session: ParticipantSession;
   stimuli: { id: string; position: number; altText: string }[];
 }) {
-  const rq = useQuery(sessionResponsesQuery(token));
+  const rq = useQuery(sessionRespuestasQuery(token));
   const responses = rq.data?.items ?? [];
   const byId = new Map(stimuli.map((s) => [s.id, s]));
 
@@ -95,16 +95,16 @@ function SessionResponses({
     <div className="mt-2 grid gap-3 rounded-md border border-border/60 bg-background/40 p-3">
       <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
         <span>
-          Consented: <SafeTimestamp value={session.consentAcceptedAt} />
+          Consentimiento: <SafeTimestamp value={session.consentAcceptedAt} />
         </span>
         <span>
-          Completed: <SafeTimestamp value={session.completedAt} />
+          Completado: <SafeTimestamp value={session.completedAt} />
         </span>
       </div>
       {rq.isLoading ? (
-        <p className="text-xs text-muted-foreground">Loading responses…</p>
+        <p className="text-xs text-muted-foreground">Cargando respuestas…</p>
       ) : responses.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No responses recorded.</p>
+        <p className="text-xs text-muted-foreground">No se registraron respuestas.</p>
       ) : (
         responses.map((r) => {
           const stim = byId.get(r.stimulusId);
@@ -120,12 +120,12 @@ function SessionResponses({
                 </span>
               </header>
               <dl className="grid gap-1.5 text-xs">
-                <Row k="Observation" v={r.observation} />
-                <Row k="Attention" v={r.attention} />
-                <Row k="Feeling" v={r.feeling} />
-                <Row k="Interpretation" v={r.interpretation} />
+                <Row k="Observación" v={r.observation} />
+                <Row k="Elementos que llamaron la atención" v={r.attention} />
+                <Row k="Sensación" v={r.feeling} />
+                <Row k="Interpretación" v={r.interpretation} />
                 <Row
-                  k="Confidence"
+                  k="Nivel de confianza"
                   v={r.confidence == null ? "—" : `${Math.round(r.confidence * 5)}/5`}
                 />
               </dl>
@@ -147,7 +147,7 @@ function Row({ k, v }: { k: string; v: string | number | null }) {
   );
 }
 
-function StatusChip({ status }: { status: string }) {
+function EstadoChip({ status }: { status: string }) {
   const tone: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
     in_progress: "bg-primary/15 text-primary",

@@ -7,25 +7,25 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { RepositoryMetrics } from "@/components/system/RepositoryMetrics";
-import { SystemHealthCard } from "@/components/system/SystemHealthCard";
+import { SistemaEstadoCard } from "@/components/system/SistemaEstadoCard";
 import { ReadOnlyNotice } from "@/components/system/ReadOnlyNotice";
 import { healthQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Overview — Perception Studio" },
+      { title: "Inicio — Perception Studio" },
       {
         name: "description",
         content:
-          "Perception Studio: design, publish and share perception experiments, and browse the knowledge repository.",
+          "Perception Studio: diseña, publica y comparte estudios de percepción, y explora el repositorio de conocimiento.",
       },
     ],
   }),
-  component: OverviewRoute,
+  component: InicioRoute,
 });
 
-function OverviewRoute() {
+function InicioRoute() {
   const query = useQuery(healthQuery());
   const isInitialLoading = query.isPending && !query.data;
   const isRefreshing = query.isFetching && !query.isPending;
@@ -33,9 +33,9 @@ function OverviewRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Overview"
+        eyebrow="Inicio"
         title="Perception Studio"
-        description="Design perception experiments end to end and browse the Hidden Grain knowledge repository — all in one workspace."
+        description="Diseña estudios de percepción de principio a fin y explora el repositorio de conocimiento Hidden Grain — todo en un mismo espacio."
       />
       <div className="flex flex-col gap-8 px-4 py-6 sm:px-8">
         {/* Hero / primary navigation */}
@@ -51,7 +51,7 @@ function OverviewRoute() {
               id="hero-heading"
               className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
             >
-              Run perception experiments end to end
+              Ejecuta estudios de percepción de principio a fin
             </h2>
             <p className="max-w-2xl text-sm text-muted-foreground">
               Create an experiment, upload the three stimuli, publish it, and share the participant
@@ -65,46 +65,46 @@ function OverviewRoute() {
               className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
             >
               <FlaskConical className="h-4 w-4" aria-hidden />
-              Open Experiments
+              Abrir Experimentos
             </Link>
             <Link
               to="/explorer"
               className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/20 sm:w-auto"
             >
               <Compass className="h-4 w-4" aria-hidden />
-              Browse Knowledge Repository
+              Explorar repositorio
             </Link>
             <Link
               to="/graph"
               className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/20 sm:w-auto"
             >
               <Network className="h-4 w-4" aria-hidden />
-              Knowledge Graph
+              Grafo de conocimiento
             </Link>
           </div>
         </section>
 
-        {/* System status + repository metrics from /health */}
+        {/* Estado del sistema + repository metrics from /health */}
         <section aria-labelledby="status-heading" className="flex flex-col gap-3">
           <div className="flex items-baseline justify-between gap-2">
             <h2 id="status-heading" className="text-sm font-semibold text-foreground">
-              System status
+              Estado del sistema
             </h2>
             <Link
               to="/system"
               className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
             >
-              System details →
+              Detalles del sistema →
             </Link>
           </div>
 
           {isInitialLoading ? (
-            <LoadingState label="Loading system status…" />
+            <LoadingState label="Cargando estado del sistema…" />
           ) : query.isError && !query.data ? (
             <ErrorState error={query.error} onRetry={() => query.refetch()} />
           ) : query.data ? (
             <div className="flex flex-col gap-4">
-              <SystemHealthCard health={query.data} isRefreshing={isRefreshing} />
+              <SistemaEstadoCard health={query.data} isRefreshing={isRefreshing} />
               <RepositoryMetrics health={query.data} includeSchema />
             </div>
           ) : null}

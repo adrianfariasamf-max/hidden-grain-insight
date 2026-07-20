@@ -1,13 +1,13 @@
 import { memo } from "react";
 
-import type { DiscoveryInsight } from "@/lib/domain/discovery";
+import type { DescubrimientosInsight } from "@/lib/domain/discovery";
 
 import { InsightListItem } from "./InsightListItem";
 import { WorkspaceFilters, type WorkspaceFiltersProps } from "./WorkspaceFilters";
 
 export interface InsightListPanelProps extends WorkspaceFiltersProps {
   /** Already filtered AND sorted — the panel never reorders. */
-  insights: readonly DiscoveryInsight[];
+  insights: readonly DescubrimientosInsight[];
   selectedId: string | null;
   onSelect: (id: string) => void;
 }

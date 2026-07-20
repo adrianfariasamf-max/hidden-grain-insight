@@ -16,7 +16,7 @@ interface ErrorStateProps {
 
 function describe(error: unknown): { title: string; message: string } {
   if (error instanceof ApiNotFoundError) {
-    return { title: "Not found", message: "The requested resource does not exist." };
+    return { title: "No encontrado", message: "The requested resource does not exist." };
   }
   if (error instanceof ApiTimeoutError) {
     return {
@@ -43,7 +43,7 @@ function describe(error: unknown): { title: string; message: string } {
   if (error instanceof Error) {
     return { title: "Something went wrong", message: error.message };
   }
-  return { title: "Something went wrong", message: "Unknown error." };
+  return { title: "Something went wrong", message: "Error desconocido." };
 }
 
 export function ErrorState({ error, onRetry, title }: ErrorStateProps) {

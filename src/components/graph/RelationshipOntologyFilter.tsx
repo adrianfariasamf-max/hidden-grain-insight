@@ -3,24 +3,24 @@ import { Check, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
-  getRelationshipCategoryLabel,
-  type RelationshipCategory,
-  type RelationshipSummary,
+  getRelationshipCategoríaLabel,
+  type RelationshipCategoría,
+  type RelationshipResumen,
 } from "@/lib/domain";
 
 interface RelationshipOntologyFilterProps {
-  summary: RelationshipSummary;
-  selectedTypeIds: readonly string[];
-  selectedCategories: readonly RelationshipCategory[];
-  onToggleType: (id: string) => void;
-  onToggleCategory: (category: RelationshipCategory) => void;
+  summary: RelationshipResumen;
+  selectedTipoIds: readonly string[];
+  selectedCategories: readonly RelationshipCategoría[];
+  onToggleTipo: (id: string) => void;
+  onToggleCategoría: (category: RelationshipCategoría) => void;
   onClear: () => void;
 }
 
 /**
  * Ontology-aware multi-select filter surface for graph relationships.
  * Two chip groups:
- *   - Types      → selection within group is OR
+ *   - Tipos      → selection within group is OR
  *   - Categories → selection within group is OR
  *   - Between groups → AND (semantics owned by the caller / stats module).
  *
@@ -30,20 +30,20 @@ interface RelationshipOntologyFilterProps {
  */
 export function RelationshipOntologyFilter({
   summary,
-  selectedTypeIds,
+  selectedTipoIds,
   selectedCategories,
-  onToggleType,
-  onToggleCategory,
+  onToggleTipo,
+  onToggleCategoría,
   onClear,
 }: RelationshipOntologyFilterProps) {
-  const typeSet = new Set(selectedTypeIds);
+  const typeSet = new Set(selectedTipoIds);
   const categorySet = new Set(selectedCategories);
   const hasSelection = typeSet.size > 0 || categorySet.size > 0;
 
-  const handleTypeClick = useCallback((id: string) => () => onToggleType(id), [onToggleType]);
-  const handleCategoryClick = useCallback(
-    (c: RelationshipCategory) => () => onToggleCategory(c),
-    [onToggleCategory],
+  const handleTipoClick = useCallback((id: string) => () => onToggleTipo(id), [onToggleTipo]);
+  const handleCategoríaClick = useCallback(
+    (c: RelationshipCategoría) => () => onToggleCategoría(c),
+    [onToggleCategoría],
   );
 
   if (summary.total === 0) return null;
@@ -85,7 +85,7 @@ export function RelationshipOntologyFilter({
                 <li key={stat.category}>
                   <button
                     type="button"
-                    onClick={handleCategoryClick(stat.category)}
+                    onClick={handleCategoríaClick(stat.category)}
                     aria-pressed={selected}
                     className={cn(
                       "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -96,7 +96,7 @@ export function RelationshipOntologyFilter({
                     data-relationship-category={stat.category}
                   >
                     {selected ? <Check className="h-3 w-3" aria-hidden /> : null}
-                    <span>{getRelationshipCategoryLabel(stat.category)}</span>
+                    <span>{getRelationshipCategoríaLabel(stat.category)}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">
                       {stat.count}
                     </span>
@@ -111,7 +111,7 @@ export function RelationshipOntologyFilter({
       {summary.types.length > 0 ? (
         <fieldset className="flex flex-col gap-1.5">
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Types · OR within group · AND with categories
+            Tipos · OR within group · AND with categories
           </legend>
           <ul
             className="flex flex-wrap gap-1.5"
@@ -125,7 +125,7 @@ export function RelationshipOntologyFilter({
                 <li key={stat.descriptor.id}>
                   <button
                     type="button"
-                    onClick={handleTypeClick(stat.descriptor.id)}
+                    onClick={handleTipoClick(stat.descriptor.id)}
                     aria-pressed={selected}
                     title={stat.descriptor.description || stat.descriptor.displayName}
                     className={cn(

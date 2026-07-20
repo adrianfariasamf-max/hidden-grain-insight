@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Link2 } from "lucide-react";
 
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { EstadoBadge } from "@/components/shared/EstadoBadge";
 import type { KnowledgeObject } from "@/lib/domain";
 import { getDisplayVersion, getRelationshipCount } from "@/lib/domain";
 
@@ -15,7 +15,7 @@ interface ObjectCardProps {
  * The whole card links to /objects/:id.
  */
 export function ObjectCard({ object }: ObjectCardProps) {
-  const hasTags = object.tags.length > 0;
+  const hasEtiquetas = object.tags.length > 0;
   const version = getDisplayVersion(object);
   const relCount = getRelationshipCount(object);
 
@@ -35,7 +35,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
           <h3 className="truncate text-sm font-semibold text-foreground">{object.title}</h3>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {object.status ? <StatusBadge status={object.status} /> : null}
+          {object.status ? <EstadoBadge status={object.status} /> : null}
           <ArrowUpRight
             className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground"
             aria-hidden
@@ -56,7 +56,7 @@ export function ObjectCard({ object }: ObjectCardProps) {
             {relCount}
           </span>
         ) : null}
-        {hasTags ? (
+        {hasEtiquetas ? (
           <span className="ml-auto flex flex-wrap gap-1">
             {object.tags.slice(0, 4).map((t) => (
               <span

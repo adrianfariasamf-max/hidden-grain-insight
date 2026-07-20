@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   experimentKeys,
   experimentsApi,
-  sessionResponsesQuery,
+  sessionRespuestasQuery,
   sessionSnapshotQuery,
 } from "@/lib/perception/client";
 import type {
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/e/$experimentId/s/$token")({
   component: ParticipantSession,
   head: () => ({
     meta: [
-      { title: "Perception experiment session" },
+      { title: "Sesión del estudio de percepción" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -34,7 +34,7 @@ function ParticipantSession() {
   const { experimentId, token } = Route.useParams();
   const qc = useQueryClient();
   const snapshot = useQuery(sessionSnapshotQuery(token));
-  const responsesQ = useQuery(sessionResponsesQuery(token));
+  const responsesQ = useQuery(sessionRespuestasQuery(token));
 
   const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">(
     "instructions",
@@ -57,9 +57,9 @@ function ParticipantSession() {
     else if (answered.length > 0) setStage("stimulus");
   }, [snapshot.data, responsesQ.data, answered.length, stimuliSorted.length]);
 
-  if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Loading…" />;
+  if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Cargando…" />;
   if (snapshot.error) return <ErrorState error={snapshot.error} onRetry={() => snapshot.refetch()} />;
-  if (!snapshot.data) return <EmptyState title="Session not found" />;
+  if (!snapshot.data) return <EmptyState title="Sesión no encontrada" />;
 
   const exp = snapshot.data.experiment;
   const currentIndex = Math.min(answered.length, stimuliSorted.length - 1);
@@ -76,12 +76,12 @@ function ParticipantSession() {
         title={exp.title}
         instructions={exp.instructions}
         total={stimuliSorted.length}
-        onBegin={() => setStage("stimulus")}
+        onComenzar={() => setStage("stimulus")}
       />
     );
   }
 
-  if (!currentStimulus) return <EmptyState title="No stimuli available" />;
+  if (!currentStimulus) return <EmptyState title="No hay estímulos disponibles" />;
 
   return (
     <StimulusView
@@ -90,7 +90,7 @@ function ParticipantSession() {
       index={currentIndex}
       total={stimuliSorted.length}
       onSubmitted={async (last) => {
-        await qc.invalidateQueries({ queryKey: experimentKeys.sessionResponses(token) });
+        await qc.invalidateQueries({ queryKey: experimentKeys.sessionRespuestas(token) });
         if (last) {
           try {
             await experimentsApi.completeSession(token);
@@ -109,23 +109,23 @@ function InstructionsView({
   title,
   instructions,
   total,
-  onBegin,
+  onComenzar,
 }: {
   title: string;
   instructions: string;
   total: number;
-  onBegin: () => void;
+  onComenzar: () => void;
 }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-10">
       <h1 className="text-xl font-semibold text-foreground">{title}</h1>
       <p className="mt-1 text-xs text-muted-foreground">
-        You will view {total} image{total === 1 ? "" : "s"} in sequence.
+        Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
       </p>
       <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm text-foreground">
-        {instructions || "Please observe each image carefully and answer the questions that follow."}
+        {instructions || "Observa cada imagen con atención y responde las preguntas a continuación."}
       </div>
-      <Button type="button" className="mt-6" onClick={onBegin}>
+      <Button type="button" className="mt-6" onClick={onComenzar}>
         Start
       </Button>
     </div>
@@ -145,11 +145,11 @@ function StimulusView({
   submit: (input: SubmitResponseRequest) => Promise<StimulusResponse>;
   onSubmitted: (last: boolean) => void | Promise<void>;
 }) {
-  const [observation, setObservation] = useState("");
-  const [attention, setAttention] = useState("");
-  const [feeling, setFeeling] = useState("");
-  const [interpretation, setInterpretation] = useState("");
-  const [confidence, setConfidence] = useState<number | null>(null);
+  const [observation, setObservación] = useState("");
+  const [attention, setElementos que llamaron la atención] = useState("");
+  const [feeling, setSensación] = useState("");
+  const [interpretation, setInterpretación] = useState("");
+  const [confidence, setNivel de confianza] = useState<number | null>(null);
   const [firstViewedAt] = useState(() => new Date().toISOString());
   const [error, setError] = useState<string | null>(null);
 
@@ -172,7 +172,7 @@ function StimulusView({
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-6">
       <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
-          Image {index + 1} of {total}
+          Imagen {index + 1} de {total}
         </span>
         <div
           aria-hidden
@@ -213,13 +213,13 @@ function StimulusView({
       >
         <Field
           id="q-observation"
-          label="What do you see?"
-          hint="Describe the image in your own words."
+          label="¿Qué observas?"
+          hint="Descríbela con tus propias palabras."
         >
           <Textarea
             id="q-observation"
             value={observation}
-            onChange={(e) => setObservation(e.target.value)}
+            onChange={(e) => setObservación(e.target.value)}
             rows={3}
             required
           />
@@ -227,23 +227,23 @@ function StimulusView({
 
         <Field
           id="q-attention"
-          label="What draws your attention first?"
-          hint="Mention any detail your eye returns to."
+          label="¿Qué elementos llamaron primero tu atención?"
+          hint="Menciona cualquier detalle al que vuelva tu mirada."
         >
           <Textarea
             id="q-attention"
             value={attention}
-            onChange={(e) => setAttention(e.target.value)}
+            onChange={(e) => setElementos que llamaron la atención(e.target.value)}
             rows={2}
             required
           />
         </Field>
 
-        <Field id="q-feeling" label="How does it make you feel?">
+        <Field id="q-feeling" label="¿Qué sensación te transmite esta imagen?">
           <Textarea
             id="q-feeling"
             value={feeling}
-            onChange={(e) => setFeeling(e.target.value)}
+            onChange={(e) => setSensación(e.target.value)}
             rows={2}
             required
           />
@@ -251,13 +251,13 @@ function StimulusView({
 
         <Field
           id="q-interpretation"
-          label="What do you think it means?"
-          hint="There are no right or wrong answers."
+          label="¿Cómo interpretas lo que estás viendo?"
+          hint="No hay respuestas correctas ni incorrectas."
         >
           <Textarea
             id="q-interpretation"
             value={interpretation}
-            onChange={(e) => setInterpretation(e.target.value)}
+            onChange={(e) => setInterpretación(e.target.value)}
             rows={2}
             required
           />
@@ -265,10 +265,10 @@ function StimulusView({
 
         <fieldset className="grid gap-2">
           <legend className="text-sm font-medium text-foreground">
-            Confidence in your response{" "}
-            <span className="text-xs text-muted-foreground">(optional)</span>
+            Nivel de confianza in your response{" "}
+            <span className="text-xs text-muted-foreground">(opcional)</span>
           </legend>
-          <div className="flex gap-2" role="radiogroup" aria-label="Confidence level">
+          <div className="flex gap-2" role="radiogroup" aria-label="Nivel de confianza level">
             {[1, 2, 3, 4, 5].map((n) => {
               const active = confidence === n;
               return (
@@ -277,7 +277,7 @@ function StimulusView({
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => setConfidence(active ? null : n)}
+                  onClick={() => setNivel de confianza(active ? null : n)}
                   className={`h-9 flex-1 rounded-md border text-sm transition-colors ${
                     active
                       ? "border-primary bg-primary/15 text-primary"
@@ -290,22 +290,22 @@ function StimulusView({
             })}
           </div>
           <p className="text-[11px] text-muted-foreground">
-            1 = not confident · 5 = very confident
+            1 = poca confianza · 5 = mucha confianza
           </p>
         </fieldset>
 
         {error ? (
           <p className="text-xs text-destructive" role="alert">
-            We couldn't save your answer. {error}
+            No pudimos guardar tu respuesta. {error}
           </p>
         ) : null}
 
         <Button type="submit" disabled={!canSubmit} className="w-full">
           {mut.isPending
-            ? "Saving…"
+            ? "Guardando…"
             : index + 1 >= total
-              ? "Submit and finish"
-              : "Next image"}
+              ? "Enviar y finalizar"
+              : "Siguiente imagen"}
         </Button>
       </form>
     </div>
@@ -315,15 +315,15 @@ function StimulusView({
 function ThankYou({ experimentId: _ }: { experimentId: string }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-4 py-10 text-center">
-      <h1 className="text-2xl font-semibold text-foreground">Thank you</h1>
+      <h1 className="text-2xl font-semibold text-foreground">Gracias</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Your responses have been recorded. You may now close this page.
+        Tus respuestas se registraron correctamente. Ya puedes cerrar esta página.
       </p>
       <Link
         to="/"
         className="mt-6 text-xs text-muted-foreground underline-offset-4 hover:underline"
       >
-        Home
+        Inicio
       </Link>
     </div>
   );

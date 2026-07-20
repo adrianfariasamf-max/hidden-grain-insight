@@ -8,7 +8,7 @@ interface ActiveFiltersBarProps {
   onClear: () => void;
   className?: string;
   /** Rendered when `count === 0`. Optional. */
-  emptyLabel?: string;
+  vacíoLabel?: string;
 }
 
 /**
@@ -19,12 +19,12 @@ export function ActiveFiltersBar({
   count,
   onClear,
   className,
-  emptyLabel = "No active filters",
+  vacíoLabel = "No active filters",
 }: ActiveFiltersBarProps) {
   if (count === 0) {
     return (
       <p className={cn("text-[11px] text-muted-foreground", className)} aria-live="polite">
-        {emptyLabel}
+        {vacíoLabel}
       </p>
     );
   }

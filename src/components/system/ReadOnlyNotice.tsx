@@ -14,7 +14,7 @@ export function ReadOnlyNotice({ variant = "default" }: ReadOnlyNoticeProps) {
       <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
         <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
         <p>
-          Read-only projection. Canonical Knowledge Objects are authored outside this interface — no
+          Sólo lectura projection. Canonical Objetos de conocimiento are authored outside this interface — no
           create, edit, delete, approve or publish actions exist by design.
         </p>
       </div>
@@ -31,7 +31,7 @@ export function ReadOnlyNotice({ variant = "default" }: ReadOnlyNoticeProps) {
           <Lock className="h-4 w-4" aria-hidden />
         </span>
         <h2 id="read-only-heading" className="text-sm font-semibold text-foreground">
-          Read-only interface
+          Sólo lectura interface
         </h2>
       </div>
       <p className="text-sm text-muted-foreground">
@@ -39,7 +39,7 @@ export function ReadOnlyNotice({ variant = "default" }: ReadOnlyNoticeProps) {
         never mutates state — it observes.
       </p>
       <ul className="grid gap-1.5 text-xs text-muted-foreground sm:grid-cols-2">
-        <li>• Canonical Knowledge Objects remain outside the frontend.</li>
+        <li>• Canonical Objetos de conocimiento remain outside the frontend.</li>
         <li>• No direct Markdown or generated JSON access.</li>
         <li>• No create, edit, delete, approve or publish operations.</li>
         <li>• The API is the only frontend data boundary.</li>

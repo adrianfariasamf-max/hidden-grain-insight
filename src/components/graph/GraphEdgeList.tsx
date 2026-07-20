@@ -7,18 +7,18 @@ import { GraphEdgeItem } from "./GraphEdgeItem";
 interface GraphEdgeListProps {
   relationships: Relationship[];
   knownNodeIds: ReadonlySet<KnowledgeObjectId>;
-  emptyLabel: string;
-  emptyDescription?: string;
+  vacíoLabel: string;
+  vacíoDescripción?: string;
 }
 
 export function GraphEdgeList({
   relationships,
   knownNodeIds,
-  emptyLabel,
-  emptyDescription,
+  vacíoLabel,
+  vacíoDescripción,
 }: GraphEdgeListProps) {
   if (relationships.length === 0) {
-    return <EmptyState title={emptyLabel} description={emptyDescription} />;
+    return <EmptyState title={vacíoLabel} description={vacíoDescripción} />;
   }
   return (
     <ul className="flex flex-col gap-2">

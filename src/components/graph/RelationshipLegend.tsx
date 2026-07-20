@@ -3,13 +3,13 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
-  getRelationshipCategoryLabel,
-  type RelationshipSummary,
-  type RelationshipTypeStat,
+  getRelationshipCategoríaLabel,
+  type RelationshipResumen,
+  type RelationshipTipoStat,
 } from "@/lib/domain";
 
 interface RelationshipLegendProps {
-  summary: RelationshipSummary;
+  summary: RelationshipResumen;
   /** Above this count, the list collapses behind a "Show all" toggle so
    *  large ontologies do not push the graph below the fold. */
   collapseThreshold?: number;
@@ -24,7 +24,7 @@ interface RelationshipLegendProps {
 export function RelationshipLegend({ summary, collapseThreshold = 8 }: RelationshipLegendProps) {
   const [expanded, setExpanded] = useState(false);
   const isLong = summary.types.length > collapseThreshold;
-  const visibleTypes = useMemo(
+  const visibleTipos = useMemo(
     () => (isLong && !expanded ? summary.types.slice(0, collapseThreshold) : summary.types),
     [summary.types, isLong, expanded, collapseThreshold],
   );
@@ -45,11 +45,11 @@ export function RelationshipLegend({ summary, collapseThreshold = 8 }: Relations
         </h3>
         <span className="font-mono text-[10px] text-muted-foreground">
           {summary.types.length} type{summary.types.length === 1 ? "" : "s"}
-          {summary.customTypeCount > 0 ? ` · ${summary.customTypeCount} custom` : ""}
+          {summary.customTipoCount > 0 ? ` · ${summary.customTipoCount} custom` : ""}
         </span>
       </header>
       <ul className="flex flex-wrap gap-1.5">
-        {visibleTypes.map((stat) => (
+        {visibleTipos.map((stat) => (
           <LegendItem key={stat.descriptor.id} stat={stat} />
         ))}
       </ul>
@@ -77,7 +77,7 @@ export function RelationshipLegend({ summary, collapseThreshold = 8 }: Relations
   );
 }
 
-function LegendItem({ stat }: { stat: RelationshipTypeStat }) {
+function LegendItem({ stat }: { stat: RelationshipTipoStat }) {
   const { descriptor, count } = stat;
   const Icon = descriptor.icon;
   return (
@@ -94,9 +94,9 @@ function LegendItem({ stat }: { stat: RelationshipTypeStat }) {
       <span className="text-foreground">{descriptor.displayName}</span>
       <span
         className="rounded border border-border/60 px-1 py-px font-mono text-[9px] uppercase tracking-wide text-muted-foreground"
-        aria-label={`Category ${getRelationshipCategoryLabel(descriptor.category)}`}
+        aria-label={`Categoría ${getRelationshipCategoríaLabel(descriptor.category)}`}
       >
-        {getRelationshipCategoryLabel(descriptor.category)}
+        {getRelationshipCategoríaLabel(descriptor.category)}
       </span>
       {descriptor.isCustom ? (
         <span

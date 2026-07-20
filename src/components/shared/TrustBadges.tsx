@@ -7,10 +7,10 @@
 
 import { cn } from "@/lib/utils";
 import {
-  classifyConfidence,
-  formatConfidencePercent,
-  getConfidenceClassLabel,
-  getConfidenceClassTone,
+  classifyNivel de confianza,
+  formatNivel de confianzaPercent,
+  getNivel de confianzaClassLabel,
+  getNivel de confianzaClassTone,
   getRelationshipProvenanceDescriptor,
 } from "@/lib/domain";
 import type { Relationship, RelationshipTone } from "@/lib/domain";
@@ -42,12 +42,12 @@ export function ProvenanceBadge({ relationship }: { relationship: Relationship }
   );
 }
 
-export function ConfidenceBadge({ relationship }: { relationship: Relationship }) {
-  const pct = formatConfidencePercent(relationship.confidence);
-  const cls = classifyConfidence(relationship.confidence);
+export function Nivel de confianzaBadge({ relationship }: { relationship: Relationship }) {
+  const pct = formatNivel de confianzaPercent(relationship.confidence);
+  const cls = classifyNivel de confianza(relationship.confidence);
   if (!pct || !cls) return null;
-  const label = getConfidenceClassLabel(cls);
-  const tone = getConfidenceClassTone(cls);
+  const label = getNivel de confianzaClassLabel(cls);
+  const tone = getNivel de confianzaClassTone(cls);
   return (
     <span
       className={cn(

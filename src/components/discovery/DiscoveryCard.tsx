@@ -1,18 +1,18 @@
 import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 
-import type { DiscoveryInsightViewModel } from "@/lib/domain/discovery";
+import type { DescubrimientosInsightViewModel } from "@/lib/domain/discovery";
 import type { GraphNode, KnowledgeObjectId } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
-export interface DiscoveryCardProps {
-  insight: DiscoveryInsightViewModel;
+export interface DescubrimientosCardProps {
+  insight: DescubrimientosInsightViewModel;
   /** Lookup for object metadata (title/type). Optional — the card falls
    *  back to raw ids if the lookup is missing an entry. */
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
 }
 
-const PRIORITY_TONE: Record<DiscoveryInsightViewModel["priority"], string> = {
+const PRIORITY_TONE: Record<DescubrimientosInsightViewModel["priority"], string> = {
   critical: "border-destructive/40 bg-destructive/10 text-destructive",
   high: "border-orange-500/40 bg-orange-500/10 text-orange-300",
   medium: "border-amber-500/40 bg-amber-500/10 text-amber-300",
@@ -20,7 +20,7 @@ const PRIORITY_TONE: Record<DiscoveryInsightViewModel["priority"], string> = {
   info: "border-border/60 bg-muted/40 text-muted-foreground",
 };
 
-function DiscoveryCardImpl({ insight, nodesById }: DiscoveryCardProps) {
+function DescubrimientosCardImpl({ insight, nodesById }: DescubrimientosCardProps) {
   const Icon = insight.descriptor.icon;
   const primaryId = insight.objectIds[0];
   const primaryNode = primaryId ? nodesById?.get(primaryId) : undefined;
@@ -71,7 +71,7 @@ function DiscoveryCardImpl({ insight, nodesById }: DiscoveryCardProps) {
 
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-muted-foreground sm:grid-cols-3">
         <div className="flex min-w-0 flex-col">
-          <dt className="font-mono uppercase tracking-wider">Primary</dt>
+          <dt className="font-mono uppercase tracking-wider">Principal</dt>
           <dd className="min-w-0 truncate text-foreground">
             {primaryId ? (
               <Link
@@ -104,4 +104,4 @@ function DiscoveryCardImpl({ insight, nodesById }: DiscoveryCardProps) {
   );
 }
 
-export const DiscoveryCard = memo(DiscoveryCardImpl);
+export const DescubrimientosCard = memo(DescubrimientosCardImpl);

@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescripción,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTítulo,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -22,8 +22,8 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTítulo] = useState("");
+  const [description, setDescripción] = useState("");
   const [instructions, setInstructions] = useState("");
   const [hiddenTarget, setHiddenTarget] = useState("");
   const [issues, setIssues] = useState<string[]>([]);
@@ -33,8 +33,8 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
     onSuccess: (exp) => {
       qc.invalidateQueries({ queryKey: experimentKeys.list() });
       setOpen(false);
-      setTitle("");
-      setDescription("");
+      setTítulo("");
+      setDescripción("");
       setInstructions("");
       setHiddenTarget("");
       setIssues([]);
@@ -63,52 +63,52 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>New experiment</DialogTitle>
-          <DialogDescription>
-            Create a perception experiment. You can edit every field afterwards.
-          </DialogDescription>
+          <DialogTítulo>Nuevo experimento</DialogTítulo>
+          <DialogDescripción>
+            Crea un estudio de percepción. Podrás editar cada campo después.
+          </DialogDescripción>
         </DialogHeader>
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="new-exp-title">Title</Label>
+            <Label htmlFor="new-exp-title">Título</Label>
             <Input
               id="new-exp-title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Perception study #1"
+              onChange={(e) => setTítulo(e.target.value)}
+              placeholder="Estudio de percepción #1"
               required
               autoFocus
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="new-exp-desc">Description</Label>
+            <Label htmlFor="new-exp-desc">Descripción</Label>
             <Textarea
               id="new-exp-desc"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => setDescripción(e.target.value)}
               rows={2}
-              placeholder="Short summary for your own records."
+              placeholder="Resumen breve para tus propios registros."
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="new-exp-instr">Participant instructions</Label>
+            <Label htmlFor="new-exp-instr">Instrucciones para participantes</Label>
             <Textarea
               id="new-exp-instr"
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               rows={3}
-              placeholder="What participants will read before viewing the stimuli."
+              placeholder="Lo que las personas participantes leerán antes de ver las imágenes."
             />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="new-exp-hidden">
-              Hidden target <span className="text-muted-foreground">(researcher only)</span>
+              Objetivo oculto <span className="text-muted-foreground">(sólo para el investigador)</span>
             </Label>
             <Input
               id="new-exp-hidden"
               value={hiddenTarget}
               onChange={(e) => setHiddenTarget(e.target.value)}
-              placeholder="Element you are studying — never shown to participants."
+              placeholder="Elemento que estás estudiando — nunca se muestra a las personas participantes."
               required
             />
           </div>
@@ -124,10 +124,10 @@ export function NewExperimentDialog({ trigger }: { trigger: React.ReactNode }) {
           ) : null}
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Creating…" : "Create experiment"}
+              {mutation.isPending ? "Creando…" : "Crear experimento"}
             </Button>
           </DialogFooter>
         </form>

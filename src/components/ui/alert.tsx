@@ -27,7 +27,7 @@ const Alert = React.forwardRef<
 ));
 Alert.displayName = "Alert";
 
-const AlertTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
+const AlertTítulo = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
     <h5
       ref={ref}
@@ -36,14 +36,14 @@ const AlertTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<H
     />
   ),
 );
-AlertTitle.displayName = "AlertTitle";
+AlertTítulo.displayName = "AlertTítulo";
 
-const AlertDescription = React.forwardRef<
+const AlertDescripción = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("text-sm [&_p]:leading-relaxed", className)} {...props} />
 ));
-AlertDescription.displayName = "AlertDescription";
+AlertDescripción.displayName = "AlertDescripción";
 
-export { Alert, AlertTitle, AlertDescription };
+export { Alert, AlertTítulo, AlertDescripción };

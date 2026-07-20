@@ -1,14 +1,14 @@
 import { MetricCard } from "@/components/shared/MetricCard";
-import type { HealthResponse } from "@/lib/api/types";
+import type { EstadoResponse } from "@/lib/api/types";
 
 interface RepositoryMetricsProps {
-  health: Pick<HealthResponse, "objects" | "nodes" | "edges" | "schemaVersion">;
+  health: Pick<EstadoResponse, "objects" | "nodes" | "edges" | "schemaVersion">;
   includeSchema?: boolean;
 }
 
 /**
  * Renders repository counters straight from /health. Zero is a valid value
- * — never treated as empty or errored.
+ * — never treated as vacío or errored.
  */
 export function RepositoryMetrics({ health, includeSchema }: RepositoryMetricsProps) {
   return (

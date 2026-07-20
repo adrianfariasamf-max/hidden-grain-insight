@@ -32,7 +32,7 @@ export const Route = createFileRoute("/e/$experimentId")({
   component: ParticipantLanding,
   head: () => ({
     meta: [
-      { title: "Perception experiment" },
+      { title: "Estudio de percepción" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -61,9 +61,9 @@ function ParticipantLanding() {
     },
   });
 
-  if (isLoading) return <LoadingState label="Loading…" />;
+  if (isLoading) return <LoadingState label="Cargando…" />;
   if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
-  if (!data) return <EmptyState title="Experiment not available" />;
+  if (!data) return <EmptyState title="Experimento no disponible" />;
 
   const exp = data.experiment;
   const isOpen = exp.status === "published";
@@ -77,7 +77,7 @@ function ParticipantLanding() {
 
       {!isOpen ? (
         <p className="mt-6 rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
-          This experiment isn't accepting participants right now.
+          Este experimento no está aceptando participantes en este momento.
         </p>
       ) : (
         <form
@@ -90,7 +90,7 @@ function ParticipantLanding() {
         >
           <section aria-labelledby="consent-heading" className="grid gap-2">
             <h2 id="consent-heading" className="text-sm font-semibold text-foreground">
-              Before you begin
+              Antes de comenzar
             </h2>
             <p className="text-sm text-muted-foreground">
               You will view three images in sequence and answer a few short questions about each.
@@ -101,13 +101,13 @@ function ParticipantLanding() {
 
           <div className="grid gap-1.5">
             <Label htmlFor="alias">
-              Alias <span className="text-muted-foreground">(optional)</span>
+              Alias <span className="text-muted-foreground">(opcional)</span>
             </Label>
             <Input
               id="alias"
               value={alias}
               onChange={(ev) => setAlias(ev.target.value)}
-              placeholder="Leave blank to stay anonymous"
+              placeholder="Déjalo en blanco para permanecer anónimo"
               maxLength={64}
               autoComplete="off"
             />
@@ -117,20 +117,20 @@ function ParticipantLanding() {
             <Checkbox
               checked={consent}
               onCheckedChange={(v) => setConsent(v === true)}
-              aria-label="I consent to participate"
+              aria-label="Doy mi consentimiento para participar"
             />
             <span className="text-foreground">
-              I have read the information above and consent to participate.
+              He leído la información anterior y doy mi consentimiento para participar.
             </span>
           </label>
 
           <Button type="submit" disabled={!consent || start.isPending} className="w-full">
-            {start.isPending ? "Starting…" : "Begin"}
+            {start.isPending ? "Comenzando…" : "Comenzar"}
           </Button>
 
           {start.error ? (
             <p className="text-xs text-destructive">
-              We couldn't start your session. {(start.error as Error).message}
+              No pudimos iniciar tu sesión. {(start.error as Error).message}
             </p>
           ) : null}
         </form>

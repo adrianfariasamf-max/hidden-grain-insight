@@ -37,37 +37,37 @@ const searchSchema = z.object({
   ),
 });
 
-type ExplorerSearch = z.infer<typeof searchSchema>;
+type ExploradorSearch = z.infer<typeof searchSchema>;
 
 export const Route = createFileRoute("/explorer")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Explorer — Hidden Grain" },
-      { name: "description", content: "Search, filter and paginate Knowledge Objects." },
+      { title: "Explorador — Hidden Grain" },
+      { name: "description", content: "Busca, filtra y pagina Objetos de Conocimiento." },
     ],
   }),
-  component: ExplorerRoute,
+  component: ExploradorRoute,
 });
 
 /**
- * Explorer keeps the URL as the source of truth. We derive the canonical
+ * Explorador keeps the URL as the source of truth. We derive the canonical
  * `SearchQuery` from the URL params, then let `useSearch` normalize and
  * expose it. Every write projects back to the URL — that is the ONE
- * Explorer ↔ SearchQuery ↔ URL binding.
+ * Explorador ↔ SearchQuery ↔ URL binding.
  */
-function searchQueryFromUrl(input: ExplorerSearch): SearchQuery {
+function searchQueryFromUrl(input: ExploradorSearch): SearchQuery {
   const q: SearchQuery = {
     pagination: { offset: input.offset, limit: normalizeLimit(input.limit) },
   };
   if (input.q) q.text = input.q;
-  if (input.type) q.objectTypes = [input.type];
+  if (input.type) q.objectTipos = [input.type];
   if (input.category) q.categories = [input.category];
   if (input.status) q.status = [input.status];
   return q;
 }
 
-function ExplorerRoute() {
+function ExploradorRoute() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -110,7 +110,7 @@ function ExplorerRoute() {
     if (lastPageOffset === search.offset) return;
     navigate({
       to: ".",
-      search: (prev: ExplorerSearch) => ({ ...prev, offset: lastPageOffset }),
+      search: (prev: ExploradorSearch) => ({ ...prev, offset: lastPageOffset }),
       replace: true,
     });
   }, [listQuery.data, search.offset, navigate]);
@@ -119,7 +119,7 @@ function ExplorerRoute() {
     (patch: Partial<{ type: string; category: string; status: string }>) => {
       navigate({
         to: ".",
-        search: (prev: ExplorerSearch) => ({ ...prev, ...patch, offset: 0 }),
+        search: (prev: ExploradorSearch) => ({ ...prev, ...patch, offset: 0 }),
       });
     },
     [navigate],
@@ -131,7 +131,7 @@ function ExplorerRoute() {
       if (next === (search.q ?? "")) return;
       navigate({
         to: ".",
-        search: (prev: ExplorerSearch) => ({ ...prev, q: next, offset: 0 }),
+        search: (prev: ExploradorSearch) => ({ ...prev, q: next, offset: 0 }),
         replace: true,
       });
     },
@@ -158,7 +158,7 @@ function ExplorerRoute() {
     (offset: number) => {
       navigate({
         to: ".",
-        search: (prev: ExplorerSearch) => ({ ...prev, offset }),
+        search: (prev: ExploradorSearch) => ({ ...prev, offset }),
       });
     },
     [navigate],
@@ -175,9 +175,9 @@ function ExplorerRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Explorer"
-        title="Knowledge Objects"
-        description="Search, filter and paginate the read-only object index. Filters send q, type, category and status to the API."
+        eyebrow="Explorador"
+        title="Objetos de conocimiento"
+        description="Busca, filtra y pagina el índice de objetos. Los filtros envían q, type, category y status a la API."
         actions={
           <Button asChild size="sm">
             <Link to="/objects/new">
@@ -192,8 +192,8 @@ function ExplorerRoute() {
           <SearchInput
             value={search.q ?? ""}
             onChange={handleTextChange}
-            placeholder="Search Knowledge Objects…"
-            ariaLabel="Search Knowledge Objects"
+            placeholder="Search Objetos de conocimiento…"
+            ariaLabel="Search Objetos de conocimiento"
           />
 
           <FiltersBar
@@ -212,20 +212,20 @@ function ExplorerRoute() {
         </div>
 
         {isInitialLoading ? (
-          <LoadingState label="Loading objects…" />
+          <LoadingState label="Cargando objetos…" />
         ) : listQuery.isError ? (
           <ErrorState error={listQuery.error} onRetry={() => listQuery.refetch()} />
         ) : !hasItems ? (
           <EmptyState
-            title="No objects match the current filters"
-            description="Try clearing filters or adjusting the search term."
+            title="Ningún objeto coincide con los filtros actuales"
+            description="Prueba a limpiar los filtros o ajustar el término de búsqueda."
           />
         ) : (
           <div className="flex flex-col gap-4">
             {isRefreshing ? (
               <div className="inline-flex items-center gap-2 self-start rounded border border-border/60 bg-card/60 px-2 py-1 text-[11px] text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
-                Refreshing…
+                Actualizando…
               </div>
             ) : null}
 
