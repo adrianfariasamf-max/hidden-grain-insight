@@ -14,6 +14,7 @@ import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ObjectsNewRouteImport } from './routes/objects.new'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
 import { Route as ApiRelationshipsRouteImport } from './routes/api/relationships'
 import { Route as ApiObjectsRouteImport } from './routes/api/objects'
@@ -44,6 +45,11 @@ const DiscoverRoute = DiscoverRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObjectsNewRoute = ObjectsNewRouteImport.update({
+  id: '/objects/new',
+  path: '/objects/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ObjectsIdRoute = ObjectsIdRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
   '/objects/$id': typeof ObjectsIdRoute
+  '/objects/new': typeof ObjectsNewRoute
   '/api/objects/$id': typeof ApiObjectsIdRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
   '/objects/$id': typeof ObjectsIdRoute
+  '/objects/new': typeof ObjectsNewRoute
   '/api/objects/$id': typeof ApiObjectsIdRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
   '/objects/$id': typeof ObjectsIdRoute
+  '/objects/new': typeof ObjectsNewRoute
   '/api/objects/$id': typeof ApiObjectsIdRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/api/objects'
     | '/api/relationships'
     | '/objects/$id'
+    | '/objects/new'
     | '/api/objects/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/api/objects'
     | '/api/relationships'
     | '/objects/$id'
+    | '/objects/new'
     | '/api/objects/$id'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/api/objects'
     | '/api/relationships'
     | '/objects/$id'
+    | '/objects/new'
     | '/api/objects/$id'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   ApiObjectsRoute: typeof ApiObjectsRouteWithChildren
   ApiRelationshipsRoute: typeof ApiRelationshipsRoute
   ObjectsIdRoute: typeof ObjectsIdRoute
+  ObjectsNewRoute: typeof ObjectsNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/objects/new': {
+      id: '/objects/new'
+      path: '/objects/new'
+      fullPath: '/objects/new'
+      preLoaderRoute: typeof ObjectsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/objects/$id': {
@@ -277,6 +297,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiObjectsRoute: ApiObjectsRouteWithChildren,
   ApiRelationshipsRoute: ApiRelationshipsRoute,
   ObjectsIdRoute: ObjectsIdRoute,
+  ObjectsNewRoute: ObjectsNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
