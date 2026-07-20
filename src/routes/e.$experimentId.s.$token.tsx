@@ -34,7 +34,11 @@ function ParticipantSession() {
   const snapshot = useQuery(sessionSnapshotQuery(token));
   const responsesQ = useQuery(sessionResponsesQuery(token));
 
-  const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">("instructions");
+  // RR-006 · Instructions are shown on the landing before the session is
+  // created. Once the participant lands here they go straight to the first
+  // stimulus. `complete` remains for the thank-you view (and reload of a
+  // finished session).
+  const [stage, setStage] = useState<"stimulus" | "complete">("stimulus");
 
   const answered = responsesQ.data?.items ?? [];
   const stimuliSorted = useMemo(() => {
@@ -50,7 +54,6 @@ function ParticipantSession() {
     initedRef.current = true;
     const total = stimuliSorted.length;
     if (total > 0 && answered.length >= total) setStage("complete");
-    else if (answered.length > 0) setStage("stimulus");
   }, [snapshot.data, responsesQ.data, answered.length, stimuliSorted.length]);
 
   if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Cargando…" />;
@@ -65,17 +68,6 @@ function ParticipantSession() {
 
   if (stage === "complete" || completed) {
     return <ThankYou />;
-  }
-
-  if (stage === "instructions") {
-    return (
-      <InstructionsView
-        title={exp.title}
-        instructions={exp.instructions}
-        total={stimuliSorted.length}
-        onBegin={() => setStage("stimulus")}
-      />
-    );
   }
 
   if (!currentStimulus) return <EmptyState title="No hay estímulos disponibles" />;
@@ -99,34 +91,6 @@ function ParticipantSession() {
       }}
       submit={(input) => experimentsApi.submitResponse(token, input)}
     />
-  );
-}
-
-function InstructionsView({
-  title,
-  instructions,
-  total,
-  onBegin,
-}: {
-  title: string;
-  instructions: string;
-  total: number;
-  onBegin: () => void;
-}) {
-  return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-10">
-      <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
-      </p>
-      <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm text-foreground">
-        {instructions ||
-          "Observa cada imagen con atención y responde las preguntas a continuación."}
-      </div>
-      <Button type="button" className="mt-6" onClick={onBegin}>
-        Comenzar
-      </Button>
-    </div>
   );
 }
 
@@ -167,13 +131,18 @@ function StimulusView({
     interpretation.trim().length > 0 &&
     confidence !== null;
 
+  // RR-008 · Image + questions share the viewport as a single observation
+  // unit. On lg+ the image is sticky on the left so the participant never
+  // has to scroll back to see the stimulus while answering. On mobile the
+  // image sits above the form, capped in height so the first question is
+  // always visible below.
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6">
       <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
           Imagen {index + 1} de {total}
         </span>
-        <div aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-muted">
+        <div aria-hidden className="h-1 w-24 overflow-hidden rounded-full bg-muted sm:w-32">
           <div
             className="h-full bg-primary transition-all"
             style={{ width: `${(index / total) * 100}%` }}
@@ -181,17 +150,22 @@ function StimulusView({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-black">
-        {/* Full-image display, no thumbnails, preserve aspect ratio */}
-        <img
-          src={stimulus.imageUrl}
-          alt={stimulus.altText || `Imagen ${index + 1}`}
-          className="mx-auto block max-h-[70vh] w-full object-contain"
-        />
-      </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)]">
+        <div className="lg:sticky lg:top-4 lg:self-start">
+          <div className="overflow-hidden rounded-lg border border-border bg-black">
+            {/* Full-image display, preserve aspect ratio. Height caps keep
+                the participant's first question visible on mobile and let
+                the image dominate the left column on desktop. */}
+            <img
+              src={stimulus.imageUrl}
+              alt={stimulus.altText || `Imagen ${index + 1}`}
+              className="mx-auto block max-h-[48vh] w-full object-contain sm:max-h-[60vh] lg:max-h-[calc(100vh-8rem)]"
+            />
+          </div>
+        </div>
 
-      <form
-        className="mt-5 grid gap-4"
+        <form
+          className="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (!canSubmit) return;
@@ -311,14 +285,15 @@ function StimulusView({
           </p>
         ) : null}
 
-        <Button type="submit" disabled={!canSubmit} className="w-full">
+        <Button type="submit" size="lg" disabled={!canSubmit} className="w-full">
           {mut.isPending
             ? "Guardando…"
             : index + 1 >= total
               ? "Enviar y finalizar"
               : "Siguiente imagen"}
         </Button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
