@@ -80,7 +80,7 @@ function ParticipantLanding() {
   // A participant only exists once the first stimulus has been fetched by the
   // browser. This eliminates the "0-response" ghost participants that appear
   // when someone opens a link or just clicks the consent button.
-  const [stage, setStage] = useState<"form" | "instructions" | "preloading">("form");
+  const [stage, setStage] = useState<"form" | "preloading">("form");
   const [preloadError, setPreloadError] = useState<string | null>(null);
 
   // Contamination shield (RR-005): sessions started with ?test=1 in the URL
@@ -153,24 +153,6 @@ function ParticipantLanding() {
   const isClosed = exp.status === "closed";
   const firstStimulus = [...(data.stimuli ?? [])].sort((a, b) => a.position - b.position)[0];
 
-  if (isOpen && stage === "instructions") {
-    return (
-      <>
-      <PreviewBanner active={preview} />
-      <InstructionsStage
-        title={exp.title}
-        instructions={exp.instructions}
-        total={data.stimuli?.length ?? 0}
-        onBegin={() => {
-          setPreloadError(null);
-          setStage("preloading");
-        }}
-        onBack={() => setStage("form")}
-      />
-      </>
-    );
-  }
-
   if (isOpen && stage === "preloading") {
     return (
       <>
@@ -184,7 +166,7 @@ function ParticipantLanding() {
         }}
         onFail={(msg) => setPreloadError(msg)}
         onCancel={() => {
-          setStage("instructions");
+          setStage("form");
           setPreloadError(null);
         }}
       />
@@ -226,7 +208,8 @@ function ParticipantLanding() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!consent || !ageRange) return;
-            setStage("instructions");
+            setPreloadError(null);
+            setStage("preloading");
           }}
         >
           <section aria-labelledby="consent-heading" className="grid gap-2">
