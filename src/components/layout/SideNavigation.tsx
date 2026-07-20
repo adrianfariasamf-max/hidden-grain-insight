@@ -36,8 +36,8 @@ export function SideNavigation({ onNavigate }: SideNavigationProps = {}) {
           <span className="font-mono text-sm font-semibold">HG</span>
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold">Hidden Grain</span>
-          <span className="text-[11px] text-muted-foreground">Perception Studio</span>
+          <span className="text-sm font-semibold">Perception Studio</span>
+          <span className="text-[11px] text-muted-foreground">by Hidden Grain</span>
         </div>
       </div>
 

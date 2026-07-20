@@ -33,6 +33,8 @@ import { Route as ApiExperimentsIdStimuliRouteImport } from './routes/api/experi
 import { Route as ApiExperimentsIdSessionsRouteImport } from './routes/api/experiments.$id.sessions'
 import { Route as ApiExperimentsIdResultsRouteImport } from './routes/api/experiments.$id.results'
 import { Route as ApiExperimentsIdPublishRouteImport } from './routes/api/experiments.$id.publish'
+import { Route as ApiExperimentsIdStimuliUploadUrlRouteImport } from './routes/api/experiments.$id.stimuli.upload-url'
+import { Route as ApiExperimentsIdStimuliStimulusIdRouteImport } from './routes/api/experiments.$id.stimuli.$stimulusId'
 
 const SystemRoute = SystemRouteImport.update({
   id: '/system',
@@ -157,6 +159,18 @@ const ApiExperimentsIdPublishRoute = ApiExperimentsIdPublishRouteImport.update({
   path: '/publish',
   getParentRoute: () => ApiExperimentsIdRoute,
 } as any)
+const ApiExperimentsIdStimuliUploadUrlRoute =
+  ApiExperimentsIdStimuliUploadUrlRouteImport.update({
+    id: '/upload-url',
+    path: '/upload-url',
+    getParentRoute: () => ApiExperimentsIdStimuliRoute,
+  } as any)
+const ApiExperimentsIdStimuliStimulusIdRoute =
+  ApiExperimentsIdStimuliStimulusIdRouteImport.update({
+    id: '/$stimulusId',
+    path: '/$stimulusId',
+    getParentRoute: () => ApiExperimentsIdStimuliRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -179,10 +193,12 @@ export interface FileRoutesByFullPath {
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
-  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRoute
+  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRouteWithChildren
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
+  '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -205,10 +221,12 @@ export interface FileRoutesByTo {
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
-  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRoute
+  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRouteWithChildren
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
+  '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -232,10 +250,12 @@ export interface FileRoutesById {
   '/api/experiments/$id/publish': typeof ApiExperimentsIdPublishRoute
   '/api/experiments/$id/results': typeof ApiExperimentsIdResultsRoute
   '/api/experiments/$id/sessions': typeof ApiExperimentsIdSessionsRoute
-  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRoute
+  '/api/experiments/$id/stimuli': typeof ApiExperimentsIdStimuliRouteWithChildren
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
+  '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -264,6 +284,8 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/api/experiments/$id/stimuli/$stimulusId'
+    | '/api/experiments/$id/stimuli/upload-url'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -290,6 +312,8 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/api/experiments/$id/stimuli/$stimulusId'
+    | '/api/experiments/$id/stimuli/upload-url'
   id:
     | '__root__'
     | '/'
@@ -316,6 +340,8 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/api/experiments/$id/stimuli/$stimulusId'
+    | '/api/experiments/$id/stimuli/upload-url'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -505,6 +531,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiExperimentsIdPublishRouteImport
       parentRoute: typeof ApiExperimentsIdRoute
     }
+    '/api/experiments/$id/stimuli/upload-url': {
+      id: '/api/experiments/$id/stimuli/upload-url'
+      path: '/upload-url'
+      fullPath: '/api/experiments/$id/stimuli/upload-url'
+      preLoaderRoute: typeof ApiExperimentsIdStimuliUploadUrlRouteImport
+      parentRoute: typeof ApiExperimentsIdStimuliRoute
+    }
+    '/api/experiments/$id/stimuli/$stimulusId': {
+      id: '/api/experiments/$id/stimuli/$stimulusId'
+      path: '/$stimulusId'
+      fullPath: '/api/experiments/$id/stimuli/$stimulusId'
+      preLoaderRoute: typeof ApiExperimentsIdStimuliStimulusIdRouteImport
+      parentRoute: typeof ApiExperimentsIdStimuliRoute
+    }
   }
 }
 
@@ -520,18 +560,36 @@ const ExperimentsRouteWithChildren = ExperimentsRoute._addFileChildren(
   ExperimentsRouteChildren,
 )
 
+interface ApiExperimentsIdStimuliRouteChildren {
+  ApiExperimentsIdStimuliStimulusIdRoute: typeof ApiExperimentsIdStimuliStimulusIdRoute
+  ApiExperimentsIdStimuliUploadUrlRoute: typeof ApiExperimentsIdStimuliUploadUrlRoute
+}
+
+const ApiExperimentsIdStimuliRouteChildren: ApiExperimentsIdStimuliRouteChildren =
+  {
+    ApiExperimentsIdStimuliStimulusIdRoute:
+      ApiExperimentsIdStimuliStimulusIdRoute,
+    ApiExperimentsIdStimuliUploadUrlRoute:
+      ApiExperimentsIdStimuliUploadUrlRoute,
+  }
+
+const ApiExperimentsIdStimuliRouteWithChildren =
+  ApiExperimentsIdStimuliRoute._addFileChildren(
+    ApiExperimentsIdStimuliRouteChildren,
+  )
+
 interface ApiExperimentsIdRouteChildren {
   ApiExperimentsIdPublishRoute: typeof ApiExperimentsIdPublishRoute
   ApiExperimentsIdResultsRoute: typeof ApiExperimentsIdResultsRoute
   ApiExperimentsIdSessionsRoute: typeof ApiExperimentsIdSessionsRoute
-  ApiExperimentsIdStimuliRoute: typeof ApiExperimentsIdStimuliRoute
+  ApiExperimentsIdStimuliRoute: typeof ApiExperimentsIdStimuliRouteWithChildren
 }
 
 const ApiExperimentsIdRouteChildren: ApiExperimentsIdRouteChildren = {
   ApiExperimentsIdPublishRoute: ApiExperimentsIdPublishRoute,
   ApiExperimentsIdResultsRoute: ApiExperimentsIdResultsRoute,
   ApiExperimentsIdSessionsRoute: ApiExperimentsIdSessionsRoute,
-  ApiExperimentsIdStimuliRoute: ApiExperimentsIdStimuliRoute,
+  ApiExperimentsIdStimuliRoute: ApiExperimentsIdStimuliRouteWithChildren,
 }
 
 const ApiExperimentsIdRouteWithChildren =

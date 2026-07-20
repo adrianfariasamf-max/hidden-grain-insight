@@ -1,18 +1,27 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, Circle, EyeOff, Rocket } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { SharePanel } from "@/components/experiments/SharePanel";
+import { StimulusSlot } from "@/components/experiments/StimulusSlot";
 import { experimentDetailQuery, experimentKeys, experimentsApi } from "@/lib/perception/client";
+import type { ExperimentDetail } from "@/lib/perception/types";
 
 export const Route = createFileRoute("/experiments/$id")({
   component: ExperimentDetailPage,
   head: () => ({
     meta: [
-      { title: "Experiment — Hidden Grain" },
-      { name: "description", content: "Perception experiment configuration." },
+      { title: "Experiment — Perception Studio" },
+      { name: "description", content: "Configure, publish and share a perception experiment." },
     ],
   }),
   errorComponent: ({ error, reset }) => <ErrorState error={error} onRetry={reset} />,
@@ -24,100 +33,334 @@ function ExperimentDetailPage() {
   const qc = useQueryClient();
   const { data, isLoading, error, refetch } = useQuery(experimentDetailQuery(id));
 
-  const publish = useMutation({
-    mutationFn: () => experimentsApi.publish(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: experimentKeys.detail(id) });
-      qc.invalidateQueries({ queryKey: experimentKeys.list() });
-    },
-  });
-
   if (isLoading) return <LoadingState label="Loading experiment…" />;
   if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
   if (!data) return <EmptyState title="Experiment not found" />;
 
-  const { experiment: e, stimuli, sessionCount, responseCount, publishReadiness } = data;
+  return <ExperimentEditor detail={data} experimentId={id} qc={qc} />;
+}
+
+function ExperimentEditor({
+  detail,
+  experimentId,
+  qc,
+}: {
+  detail: ExperimentDetail;
+  experimentId: string;
+  qc: ReturnType<typeof useQueryClient>;
+}) {
+  const { experiment, stimuli, sessionCount, responseCount, publishReadiness } = detail;
+  const isPublished = experiment.status !== "draft";
+
+  const publish = useMutation({
+    mutationFn: () => experimentsApi.publish(experimentId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
+      qc.invalidateQueries({ queryKey: experimentKeys.list() });
+    },
+  });
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8">
       <div className="mb-4">
         <Link to="/experiments" className="text-xs text-muted-foreground hover:text-foreground">
           ← All experiments
         </Link>
       </div>
-      <PageHeader title={e.title} description={e.description} />
 
-      <section className="mt-6 grid gap-3 rounded-lg border border-border bg-card p-4 sm:grid-cols-2">
-        <Field label="Status" value={e.status} />
-        <Field label="Hidden target" value={e.hiddenTarget} mono />
-        <Field label="Stimuli" value={`${stimuli.length} / 3`} />
-        <Field label="Sessions" value={String(sessionCount)} />
-        <Field label="Responses" value={String(responseCount)} />
-        <Field label="Publish ready" value={publishReadiness.ready ? "yes" : "no"} />
-      </section>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader title={experiment.title} description={experiment.description} />
+        <StatusPill status={experiment.status} />
+      </div>
 
-      {e.instructions ? (
-        <section className="mt-4 rounded-lg border border-border bg-card p-4">
-          <h3 className="text-sm font-semibold">Instructions</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{e.instructions}</p>
-        </section>
-      ) : null}
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-6">
+          <MetadataCard detail={detail} experimentId={experimentId} qc={qc} readOnly={isPublished} />
 
-      <section className="mt-4 rounded-lg border border-border bg-card p-4">
-        <h3 className="text-sm font-semibold">Stimuli</h3>
-        {stimuli.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">
-            No stimuli attached yet. The MVP requires exactly 3 images.
-          </p>
-        ) : (
-          <ul className="mt-2 grid gap-2">
-            {stimuli.map((s) => (
-              <li
-                key={s.id}
-                className="flex items-center gap-3 rounded border border-border/60 p-2 text-sm"
-              >
-                <span className="font-mono text-xs text-muted-foreground">#{s.position}</span>
-                <span className="flex-1 truncate">{s.altText || s.imagePath}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          <section className="rounded-lg border border-border bg-card p-5">
+            <div className="mb-3 flex items-baseline justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Stimuli</h3>
+                <p className="text-xs text-muted-foreground">
+                  Exactly three images are required. Alt text is mandatory for each.
+                </p>
+              </div>
+              <span className="font-mono text-[11px] text-muted-foreground">
+                {stimuli.length}/3
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {[1, 2, 3].map((pos) => (
+                <StimulusSlot
+                  key={pos}
+                  experimentId={experimentId}
+                  position={pos as 1 | 2 | 3}
+                  stimulus={stimuli.find((s) => s.position === pos)}
+                  readOnly={isPublished}
+                />
+              ))}
+            </div>
+          </section>
 
-      <section className="mt-4 rounded-lg border border-border bg-card p-4">
-        <h3 className="text-sm font-semibold">Publish readiness</h3>
-        {publishReadiness.ready ? (
-          <p className="mt-2 text-sm text-primary">Experiment is ready to publish.</p>
-        ) : (
-          <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
-            {publishReadiness.reasons.map((r) => (
-              <li key={r}>{r}</li>
-            ))}
-          </ul>
-        )}
-        {e.status === "draft" ? (
-          <button
-            type="button"
-            disabled={!publishReadiness.ready || publish.isPending}
-            onClick={() => publish.mutate()}
-            className="mt-3 inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
-          >
-            {publish.isPending ? "Publishing…" : "Publish experiment"}
-          </button>
-        ) : null}
-        {publish.error ? (
-          <p className="mt-2 text-xs text-destructive">{(publish.error as Error).message}</p>
-        ) : null}
-      </section>
+          {isPublished ? <SharePanel experimentId={experimentId} /> : null}
+        </div>
+
+        <aside className="grid gap-4 lg:sticky lg:top-6 lg:self-start">
+          <PublishChecklist
+            reasons={publishReadiness.reasons}
+            ready={publishReadiness.ready}
+            status={experiment.status}
+            onPublish={() => publish.mutate()}
+            pending={publish.isPending}
+            error={publish.error ? (publish.error as Error).message : null}
+          />
+
+          <section className="rounded-lg border border-border bg-card p-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Activity
+            </h4>
+            <dl className="mt-3 grid gap-2 text-sm">
+              <Row label="Sessions" value={String(sessionCount)} />
+              <Row label="Responses" value={String(responseCount)} />
+            </dl>
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
 
-function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function MetadataCard({
+  detail,
+  experimentId,
+  qc,
+  readOnly,
+}: {
+  detail: ExperimentDetail;
+  experimentId: string;
+  qc: ReturnType<typeof useQueryClient>;
+  readOnly: boolean;
+}) {
+  const e = detail.experiment;
+  const [title, setTitle] = useState(e.title);
+  const [description, setDescription] = useState(e.description);
+  const [instructions, setInstructions] = useState(e.instructions);
+  const [hiddenTarget, setHiddenTarget] = useState(e.hiddenTarget);
+
+  useEffect(() => {
+    setTitle(e.title);
+    setDescription(e.description);
+    setInstructions(e.instructions);
+    setHiddenTarget(e.hiddenTarget);
+  }, [e.id, e.title, e.description, e.instructions, e.hiddenTarget]);
+
+  const dirty =
+    title !== e.title ||
+    description !== e.description ||
+    instructions !== e.instructions ||
+    hiddenTarget !== e.hiddenTarget;
+
+  const save = useMutation({
+    mutationFn: () =>
+      experimentsApi.update(experimentId, { title, description, instructions, hiddenTarget }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
+      qc.invalidateQueries({ queryKey: experimentKeys.list() });
+    },
+  });
+
   return (
-    <div>
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-0.5 text-sm ${mono ? "font-mono" : ""}`}>{value}</div>
+    <section className="rounded-lg border border-border bg-card p-5">
+      <h3 className="text-sm font-semibold text-foreground">Experiment metadata</h3>
+      <p className="text-xs text-muted-foreground">
+        These fields shape what participants read before viewing the stimuli.
+      </p>
+      <div className="mt-4 grid gap-4">
+        <Field id="exp-title" label="Title">
+          <Input
+            id="exp-title"
+            value={title}
+            onChange={(ev) => setTitle(ev.target.value)}
+            disabled={readOnly}
+          />
+        </Field>
+        <Field id="exp-desc" label="Description">
+          <Textarea
+            id="exp-desc"
+            value={description}
+            onChange={(ev) => setDescription(ev.target.value)}
+            rows={2}
+            disabled={readOnly}
+          />
+        </Field>
+        <Field id="exp-instr" label="Participant instructions">
+          <Textarea
+            id="exp-instr"
+            value={instructions}
+            onChange={(ev) => setInstructions(ev.target.value)}
+            rows={4}
+            disabled={readOnly}
+          />
+        </Field>
+        <Field
+          id="exp-hidden"
+          label={
+            <span className="inline-flex items-center gap-1.5">
+              <EyeOff className="h-3 w-3" /> Hidden target — never shown to participants
+            </span>
+          }
+        >
+          <Input
+            id="exp-hidden"
+            value={hiddenTarget}
+            onChange={(ev) => setHiddenTarget(ev.target.value)}
+            disabled={readOnly}
+            className="font-mono"
+          />
+        </Field>
+
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => save.mutate()}
+            disabled={!dirty || save.isPending || readOnly}
+          >
+            {save.isPending ? "Saving…" : dirty ? "Save changes" : "Saved"}
+          </Button>
+          {readOnly ? (
+            <span className="text-[11px] text-muted-foreground">
+              Published experiments are locked from edits.
+            </span>
+          ) : null}
+          {save.error ? (
+            <span className="text-xs text-destructive">{(save.error as Error).message}</span>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PublishChecklist({
+  reasons,
+  ready,
+  status,
+  onPublish,
+  pending,
+  error,
+}: {
+  reasons: string[];
+  ready: boolean;
+  status: string;
+  onPublish: () => void;
+  pending: boolean;
+  error: string | null;
+}) {
+  const items = [
+    { key: "title", label: "Title present" },
+    { key: "instructions", label: "Participant instructions" },
+    { key: "hidden", label: "Hidden target defined" },
+    { key: "3-stimuli", label: "Exactly 3 stimuli attached" },
+    { key: "alt", label: "Alt text on each stimulus" },
+  ];
+  const missingLower = reasons.map((r) => r.toLowerCase()).join(" | ");
+  const isMissing = (k: string) => {
+    switch (k) {
+      case "title":
+        return missingLower.includes("title");
+      case "instructions":
+        return missingLower.includes("instruction");
+      case "hidden":
+        return missingLower.includes("hidden");
+      case "3-stimuli":
+        return missingLower.includes("stimul");
+      case "alt":
+        return missingLower.includes("alt");
+      default:
+        return false;
+    }
+  };
+
+  return (
+    <section className="rounded-lg border border-border bg-card p-4">
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Publish checklist
+      </h4>
+      <ul className="mt-3 grid gap-1.5 text-sm">
+        {items.map((it) => {
+          const missing = isMissing(it.key);
+          return (
+            <li key={it.key} className="flex items-center gap-2">
+              {missing ? (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+              ) : (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden />
+              )}
+              <span className={missing ? "text-muted-foreground" : "text-foreground"}>
+                {it.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      {status === "draft" ? (
+        <Button
+          type="button"
+          size="sm"
+          className="mt-4 w-full"
+          onClick={onPublish}
+          disabled={!ready || pending}
+        >
+          <Rocket className="mr-1.5 h-4 w-4" />
+          {pending ? "Publishing…" : "Publish experiment"}
+        </Button>
+      ) : (
+        <p className="mt-4 text-xs text-primary">Experiment is published.</p>
+      )}
+      {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
+    </section>
+  );
+}
+
+function Field({
+  id,
+  label,
+  children,
+}: {
+  id: string;
+  label: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      {children}
     </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between">
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="font-mono text-sm text-foreground">{value}</dd>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const tone: Record<string, string> = {
+    draft: "bg-muted text-muted-foreground",
+    published: "bg-primary/15 text-primary",
+    closed: "bg-secondary text-secondary-foreground",
+  };
+  return (
+    <span
+      className={`rounded px-2 py-0.5 font-mono text-[11px] ${tone[status] ?? "bg-muted text-muted-foreground"}`}
+    >
+      {status}
+    </span>
   );
 }

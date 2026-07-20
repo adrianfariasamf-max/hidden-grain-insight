@@ -7,6 +7,8 @@ import { randomBytes } from "crypto";
 import { supabaseAdmin } from "./db.server";
 import { computePublishReadiness } from "@/lib/perception/schemas";
 import type {
+  UpdateExperimentRequest,
+  UpdateStimulusRequest,
   CreateExperimentRequest,
   CreateSessionRequest,
   CreateStimulusRequest,
@@ -82,11 +84,11 @@ const toExperiment = (r: ExperimentRow): PerceptionExperiment => ({
   updatedAt: r.updated_at,
 });
 
-const toStimulus = (r: StimulusRow): ExperimentStimulus => ({
+const toStimulus = (r: StimulusRow, viewUrl?: string): ExperimentStimulus => ({
   id: r.id,
   experimentId: r.experiment_id,
   position: r.position as 1 | 2 | 3,
-  imageUrl: r.image_url,
+  imageUrl: viewUrl ?? r.image_url,
   imagePath: r.image_path,
   altText: r.alt_text,
   displayDurationSeconds: r.display_duration_seconds,
@@ -199,7 +201,10 @@ export async function getExperimentDetail(id: string): Promise<ExperimentDetail 
       .eq("session.experiment_id", id),
   ]);
   if (se) throw se;
-  const stimuli = ((stim ?? []) as StimulusRow[]).map(toStimulus);
+  const rows = (stim ?? []) as StimulusRow[];
+  const stimuli = await Promise.all(
+    rows.map(async (r) => toStimulus(r, await signStimulusReadUrl(r.image_path))),
+  );
 
   return {
     experiment,
@@ -208,6 +213,83 @@ export async function getExperimentDetail(id: string): Promise<ExperimentDetail 
     responseCount: rc ?? 0,
     publishReadiness: computePublishReadiness(stimuli),
   };
+}
+
+export async function updateExperiment(
+  id: string,
+  input: UpdateExperimentRequest,
+): Promise<PerceptionExperiment> {
+  const patch: Partial<{
+    title: string;
+    description: string;
+    instructions: string;
+    hidden_target: string;
+  }> = {};
+  if (input.title !== undefined) patch.title = input.title;
+  if (input.description !== undefined) patch.description = input.description;
+  if (input.instructions !== undefined) patch.instructions = input.instructions;
+  if (input.hiddenTarget !== undefined) patch.hidden_target = input.hiddenTarget;
+  if (Object.keys(patch).length === 0) {
+    const detail = await getExperimentDetail(id);
+    if (!detail) throw new Error("Experiment not found.");
+    return detail.experiment;
+  }
+  const { data, error } = await supabaseAdmin
+    .from("perception_experiments")
+    .update(patch)
+    .eq("id", id)
+    .select("*")
+    .single();
+  if (error) throw error;
+  return toExperiment(data as ExperimentRow);
+}
+
+export async function updateStimulus(
+  experimentId: string,
+  stimulusId: string,
+  input: UpdateStimulusRequest,
+): Promise<ExperimentStimulus> {
+  const patch: Partial<{ alt_text: string; image_url: string; image_path: string }> = {};
+  if (input.altText !== undefined) patch.alt_text = input.altText;
+  if (input.imageUrl !== undefined) patch.image_url = input.imageUrl;
+  if (input.imagePath !== undefined) patch.image_path = input.imagePath;
+  if (Object.keys(patch).length === 0) throw new Error("No fields to update.");
+  const { data, error } = await supabaseAdmin
+    .from("experiment_stimuli")
+    .update(patch)
+    .eq("id", stimulusId)
+    .eq("experiment_id", experimentId)
+    .select("*")
+    .single();
+  if (error) throw error;
+  const row = data as StimulusRow;
+  return toStimulus(row, await signStimulusReadUrl(row.image_path));
+}
+
+export async function deleteStimulus(
+  experimentId: string,
+  stimulusId: string,
+): Promise<{ deleted: true }> {
+  const { data: existing, error: qe } = await supabaseAdmin
+    .from("experiment_stimuli")
+    .select("image_path")
+    .eq("id", stimulusId)
+    .eq("experiment_id", experimentId)
+    .maybeSingle();
+  if (qe) throw qe;
+  const { error } = await supabaseAdmin
+    .from("experiment_stimuli")
+    .delete()
+    .eq("id", stimulusId)
+    .eq("experiment_id", experimentId);
+  if (error) throw error;
+  if (existing?.image_path) {
+    await supabaseAdmin.storage
+      .from("experiment-stimuli")
+      .remove([existing.image_path])
+      .catch(() => undefined);
+  }
+  return { deleted: true };
 }
 
 export async function addStimulus(
@@ -427,11 +509,22 @@ export async function signStimulusUpload(
     .from("experiment-stimuli")
     .createSignedUploadUrl(path);
   if (error) throw error;
-  const { data: pub } = supabaseAdmin.storage.from("experiment-stimuli").getPublicUrl(path);
+  const viewUrl = await signStimulusReadUrl(path);
   return {
     uploadUrl: data.signedUrl,
     imagePath: path,
-    imageUrl: pub.publicUrl, // requires bucket public read policy (already granted)
+    imageUrl: viewUrl,
     token: data.token,
   };
+}
+
+// Signed download URL for private bucket. TTL is long enough for a working
+// research session (2 hours). Re-signed on every experiment detail fetch.
+export async function signStimulusReadUrl(path: string): Promise<string> {
+  if (!path) return "";
+  const { data, error } = await supabaseAdmin.storage
+    .from("experiment-stimuli")
+    .createSignedUrl(path, 60 * 60 * 2);
+  if (error || !data) return "";
+  return data.signedUrl;
 }

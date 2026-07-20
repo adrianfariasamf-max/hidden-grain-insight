@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Compass, Network } from "lucide-react";
+import { Compass, FlaskConical, Network } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { LoadingState } from "@/components/state/LoadingState";
@@ -14,10 +14,11 @@ import { healthQuery } from "@/lib/api/queries";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Overview — Hidden Grain" },
+      { title: "Overview — Perception Studio" },
       {
         name: "description",
-        content: "Read-only knowledge OS: browse objects, relationships and system health.",
+        content:
+          "Perception Studio: design, publish and share perception experiments, and browse the knowledge repository.",
       },
     ],
   }),
@@ -33,8 +34,8 @@ function OverviewRoute() {
     <>
       <PageHeader
         eyebrow="Overview"
-        title="Hidden Grain"
-        description="A read-only knowledge operating system. Objects, relationships and system state flow from the API — nothing is authored in the UI."
+        title="Perception Studio"
+        description="Design perception experiments end to end and browse the Hidden Grain knowledge repository — all in one workspace."
       />
       <div className="flex flex-col gap-8 px-4 py-6 sm:px-8">
         {/* Hero / primary navigation */}
@@ -44,34 +45,41 @@ function OverviewRoute() {
         >
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-              Knowledge operating system
+              Perception Studio
             </span>
             <h2
               id="hero-heading"
               className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
             >
-              Explore the Hidden Grain repository
+              Run perception experiments end to end
             </h2>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Hidden Grain projects a canonical knowledge repository as a queryable read-only
-              surface. Browse objects, follow relationships, and inspect the graph — no authoring,
-              no side effects.
+              Create an experiment, upload the three stimuli, publish it, and share the participant
+              link — without leaving the studio. The Hidden Grain knowledge repository is available
+              side by side for reference.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Link
-              to="/explorer"
+              to="/experiments"
               className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
             >
+              <FlaskConical className="h-4 w-4" aria-hidden />
+              Open Experiments
+            </Link>
+            <Link
+              to="/explorer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/20 sm:w-auto"
+            >
               <Compass className="h-4 w-4" aria-hidden />
-              Open Explorer
+              Browse Knowledge Repository
             </Link>
             <Link
               to="/graph"
               className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/20 sm:w-auto"
             >
               <Network className="h-4 w-4" aria-hidden />
-              View Knowledge Graph
+              Knowledge Graph
             </Link>
           </div>
         </section>

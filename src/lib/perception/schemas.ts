@@ -20,6 +20,24 @@ export const createExperimentSchema = z.object({
   instructions: z.string().max(2000).optional(),
 });
 
+export const updateExperimentSchema = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  description: z.string().max(2000).optional(),
+  hiddenTarget: z.string().trim().min(1).max(200).optional(),
+  instructions: z.string().max(2000).optional(),
+});
+
+export const updateStimulusSchema = z.object({
+  altText: z.string().max(500).optional(),
+  imageUrl: z.string().url().optional(),
+  imagePath: z.string().min(1).optional(),
+});
+
+export const signUploadSchema = z.object({
+  filename: z.string().trim().min(1).max(200),
+  contentType: z.string().trim().min(1).max(120).optional(),
+});
+
 export const createStimulusSchema = z.object({
   position: positionSchema,
   imageUrl: z.string().url(),

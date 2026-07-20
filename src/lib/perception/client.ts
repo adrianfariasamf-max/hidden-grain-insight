@@ -13,8 +13,11 @@ import type {
   ExperimentStimulus,
   ParticipantSession,
   PerceptionExperiment,
+  SignUploadResponse,
   StimulusResponse,
   SubmitResponseRequest,
+  UpdateExperimentRequest,
+  UpdateStimulusRequest,
 } from "./types";
 
 async function json<T>(res: Response): Promise<T> {
@@ -43,12 +46,42 @@ export const experimentsApi = {
         body: JSON.stringify(input),
       }),
     ),
+  update: async (id: string, input: UpdateExperimentRequest) =>
+    json<PerceptionExperiment>(
+      await fetch(`${API_BASE}/experiments/${id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    ),
   addStimulus: async (id: string, input: CreateStimulusRequest) =>
     json<ExperimentStimulus>(
       await fetch(`${API_BASE}/experiments/${id}/stimuli`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
+      }),
+    ),
+  updateStimulus: async (id: string, stimulusId: string, input: UpdateStimulusRequest) =>
+    json<ExperimentStimulus>(
+      await fetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    ),
+  deleteStimulus: async (id: string, stimulusId: string) =>
+    json<{ deleted: true }>(
+      await fetch(`${API_BASE}/experiments/${id}/stimuli/${stimulusId}`, {
+        method: "DELETE",
+      }),
+    ),
+  signUpload: async (id: string, filename: string, contentType?: string) =>
+    json<SignUploadResponse>(
+      await fetch(`${API_BASE}/experiments/${id}/stimuli/upload-url`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ filename, contentType }),
       }),
     ),
   publish: async (id: string) =>

@@ -1,20 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/state/EmptyState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { LoadingState } from "@/components/state/LoadingState";
+import { Button } from "@/components/ui/button";
+import { NewExperimentDialog } from "@/components/experiments/NewExperimentDialog";
 import { experimentListQuery } from "@/lib/perception/client";
 
 export const Route = createFileRoute("/experiments")({
   component: ExperimentsPage,
   head: () => ({
     meta: [
-      { title: "Experiments — Hidden Grain" },
+      { title: "Experiments — Perception Studio" },
       {
         name: "description",
-        content: "Design, run and analyse perception experiments in Hidden Grain.",
+        content: "Design, run and analyse perception experiments in Perception Studio.",
       },
     ],
   }),
@@ -25,9 +28,25 @@ export const Route = createFileRoute("/experiments")({
 function ExperimentsPage() {
   const { data, isLoading, error, refetch } = useQuery(experimentListQuery());
 
+  const newButton = (
+    <NewExperimentDialog
+      trigger={
+        <Button size="sm">
+          <Plus className="mr-1.5 h-4 w-4" /> New experiment
+        </Button>
+      }
+    />
+  );
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8">
-      <PageHeader title="Experiments" description="Perception studies powered by Hidden Grain." />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          title="Experiments"
+          description="Perception studies built and shared from one workspace."
+        />
+        <div className="pt-1">{newButton}</div>
+      </div>
       <div className="mt-6">
         {isLoading ? (
           <LoadingState label="Loading experiments…" />
@@ -36,7 +55,8 @@ function ExperimentsPage() {
         ) : !data?.items.length ? (
           <EmptyState
             title="No experiments yet"
-            description="Create the first perception experiment to begin."
+            description="Create your first perception experiment to begin."
+            action={newButton}
           />
         ) : (
           <ul className="grid gap-3">
@@ -59,7 +79,6 @@ function ExperimentsPage() {
                       </p>
                     ) : null}
                     <div className="mt-3 flex flex-wrap gap-4 font-mono text-[11px] text-muted-foreground">
-                      <span>hidden: {e.hiddenTarget}</span>
                       <span>
                         stimuli: {e.stimulusCount}/3
                         {missing > 0 ? ` (missing ${missing})` : ""}

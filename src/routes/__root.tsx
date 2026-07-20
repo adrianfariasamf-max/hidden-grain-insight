@@ -78,17 +78,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Hidden Grain" },
+      { title: "Perception Studio — Hidden Grain" },
       {
         name: "description",
         content:
-          "Hidden Grain is a read-only knowledge OS: browse Knowledge Objects, relationships and system state.",
+          "Perception Studio by Hidden Grain: design, publish and share perception experiments end to end.",
       },
       { name: "author", content: "Hidden Grain" },
-      { property: "og:title", content: "Hidden Grain" },
+      { property: "og:title", content: "Perception Studio — Hidden Grain" },
       {
         property: "og:description",
-        content: "Read-only knowledge OS for structured objects and relationships.",
+        content: "Design, publish and share perception experiments with Hidden Grain.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
