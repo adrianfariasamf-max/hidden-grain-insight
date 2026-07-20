@@ -6,7 +6,7 @@ interface RuntimeInfoProps {
 }
 
 /**
- * Runtime facts about the client/server pairing. API base is read from the
+ * Ejecución facts about the client/server pairing. API base is read from the
  * already-resolved client value so we never duplicate the resolution logic.
  * VITE_HG_API_BASE is a public frontend variable — no secret exposure.
  */
@@ -14,7 +14,7 @@ export function RuntimeInfo({ health }: RuntimeInfoProps) {
   const rows: Array<{ label: string; value: string; mono?: boolean }> = [
     { label: "API base", value: API_BASE, mono: true },
     { label: "Service", value: health.service, mono: true },
-    { label: "Schema version", value: health.schemaVersion, mono: true },
+    { label: "Versión del esquema", value: health.schemaVersion, mono: true },
   ];
 
   return (

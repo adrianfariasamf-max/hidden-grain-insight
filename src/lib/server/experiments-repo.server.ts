@@ -27,11 +27,9 @@ import type {
 // for participants. Every /sessions/* endpoint MUST route experiment data
 // through this helper.
 const toPublicExperiment = (e: PerceptionExperiment): PublicExperiment => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { hiddenTarget: _omit, ...safe } = e;
   return safe;
 };
-
 
 // ------------------- Mappers -------------------
 
@@ -506,9 +504,7 @@ export async function getSessionResponses(token: string): Promise<StimulusRespon
   return ((data ?? []) as ResponseRow[]).map(toResponse);
 }
 
-export async function listSessionsForExperiment(
-  experimentId: string,
-): Promise<SessionSummary[]> {
+export async function listSessionsForExperiment(experimentId: string): Promise<SessionSummary[]> {
   const { data, error } = await supabaseAdmin
     .from("participant_sessions")
     .select("*")

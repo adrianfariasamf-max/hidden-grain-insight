@@ -35,11 +35,11 @@ import { countActiveFilters, toGraphQueryParams, type SearchQuery } from "@/lib/
 export const Route = createFileRoute("/graph")({
   head: () => ({
     meta: [
-      { title: "Knowledge Graph — Hidden Grain" },
+      { title: "Grafo de conocimiento — Hidden Grain" },
       {
         name: "description",
         content:
-          "Structured view of the Hidden Grain Knowledge Graph: nodes, relationships and resolution metrics.",
+          "Structured view of the Hidden Grain Grafo de conocimiento: nodes, relationships and resolution metrics.",
       },
     ],
   }),
@@ -304,7 +304,7 @@ function GraphRoute() {
 
   // Canonical projection: every mapped Graph filter dimension is exposed
   // as a single, normalized `SearchQuery`. This is the SAME model used by
-  // Explorer — Graph does not maintain a parallel search abstraction, it
+  // Explorador — Graph does not maintain a parallel search abstraction, it
   // just projects its per-filter UI state into the canonical shape.
   // `minConfidencePct` and `unknownConfidencePolicy` are trust-panel
   // ancillary controls and are intentionally NOT part of SearchQuery: they
@@ -344,7 +344,7 @@ function GraphRoute() {
     <>
       <PageHeader
         eyebrow="Graph"
-        title="Knowledge Graph"
+        title="Grafo de conocimiento"
         description="Structured, read-only projection of nodes and relationships."
       />
       <section className="flex flex-col gap-6 px-4 py-6 sm:px-8">
@@ -404,7 +404,7 @@ function GraphRoute() {
 
             {query.isFetching ? (
               <p className="text-[11px] text-muted-foreground" aria-live="polite">
-                Refreshing…
+                Actualizando…
               </p>
             ) : null}
 
@@ -421,14 +421,14 @@ function GraphRoute() {
                 nodes={visibleNodes}
                 emptyLabel={
                   graph.nodeCount === 0
-                    ? "No nodes in the graph"
+                    ? "No hay nodos en el grafo"
                     : filtersActive
-                      ? "No nodes match the current filters"
-                      : "No nodes to display"
+                      ? "Ningún nodo coincide con los filtros"
+                      : "No hay nodos que mostrar"
                 }
-                emptyDescription={
+                vacíoDescription={
                   graph.nodeCount === 0
-                    ? "The projection is currently empty."
+                    ? "The projection is currently vacío."
                     : filtersActive
                       ? "Try clearing filters to see the full projection."
                       : undefined
@@ -458,12 +458,12 @@ function GraphRoute() {
                 knownNodeIds={knownNodeIds}
                 emptyLabel={
                   graph.edgeCount === 0
-                    ? "No relationships in the graph"
+                    ? "No hay relaciones en el grafo"
                     : filtersActive
-                      ? "No relationships match the current filters"
-                      : "No relationships to display"
+                      ? "Ninguna relación coincide con los filtros"
+                      : "No hay relaciones que mostrar"
                 }
-                emptyDescription={
+                vacíoDescription={
                   graph.edgeCount === 0
                     ? "The projection has no edges yet."
                     : filtersActive
@@ -491,7 +491,7 @@ function GraphRoute() {
             </section>
 
             <footer className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-t border-border/60 pt-4 text-[11px] text-muted-foreground">
-              <span className="uppercase tracking-wide">Generated at</span>
+              <span className="uppercase tracking-wide">Generado a las</span>
               <span className="font-mono text-foreground">
                 <SafeTimestamp value={graph.generatedAt} />
               </span>
@@ -588,7 +588,7 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
         {summary.hasConfidence ? (
           <>
             <div className="inline-flex items-baseline gap-1.5">
-              <dt className="uppercase tracking-wide">With confidence</dt>
+              <dt className="uppercase tracking-wide">Con confianza</dt>
               <dd className="font-mono text-xs text-foreground">{summary.withConfidence}</dd>
             </div>
             <div className="inline-flex items-baseline gap-1.5">
@@ -607,7 +607,7 @@ function TrustPanel({ summary }: { summary: import("@/lib/domain").RelationshipT
           : null}
         {summary.hasProvenance && summary.withoutProvenance > 0 ? (
           <div className="inline-flex items-baseline gap-1.5">
-            <dt className="uppercase tracking-wide">Not specified</dt>
+            <dt className="uppercase tracking-wide">Sin especificar</dt>
             <dd className="font-mono text-xs text-foreground">{summary.withoutProvenance}</dd>
           </div>
         ) : null}

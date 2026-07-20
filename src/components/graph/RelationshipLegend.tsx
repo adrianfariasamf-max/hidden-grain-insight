@@ -94,7 +94,7 @@ function LegendItem({ stat }: { stat: RelationshipTypeStat }) {
       <span className="text-foreground">{descriptor.displayName}</span>
       <span
         className="rounded border border-border/60 px-1 py-px font-mono text-[9px] uppercase tracking-wide text-muted-foreground"
-        aria-label={`Category ${getRelationshipCategoryLabel(descriptor.category)}`}
+        aria-label={`Categoría ${getRelationshipCategoryLabel(descriptor.category)}`}
       >
         {getRelationshipCategoryLabel(descriptor.category)}
       </span>

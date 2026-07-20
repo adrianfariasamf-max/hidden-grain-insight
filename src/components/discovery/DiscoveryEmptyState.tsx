@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/state/EmptyState";
 
 export interface DiscoveryEmptyStateProps {
-  /** True when the analyzer ran on a non-empty graph but produced 0 insights. */
+  /** True when the analyzer ran on a non-vacío graph but produced 0 insights. */
   hasGraph: boolean;
 }
 
@@ -12,16 +12,16 @@ export function DiscoveryEmptyState({ hasGraph }: DiscoveryEmptyStateProps) {
     return (
       <EmptyState
         icon={<Sparkles className="h-6 w-6" aria-hidden />}
-        title="No graph data available"
-        description="Discovery needs a populated Knowledge Graph before it can surface insights."
+        title="No hay datos del grafo disponibles"
+        description="Discovery needs a populated Grafo de conocimiento before it can surface insights."
       />
     );
   }
   return (
     <EmptyState
       icon={<Sparkles className="h-6 w-6" aria-hidden />}
-      title="Nothing to discover yet"
-      description="The deterministic analyzer did not detect any noteworthy patterns in the current graph."
+      title="Aún no hay descubrimientos"
+      description="El analizador determinista no detectó patrones destacables en el grafo actual."
     />
   );
 }

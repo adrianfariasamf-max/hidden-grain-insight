@@ -54,12 +54,12 @@ export function CreateRelationshipDialog({ sourceObjectId, sourceTitle }: Props)
       <DialogTrigger asChild>
         <Button size="sm" variant="default">
           <Plus className="mr-1.5 h-3.5 w-3.5" aria-hidden />
-          Create Relationship
+          Crear relación
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create Relationship</DialogTitle>
+          <DialogTitle>Crear relación</DialogTitle>
           <DialogDescription>
             Link <span className="font-medium text-foreground">{sourceTitle}</span> to another
             Knowledge Object.
@@ -126,16 +126,16 @@ function CreateRelationshipForm({
     setFieldErrors({});
 
     const errs: FieldErrors = {};
-    if (!targetObjectId) errs.targetObjectId = "Select a target object.";
+    if (!targetObjectId) errs.targetObjectId = "Selecciona un objeto destino.";
     else if (targetObjectId === sourceObjectId)
-      errs.targetObjectId = "Source and target must differ.";
-    if (!type) errs.type = "Select a relationship type.";
+      errs.targetObjectId = "Origen y destino deben ser distintos.";
+    if (!type) errs.type = "Selecciona un tipo de relación.";
 
     let confidenceNum: number | undefined;
     if (confidence.trim() !== "") {
       const n = Number(confidence);
       if (!Number.isFinite(n) || n < 0 || n > 1) {
-        errs.confidence = "Confidence must be a number between 0 and 1.";
+        errs.confidence = "Confianza must be a number between 0 and 1.";
       } else {
         confidenceNum = n;
       }
@@ -172,7 +172,7 @@ function CreateRelationshipForm({
       },
       onError: (err) => {
         if (err instanceof ApiError) setServerError(`${err.status} — ${err.message}`);
-        else setServerError((err as Error).message || "Unknown error");
+        else setServerError((err as Error).message || "Error desconocido");
       },
     });
   };
@@ -207,7 +207,7 @@ function CreateRelationshipForm({
                 id="rel-target"
                 value={targetQuery}
                 onChange={(e) => setTargetQuery(e.target.value)}
-                placeholder="Search objects by title, keyword…"
+                placeholder="Buscar objetos por título o palabra clave…"
                 autoComplete="off"
                 className="pl-8"
                 disabled={disabled}
@@ -230,14 +230,14 @@ function CreateRelationshipForm({
         ) : null}
       </div>
 
-      {/* Type */}
+      {/* Tipo */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="rel-type">
-          Type <span className="text-destructive">*</span>
+          Tipo <span className="text-destructive">*</span>
         </Label>
         <Select value={type} onValueChange={setType} disabled={disabled}>
           <SelectTrigger id="rel-type">
-            <SelectValue placeholder="Select a relationship type…" />
+            <SelectValue placeholder="Selecciona un tipo de relación…" />
           </SelectTrigger>
           <SelectContent>
             {ontology.map((d) => (
@@ -255,9 +255,9 @@ function CreateRelationshipForm({
         ) : null}
       </div>
 
-      {/* Description */}
+      {/* Descripción */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="rel-desc">Description</Label>
+        <Label htmlFor="rel-desc">Descripción</Label>
         <Textarea
           id="rel-desc"
           value={description}
@@ -265,7 +265,7 @@ function CreateRelationshipForm({
           rows={2}
           maxLength={500}
           disabled={disabled}
-          placeholder="Optional context…"
+          placeholder="Contexto opcional…"
         />
       </div>
 
@@ -281,7 +281,7 @@ function CreateRelationshipForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="rel-conf">Confidence</Label>
+          <Label htmlFor="rel-conf">Confianza</Label>
           <Input
             id="rel-conf"
             value={confidence}
@@ -309,16 +309,16 @@ function CreateRelationshipForm({
 
       <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose} disabled={disabled}>
-          Cancel
+          Cancelar
         </Button>
         <Button type="submit" disabled={disabled}>
           {disabled ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-              Saving…
+              Guardando…
             </>
           ) : (
-            "Create Relationship"
+            "Crear relación"
           )}
         </Button>
       </DialogFooter>
@@ -342,7 +342,9 @@ function TargetResults({
   onPick: (obj: KnowledgeObjectSummary) => void;
 }) {
   if (!enabled) {
-    return <p className="text-[11px] text-muted-foreground">Type to search Knowledge Objects.</p>;
+    return (
+      <p className="text-[11px] text-muted-foreground">Tipo to search Objetos de conocimiento.</p>
+    );
   }
   if (isLoading) {
     return <p className="text-[11px] text-muted-foreground">Searching…</p>;
@@ -357,7 +359,7 @@ function TargetResults({
   return (
     <ul
       role="listbox"
-      aria-label="Target object search results"
+      aria-label="Resultados de búsqueda del objeto destino"
       className="max-h-56 overflow-y-auto rounded-md border border-border/60 bg-card/40"
     >
       {filtered.map((r) => (

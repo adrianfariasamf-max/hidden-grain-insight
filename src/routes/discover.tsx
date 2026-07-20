@@ -28,7 +28,7 @@ export const Route = createFileRoute("/discover")({
       {
         name: "description",
         content:
-          "Discovery Workspace: explore, prioritise and inspect deterministic insights from the Knowledge Graph.",
+          "Espacio de descubrimiento: explore, prioritise and inspect deterministic insights from the Grafo de conocimiento.",
       },
     ],
   }),
@@ -87,13 +87,13 @@ function DiscoverRoute() {
   return (
     <>
       <PageHeader
-        eyebrow="Discovery"
-        title="Discovery Workspace"
-        description="Deterministic insights derived from the Knowledge Graph — no AI, no probabilistic ranking."
+        eyebrow="Descubrimientos"
+        title="Espacio de descubrimiento"
+        description="Descubrimientos deterministas derivados del Grafo de conocimiento — sin IA, sin ranking probabilístico."
       />
       <section className="flex flex-col gap-4 px-4 py-6 sm:px-8">
         {query.isPending ? (
-          <LoadingState label="Analyzing graph…" />
+          <LoadingState label="Analizando el grafo…" />
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
         ) : insights.length === 0 ? (

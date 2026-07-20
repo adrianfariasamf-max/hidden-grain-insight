@@ -23,10 +23,7 @@ import { EmptyState } from "@/components/state/EmptyState";
 export const Route = createFileRoute("/e/$experimentId/s/$token")({
   component: ParticipantSession,
   head: () => ({
-    meta: [
-      { title: "Perception experiment session" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Sesión del estudio de percepción" }, { name: "robots", content: "noindex" }],
   }),
 });
 
@@ -36,9 +33,7 @@ function ParticipantSession() {
   const snapshot = useQuery(sessionSnapshotQuery(token));
   const responsesQ = useQuery(sessionResponsesQuery(token));
 
-  const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">(
-    "instructions",
-  );
+  const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">("instructions");
 
   const answered = responsesQ.data?.items ?? [];
   const stimuliSorted = useMemo(() => {
@@ -57,9 +52,10 @@ function ParticipantSession() {
     else if (answered.length > 0) setStage("stimulus");
   }, [snapshot.data, responsesQ.data, answered.length, stimuliSorted.length]);
 
-  if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Loading…" />;
-  if (snapshot.error) return <ErrorState error={snapshot.error} onRetry={() => snapshot.refetch()} />;
-  if (!snapshot.data) return <EmptyState title="Session not found" />;
+  if (snapshot.isLoading || responsesQ.isLoading) return <LoadingState label="Cargando…" />;
+  if (snapshot.error)
+    return <ErrorState error={snapshot.error} onRetry={() => snapshot.refetch()} />;
+  if (!snapshot.data) return <EmptyState title="Sesión no encontrada" />;
 
   const exp = snapshot.data.experiment;
   const currentIndex = Math.min(answered.length, stimuliSorted.length - 1);
@@ -81,7 +77,7 @@ function ParticipantSession() {
     );
   }
 
-  if (!currentStimulus) return <EmptyState title="No stimuli available" />;
+  if (!currentStimulus) return <EmptyState title="No hay estímulos disponibles" />;
 
   return (
     <StimulusView
@@ -120,10 +116,11 @@ function InstructionsView({
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-10">
       <h1 className="text-xl font-semibold text-foreground">{title}</h1>
       <p className="mt-1 text-xs text-muted-foreground">
-        You will view {total} image{total === 1 ? "" : "s"} in sequence.
+        Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
       </p>
       <div className="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-card p-4 text-sm text-foreground">
-        {instructions || "Please observe each image carefully and answer the questions that follow."}
+        {instructions ||
+          "Observa cada imagen con atención y responde las preguntas a continuación."}
       </div>
       <Button type="button" className="mt-6" onClick={onBegin}>
         Start
@@ -172,15 +169,12 @@ function StimulusView({
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-6">
       <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
-          Image {index + 1} of {total}
+          Imagen {index + 1} de {total}
         </span>
-        <div
-          aria-hidden
-          className="h-1 w-32 overflow-hidden rounded-full bg-muted"
-        >
+        <div aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-muted">
           <div
             className="h-full bg-primary transition-all"
-            style={{ width: `${((index) / total) * 100}%` }}
+            style={{ width: `${(index / total) * 100}%` }}
           />
         </div>
       </div>
@@ -213,8 +207,8 @@ function StimulusView({
       >
         <Field
           id="q-observation"
-          label="What do you see?"
-          hint="Describe the image in your own words."
+          label="¿Qué observas?"
+          hint="Descríbela con tus propias palabras."
         >
           <Textarea
             id="q-observation"
@@ -227,8 +221,8 @@ function StimulusView({
 
         <Field
           id="q-attention"
-          label="What draws your attention first?"
-          hint="Mention any detail your eye returns to."
+          label="¿Qué elementos llamaron primero tu atención?"
+          hint="Menciona cualquier detalle al que vuelva tu mirada."
         >
           <Textarea
             id="q-attention"
@@ -239,7 +233,7 @@ function StimulusView({
           />
         </Field>
 
-        <Field id="q-feeling" label="How does it make you feel?">
+        <Field id="q-feeling" label="¿Qué sensación te transmite esta imagen?">
           <Textarea
             id="q-feeling"
             value={feeling}
@@ -251,8 +245,8 @@ function StimulusView({
 
         <Field
           id="q-interpretation"
-          label="What do you think it means?"
-          hint="There are no right or wrong answers."
+          label="¿Cómo interpretas lo que estás viendo?"
+          hint="No hay respuestas correctas ni incorrectas."
         >
           <Textarea
             id="q-interpretation"
@@ -265,10 +259,10 @@ function StimulusView({
 
         <fieldset className="grid gap-2">
           <legend className="text-sm font-medium text-foreground">
-            Confidence in your response{" "}
-            <span className="text-xs text-muted-foreground">(optional)</span>
+            Confianza in your response{" "}
+            <span className="text-xs text-muted-foreground">(opcional)</span>
           </legend>
-          <div className="flex gap-2" role="radiogroup" aria-label="Confidence level">
+          <div className="flex gap-2" role="radiogroup" aria-label="Confianza level">
             {[1, 2, 3, 4, 5].map((n) => {
               const active = confidence === n;
               return (
@@ -290,22 +284,22 @@ function StimulusView({
             })}
           </div>
           <p className="text-[11px] text-muted-foreground">
-            1 = not confident · 5 = very confident
+            1 = poca confianza · 5 = mucha confianza
           </p>
         </fieldset>
 
         {error ? (
           <p className="text-xs text-destructive" role="alert">
-            We couldn't save your answer. {error}
+            No pudimos guardar tu respuesta. {error}
           </p>
         ) : null}
 
         <Button type="submit" disabled={!canSubmit} className="w-full">
           {mut.isPending
-            ? "Saving…"
+            ? "Guardando…"
             : index + 1 >= total
-              ? "Submit and finish"
-              : "Next image"}
+              ? "Enviar y finalizar"
+              : "Siguiente imagen"}
         </Button>
       </form>
     </div>
@@ -315,15 +309,15 @@ function StimulusView({
 function ThankYou({ experimentId: _ }: { experimentId: string }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-4 py-10 text-center">
-      <h1 className="text-2xl font-semibold text-foreground">Thank you</h1>
+      <h1 className="text-2xl font-semibold text-foreground">Gracias</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Your responses have been recorded. You may now close this page.
+        Tus respuestas se registraron correctamente. Ya puedes cerrar esta página.
       </p>
       <Link
         to="/"
         className="mt-6 text-xs text-muted-foreground underline-offset-4 hover:underline"
       >
-        Home
+        Inicio
       </Link>
     </div>
   );

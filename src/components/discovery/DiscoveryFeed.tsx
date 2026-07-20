@@ -21,7 +21,7 @@ export interface DiscoveryFeedProps {
   /** Called for lookups only — never mutated. */
   nodesById?: ReadonlyMap<KnowledgeObjectId, Pick<GraphNode, "id" | "title" | "type">>;
   grouping?: DiscoveryFeedGrouping;
-  /** Drives the "no graph yet" vs "no insights" empty state. */
+  /** Drives the "no graph yet" vs "no insights" vacío state. */
   hasGraph: boolean;
 }
 

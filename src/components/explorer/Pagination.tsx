@@ -40,7 +40,7 @@ export function Pagination({ offset, limit, total, onChange, disabled }: Paginat
             "inline-flex h-8 items-center gap-1 rounded-md border border-border/60 bg-background px-2 transition-colors",
             canPrev ? "hover:text-foreground" : "opacity-50",
           )}
-          aria-label="Previous page"
+          aria-label="Página anterior"
         >
           <ChevronLeft className="h-3 w-3" aria-hidden />
           Prev
@@ -56,7 +56,7 @@ export function Pagination({ offset, limit, total, onChange, disabled }: Paginat
             "inline-flex h-8 items-center gap-1 rounded-md border border-border/60 bg-background px-2 transition-colors",
             canNext ? "hover:text-foreground" : "opacity-50",
           )}
-          aria-label="Next page"
+          aria-label="Página siguiente"
         >
           Next
           <ChevronRight className="h-3 w-3" aria-hidden />

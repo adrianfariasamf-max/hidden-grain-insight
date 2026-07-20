@@ -94,7 +94,7 @@ export function RelationshipTrustFilter({
             type="button"
             onClick={onClear}
             className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-background px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Clear trust filters"
+            aria-label="Limpiar filtros de confianza"
           >
             <X className="h-3 w-3" aria-hidden />
             Clear
@@ -151,9 +151,9 @@ export function RelationshipTrustFilter({
                       ? "border-primary/50 bg-primary/10 text-foreground"
                       : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
                   )}
-                  title="Relationships that did not declare a provenance."
+                  title="Relaciones que no declararon procedencia."
                 >
-                  <span>Not specified</span>
+                  <span>Sin especificar</span>
                   <span className="font-mono text-[10px] text-muted-foreground">
                     {summary.withoutProvenance}
                   </span>
@@ -167,7 +167,7 @@ export function RelationshipTrustFilter({
       {showStatus ? (
         <fieldset className="flex flex-col gap-1.5">
           <legend className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Status · OR within group
+            Estado · OR within group
           </legend>
           <ul className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by status">
             {summary.statuses.map((stat) => {
@@ -235,13 +235,13 @@ export function RelationshipTrustFilter({
                 threshold
               </span>
             ) : (
-              <span className="text-[10px] text-muted-foreground">No threshold</span>
+              <span className="text-[10px] text-muted-foreground">Sin umbral</span>
             )}
           </label>
           {thresholdActive && summary.withoutConfidence > 0 ? (
             <fieldset
               className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
-              aria-label="How to treat relationships without confidence"
+              aria-label="Cómo tratar las relaciones sin confianza"
             >
               <legend className="sr-only">How to treat relationships without confidence</legend>
               <span>

@@ -37,21 +37,21 @@ export function FiltersBar({ values, options, onChange, onClearAll, disabled }: 
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
       <FilterSelect
-        label="Type"
+        label="Tipo"
         value={values.type}
         options={options.types}
         onChange={(v) => onChange({ type: v })}
         disabled={disabled}
       />
       <FilterSelect
-        label="Category"
+        label="Categoría"
         value={values.category}
         options={options.categories}
         onChange={(v) => onChange({ category: v })}
         disabled={disabled}
       />
       <FilterSelect
-        label="Status"
+        label="Estado"
         value={values.status}
         options={options.statuses}
         onChange={(v) => onChange({ status: v })}
@@ -64,7 +64,7 @@ export function FiltersBar({ values, options, onChange, onClearAll, disabled }: 
           className="inline-flex h-9 items-center gap-1 self-start rounded-md border border-border/60 bg-background px-3 text-xs text-muted-foreground transition-colors hover:text-foreground sm:self-end"
         >
           <X className="h-3 w-3" aria-hidden />
-          Clear filters
+          Limpiar filtros
         </button>
       ) : null}
     </div>

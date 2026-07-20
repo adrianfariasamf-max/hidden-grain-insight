@@ -4,7 +4,7 @@ interface LoadingStateProps {
   label?: string;
 }
 
-export function LoadingState({ label = "Loading…" }: LoadingStateProps) {
+export function LoadingState({ label = "Cargando…" }: LoadingStateProps) {
   return (
     <div
       role="status"

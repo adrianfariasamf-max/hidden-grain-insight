@@ -7,9 +7,8 @@ export const Route = createFileRoute("/api/experiments/$id/sessions")({
     handlers: {
       GET: async ({ params }) => {
         try {
-          const { listSessionsForExperiment } = await import(
-            "@/lib/server/experiments-repo.server"
-          );
+          const { listSessionsForExperiment } =
+            await import("@/lib/server/experiments-repo.server");
           const items = await listSessionsForExperiment(params.id);
           return Response.json({ items });
         } catch (err) {

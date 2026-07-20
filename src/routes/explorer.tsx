@@ -44,17 +44,17 @@ export const Route = createFileRoute("/explorer")({
   head: () => ({
     meta: [
       { title: "Explorer — Hidden Grain" },
-      { name: "description", content: "Search, filter and paginate Knowledge Objects." },
+      { name: "description", content: "Busca, filtra y pagina Objetos de Conocimiento." },
     ],
   }),
   component: ExplorerRoute,
 });
 
 /**
- * Explorer keeps the URL as the source of truth. We derive the canonical
+ * Explorador keeps the URL as the source of truth. We derive the canonical
  * `SearchQuery` from the URL params, then let `useSearch` normalize and
  * expose it. Every write projects back to the URL — that is the ONE
- * Explorer ↔ SearchQuery ↔ URL binding.
+ * Explorador ↔ SearchQuery ↔ URL binding.
  */
 function searchQueryFromUrl(input: ExplorerSearch): SearchQuery {
   const q: SearchQuery = {
@@ -176,8 +176,8 @@ function ExplorerRoute() {
     <>
       <PageHeader
         eyebrow="Explorer"
-        title="Knowledge Objects"
-        description="Search, filter and paginate the read-only object index. Filters send q, type, category and status to the API."
+        title="Objetos de conocimiento"
+        description="Busca, filtra y pagina el índice de objetos. Los filtros envían q, type, category y status a la API."
         actions={
           <Button asChild size="sm">
             <Link to="/objects/new">
@@ -192,8 +192,8 @@ function ExplorerRoute() {
           <SearchInput
             value={search.q ?? ""}
             onChange={handleTextChange}
-            placeholder="Search Knowledge Objects…"
-            ariaLabel="Search Knowledge Objects"
+            placeholder="Buscar objetos de conocimiento…"
+            ariaLabel="Search Objetos de conocimiento"
           />
 
           <FiltersBar
@@ -212,20 +212,20 @@ function ExplorerRoute() {
         </div>
 
         {isInitialLoading ? (
-          <LoadingState label="Loading objects…" />
+          <LoadingState label="Cargando objetos…" />
         ) : listQuery.isError ? (
           <ErrorState error={listQuery.error} onRetry={() => listQuery.refetch()} />
         ) : !hasItems ? (
           <EmptyState
-            title="No objects match the current filters"
-            description="Try clearing filters or adjusting the search term."
+            title="Ningún objeto coincide con los filtros actuales"
+            description="Prueba a limpiar los filtros o ajustar el término de búsqueda."
           />
         ) : (
           <div className="flex flex-col gap-4">
             {isRefreshing ? (
               <div className="inline-flex items-center gap-2 self-start rounded border border-border/60 bg-card/60 px-2 py-1 text-[11px] text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
-                Refreshing…
+                Actualizando…
               </div>
             ) : null}
 

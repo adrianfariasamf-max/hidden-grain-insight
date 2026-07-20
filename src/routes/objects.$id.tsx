@@ -28,7 +28,7 @@ export const Route = createFileRoute("/objects/$id")({
   head: () => ({
     meta: [
       { title: "Object — Hidden Grain" },
-      { name: "description", content: "Knowledge Object detail view." },
+      { name: "description", content: "Knowledge Detalle del objeto view." },
     ],
   }),
   component: ObjectDetailRoute,
@@ -54,7 +54,7 @@ function ObjectDetailRoute() {
     <>
       <PageHeader
         eyebrow="Object"
-        title={canonical?.title ?? "Object detail"}
+        title={canonical?.title ?? "Detalle del objeto"}
         description={<span className="break-all font-mono text-xs">{id}</span>}
         actions={
           <Link
@@ -62,7 +62,7 @@ function ObjectDetailRoute() {
             className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Back to Explorer
+            Back to Explorador
           </Link>
         }
       />
@@ -86,7 +86,7 @@ function ObjectDetailRoute() {
 function InvalidIdView({ id }: { id: string }) {
   return (
     <EmptyState
-      title="Invalid object ID"
+      title="ID de objeto no válido"
       description={`"${id}" is not a valid Knowledge Object ID. No request was sent to the API.`}
       action={
         <Link
@@ -94,7 +94,7 @@ function InvalidIdView({ id }: { id: string }) {
           className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground hover:bg-accent/20"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Back to Explorer
+          Back to Explorador
         </Link>
       }
     />
@@ -104,7 +104,7 @@ function InvalidIdView({ id }: { id: string }) {
 function NotFoundView({ id }: { id: string }) {
   return (
     <EmptyState
-      title="Object not found"
+      title="Objeto no encontrado"
       description={`No Knowledge Object matches id ${id}.`}
       action={
         <Link
@@ -112,7 +112,7 @@ function NotFoundView({ id }: { id: string }) {
           className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground hover:bg-accent/20"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Back to Explorer
+          Back to Explorador
         </Link>
       }
     />
@@ -241,7 +241,7 @@ function ObjectDetailBody({
         <RelationshipsFilter value={filter} onChange={setFilter} summary={summary} />
         {summary.total === 0 ? (
           <EmptyState
-            title="No relationships"
+            title="Sin relaciones"
             description="This object has no outgoing relationships or backlinks."
           />
         ) : (
@@ -251,7 +251,7 @@ function ObjectDetailBody({
                 title="Outgoing"
                 relationships={outgoing}
                 currentId={object.id}
-                emptyLabel="No outgoing relationships"
+                emptyLabel="Sin relaciones salientes"
               />
             ) : null}
             {showBacklinks ? (
@@ -259,7 +259,7 @@ function ObjectDetailBody({
                 title="Backlinks"
                 relationships={incoming}
                 currentId={object.id}
-                emptyLabel="No backlinks"
+                emptyLabel="Sin backlinks"
               />
             ) : null}
           </div>
@@ -274,19 +274,19 @@ function ObjectDetailBody({
           {path ? <MetaRow label="Path" value={path} mono /> : null}
           {graphView ? (
             <>
-              {graphType ? <MetaRow label="Graph type" value={graphType} mono /> : null}
-              {graphCategory ? <MetaRow label="Graph category" value={graphCategory} mono /> : null}
+              {graphType ? <MetaRow label="Tipo en el grafo" value={graphType} mono /> : null}
+              {graphCategory ? <MetaRow label="Categoría en el grafo" value={graphCategory} mono /> : null}
             </>
           ) : null}
         </dl>
       </section>
 
-      {/* Tags & keywords */}
+      {/* Etiquetas & keywords */}
       {hasTags || hasKeywords ? (
         <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold text-foreground">Tags &amp; keywords</h2>
-          {hasTags ? <TagCloud label="Tags" items={object.tags} /> : null}
-          {hasKeywords ? <TagCloud label="Keywords" items={keywords} /> : null}
+          <h2 className="text-lg font-semibold text-foreground">Etiquetas &amp; keywords</h2>
+          {hasTags ? <TagCloud label="Etiquetas" items={object.tags} /> : null}
+          {hasKeywords ? <TagCloud label="Palabras clave" items={keywords} /> : null}
         </section>
       ) : null}
 

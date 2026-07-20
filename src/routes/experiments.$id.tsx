@@ -21,12 +21,12 @@ export const Route = createFileRoute("/experiments/$id")({
   component: ExperimentDetailPage,
   head: () => ({
     meta: [
-      { title: "Experiment — Perception Studio" },
-      { name: "description", content: "Configure, publish and share a perception experiment." },
+      { title: "Experimento — Perception Studio" },
+      { name: "description", content: "Configura, publica y comparte un estudio de percepción." },
     ],
   }),
   errorComponent: ({ error, reset }) => <ErrorState error={error} onRetry={reset} />,
-  notFoundComponent: () => <EmptyState title="Experiment not found" />,
+  notFoundComponent: () => <EmptyState title="Experimento no encontrado" />,
 });
 
 function ExperimentDetailPage() {
@@ -34,9 +34,9 @@ function ExperimentDetailPage() {
   const qc = useQueryClient();
   const { data, isLoading, error, refetch } = useQuery(experimentDetailQuery(id));
 
-  if (isLoading) return <LoadingState label="Loading experiment…" />;
+  if (isLoading) return <LoadingState label="Cargando experimento…" />;
   if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
-  if (!data) return <EmptyState title="Experiment not found" />;
+  if (!data) return <EmptyState title="Experimento no encontrado" />;
 
   return <ExperimentEditor detail={data} experimentId={id} qc={qc} />;
 }
@@ -65,7 +65,7 @@ function ExperimentEditor({
     <div className="mx-auto w-full max-w-5xl px-4 py-8">
       <div className="mb-4">
         <Link to="/experiments" className="text-xs text-muted-foreground hover:text-foreground">
-          ← All experiments
+          ← Todos los experimentos
         </Link>
       </div>
 
@@ -76,14 +76,20 @@ function ExperimentEditor({
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-6">
-          <MetadataCard detail={detail} experimentId={experimentId} qc={qc} readOnly={isPublished} />
+          <MetadataCard
+            detail={detail}
+            experimentId={experimentId}
+            qc={qc}
+            readOnly={isPublished}
+          />
 
           <section className="rounded-lg border border-border bg-card p-5">
             <div className="mb-3 flex items-baseline justify-between gap-3">
               <div>
-                <h3 className="text-sm font-semibold text-foreground">Stimuli</h3>
+                <h3 className="text-sm font-semibold text-foreground">Estímulos</h3>
                 <p className="text-xs text-muted-foreground">
-                  Exactly three images are required. Alt text is mandatory for each.
+                  Se requieren exactamente tres imágenes. El texto alternativo es obligatorio para
+                  cada una.
                 </p>
               </div>
               <span className="font-mono text-[11px] text-muted-foreground">
@@ -120,11 +126,11 @@ function ExperimentEditor({
 
           <section className="rounded-lg border border-border bg-card p-4">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Activity
+              Actividad
             </h4>
             <dl className="mt-3 grid gap-2 text-sm">
-              <Row label="Sessions" value={String(sessionCount)} />
-              <Row label="Responses" value={String(responseCount)} />
+              <Row label="Sesiones" value={String(sessionCount)} />
+              <Row label="Respuestas" value={String(responseCount)} />
             </dl>
           </section>
         </aside>
@@ -174,12 +180,12 @@ function MetadataCard({
 
   return (
     <section className="rounded-lg border border-border bg-card p-5">
-      <h3 className="text-sm font-semibold text-foreground">Experiment metadata</h3>
+      <h3 className="text-sm font-semibold text-foreground">Datos del experimento</h3>
       <p className="text-xs text-muted-foreground">
-        These fields shape what participants read before viewing the stimuli.
+        Estos campos definen lo que las personas participantes leen antes de ver las imágenes.
       </p>
       <div className="mt-4 grid gap-4">
-        <Field id="exp-title" label="Title">
+        <Field id="exp-title" label="Título">
           <Input
             id="exp-title"
             value={title}
@@ -187,7 +193,7 @@ function MetadataCard({
             disabled={readOnly}
           />
         </Field>
-        <Field id="exp-desc" label="Description">
+        <Field id="exp-desc" label="Descripción">
           <Textarea
             id="exp-desc"
             value={description}
@@ -196,7 +202,7 @@ function MetadataCard({
             disabled={readOnly}
           />
         </Field>
-        <Field id="exp-instr" label="Participant instructions">
+        <Field id="exp-instr" label="Instrucciones para participantes">
           <Textarea
             id="exp-instr"
             value={instructions}
@@ -209,7 +215,8 @@ function MetadataCard({
           id="exp-hidden"
           label={
             <span className="inline-flex items-center gap-1.5">
-              <EyeOff className="h-3 w-3" /> Hidden target — never shown to participants
+              <EyeOff className="h-3 w-3" /> Objetivo oculto — nunca se muestra a las personas
+              participantes
             </span>
           }
         >
@@ -229,11 +236,11 @@ function MetadataCard({
             onClick={() => save.mutate()}
             disabled={!dirty || save.isPending || readOnly}
           >
-            {save.isPending ? "Saving…" : dirty ? "Save changes" : "Saved"}
+            {save.isPending ? "Guardando…" : dirty ? "Guardar cambios" : "Guardado"}
           </Button>
           {readOnly ? (
             <span className="text-[11px] text-muted-foreground">
-              Published experiments are locked from edits.
+              Los experimentos publicados no se pueden editar.
             </span>
           ) : null}
           {save.error ? (
@@ -261,11 +268,11 @@ function PublishChecklist({
   error: string | null;
 }) {
   const items = [
-    { key: "title", label: "Title present" },
-    { key: "instructions", label: "Participant instructions" },
-    { key: "hidden", label: "Hidden target defined" },
-    { key: "3-stimuli", label: "Exactly 3 stimuli attached" },
-    { key: "alt", label: "Alt text on each stimulus" },
+    { key: "title", label: "Título presente" },
+    { key: "instructions", label: "Instrucciones para participantes" },
+    { key: "hidden", label: "Objetivo oculto definido" },
+    { key: "3-stimuli", label: "Exactamente 3 estímulos adjuntos" },
+    { key: "alt", label: "Texto alternativo en cada estímulo" },
   ];
   const missingLower = reasons.map((r) => r.toLowerCase()).join(" | ");
   const isMissing = (k: string) => {
@@ -288,7 +295,7 @@ function PublishChecklist({
   return (
     <section className="rounded-lg border border-border bg-card p-4">
       <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Publish checklist
+        Lista de verificación para publicar
       </h4>
       <ul className="mt-3 grid gap-1.5 text-sm">
         {items.map((it) => {
@@ -317,10 +324,10 @@ function PublishChecklist({
           disabled={!ready || pending}
         >
           <Rocket className="mr-1.5 h-4 w-4" />
-          {pending ? "Publishing…" : "Publish experiment"}
+          {pending ? "Publicando…" : "Publicar experimento"}
         </Button>
       ) : (
-        <p className="mt-4 text-xs text-primary">Experiment is published.</p>
+        <p className="mt-4 text-xs text-primary">El experimento está publicado.</p>
       )}
       {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
     </section>

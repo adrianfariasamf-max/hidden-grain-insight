@@ -17,12 +17,12 @@ export const Route = createFileRoute("/experiments")({
       { title: "Experiments — Perception Studio" },
       {
         name: "description",
-        content: "Design, run and analyse perception experiments in Perception Studio.",
+        content: "Diseña, ejecuta y analiza estudios de percepción en Perception Studio.",
       },
     ],
   }),
   errorComponent: ({ error, reset }) => <ErrorState error={error} onRetry={reset} />,
-  notFoundComponent: () => <EmptyState title="Not found" />,
+  notFoundComponent: () => <EmptyState title="No encontrado" />,
 });
 
 function ExperimentsPage() {
@@ -32,7 +32,7 @@ function ExperimentsPage() {
     <NewExperimentDialog
       trigger={
         <Button size="sm">
-          <Plus className="mr-1.5 h-4 w-4" /> New experiment
+          <Plus className="mr-1.5 h-4 w-4" /> Nuevo experimento
         </Button>
       }
     />
@@ -43,19 +43,19 @@ function ExperimentsPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageHeader
           title="Experiments"
-          description="Perception studies built and shared from one workspace."
+          description="Estudios de percepción creados y compartidos desde un único espacio."
         />
         <div className="pt-1">{newButton}</div>
       </div>
       <div className="mt-6">
         {isLoading ? (
-          <LoadingState label="Loading experiments…" />
+          <LoadingState label="Cargando experimentos…" />
         ) : error ? (
           <ErrorState error={error} onRetry={() => refetch()} />
         ) : !data?.items.length ? (
           <EmptyState
-            title="No experiments yet"
-            description="Create your first perception experiment to begin."
+            title="Aún no hay experimentos"
+            description="Crea tu primer estudio de percepción para comenzar."
             action={newButton}
           />
         ) : (

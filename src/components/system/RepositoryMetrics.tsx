@@ -8,7 +8,7 @@ interface RepositoryMetricsProps {
 
 /**
  * Renders repository counters straight from /health. Zero is a valid value
- * — never treated as empty or errored.
+ * — never treated as vacío or errored.
  */
 export function RepositoryMetrics({ health, includeSchema }: RepositoryMetricsProps) {
   return (

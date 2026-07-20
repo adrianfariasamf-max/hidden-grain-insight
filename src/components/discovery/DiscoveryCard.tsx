@@ -71,7 +71,7 @@ function DiscoveryCardImpl({ insight, nodesById }: DiscoveryCardProps) {
 
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-muted-foreground sm:grid-cols-3">
         <div className="flex min-w-0 flex-col">
-          <dt className="font-mono uppercase tracking-wider">Primary</dt>
+          <dt className="font-mono uppercase tracking-wider">Principal</dt>
           <dd className="min-w-0 truncate text-foreground">
             {primaryId ? (
               <Link

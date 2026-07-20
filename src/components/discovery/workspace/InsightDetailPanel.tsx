@@ -27,7 +27,7 @@ function InsightDetailPanelImpl({ insight, nodesById }: InsightDetailPanelProps)
   if (!insight) {
     return (
       <section
-        aria-label="Insight detail"
+        aria-label="Detalle del descubrimiento"
         className="flex h-full min-h-0 items-center justify-center rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center"
       >
         <p className="text-xs text-muted-foreground">

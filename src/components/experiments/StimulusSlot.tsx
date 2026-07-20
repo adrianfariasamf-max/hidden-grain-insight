@@ -26,8 +26,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
     setAltText(stimulus?.altText ?? "");
   }, [stimulus?.id, stimulus?.altText]);
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
+  const invalidate = () => qc.invalidateQueries({ queryKey: experimentKeys.detail(experimentId) });
 
   async function uploadFile(file: File) {
     setError(null);
@@ -87,11 +86,11 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
         </div>
         {stimulus ? (
           <span className="rounded bg-primary/15 px-2 py-0.5 font-mono text-[11px] text-primary">
-            uploaded
+            cargada
           </span>
         ) : (
           <span className="rounded bg-muted px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
-            empty
+            vacío
           </span>
         )}
       </div>
@@ -106,12 +105,12 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-            No image uploaded
+            Sin imagen
           </div>
         )}
         {uploading ? (
           <div className="absolute inset-0 grid place-items-center bg-background/70 text-xs text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Uploading…
+            <Loader2 className="h-4 w-4 animate-spin" /> Subiendo…
           </div>
         ) : null}
       </div>
@@ -119,8 +118,8 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
       {stimulus ? (
         <div className="grid gap-1.5">
           <Label htmlFor={`alt-${position}`} className="flex items-center gap-2">
-            Alt text
-            <span className="text-[10px] text-muted-foreground">(required to publish)</span>
+            Texto alternativo
+            <span className="text-[10px] text-muted-foreground">(requerido para publicar)</span>
           </Label>
           <Input
             id={`alt-${position}`}
@@ -129,11 +128,13 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
             onBlur={() => {
               if (altText !== stimulus.altText) altMutation.mutate(altText);
             }}
-            placeholder="Describe the image for accessibility and analysis."
+            placeholder="Describe la imagen para accesibilidad y análisis."
             disabled={readOnly}
           />
           {showAltMissing ? (
-            <p className="text-[11px] text-warning">Alt text is required before publishing.</p>
+            <p className="text-[11px] text-warning">
+              Texto alternativo is required before publishing.
+            </p>
           ) : null}
           <p className="truncate font-mono text-[10px] text-muted-foreground">
             {stimulus.imagePath}
@@ -161,11 +162,11 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
         >
           {stimulus ? (
             <>
-              <RefreshCcw className="mr-1.5 h-3.5 w-3.5" /> Replace image
+              <RefreshCcw className="mr-1.5 h-3.5 w-3.5" /> Reemplazar imagen
             </>
           ) : (
             <>
-              <ImagePlus className="mr-1.5 h-3.5 w-3.5" /> Upload image
+              <ImagePlus className="mr-1.5 h-3.5 w-3.5" /> Subir imagen
             </>
           )}
         </Button>
@@ -178,7 +179,7 @@ export function StimulusSlot({ experimentId, position, stimulus, readOnly }: Pro
             disabled={removeMutation.isPending || readOnly}
             className="text-destructive hover:text-destructive"
           >
-            <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Remove
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Eliminar
           </Button>
         ) : null}
       </div>

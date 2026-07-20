@@ -36,7 +36,7 @@ export function SearchInput({
   autoFocus,
 }: SearchInputProps) {
   // Local text mirrors `value` so external resets (URL, Clear all) are
-  // reflected in the field. See Explorer for the same pattern applied
+  // reflected in the field. See Explorador for the same pattern applied
   // to the URL as source of truth.
   const [local, setLocal] = useState(value);
   useEffect(() => {

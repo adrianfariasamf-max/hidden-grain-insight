@@ -26,7 +26,7 @@ const SORT_OPTIONS: { value: DiscoverySortMode; label: string }[] = [
   { value: "ranked", label: "Ranked" },
   { value: "score-desc", label: "Score ↓" },
   { value: "score-asc", label: "Score ↑" },
-  { value: "type", label: "Type" },
+  { value: "type", label: "Tipo" },
 ];
 
 export interface WorkspaceFiltersProps {
@@ -79,12 +79,12 @@ function WorkspaceFiltersImpl({
           className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-muted-foreground"
           aria-hidden
         />
-        <span className="sr-only">Search insights</span>
+        <span className="sr-only">Buscar descubrimientos</span>
         <input
           type="search"
           value={filters.query}
           onChange={(e) => handleQuery(e.target.value)}
-          placeholder="Search insights…"
+          placeholder="Buscar descubrimientos…"
           className="h-8 w-full rounded-md border border-border/60 bg-background pl-7 pr-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </label>
@@ -103,7 +103,7 @@ function WorkspaceFiltersImpl({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Category">
+      <FilterGroup label="Categoría">
         {CATEGORY_OPTIONS.map((c) => (
           <Chip
             key={c}
@@ -117,7 +117,7 @@ function WorkspaceFiltersImpl({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Type">
+      <FilterGroup label="Tipo">
         {typeCatalog.map((t) => (
           <Chip
             key={t.id}
@@ -145,7 +145,7 @@ function WorkspaceFiltersImpl({
               type="button"
               onClick={handleClear}
               className="ml-1 inline-flex items-center gap-1 rounded text-muted-foreground hover:text-foreground"
-              aria-label="Clear all filters"
+              aria-label="Limpiar todos los filtros"
             >
               <X className="h-3 w-3" aria-hidden />
               Clear

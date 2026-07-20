@@ -47,7 +47,7 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
   if (!insight || !derived) {
     return (
       <aside
-        aria-label="Insight context"
+        aria-label="Contexto del descubrimiento"
         className="flex h-full min-h-0 items-center justify-center rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center"
       >
         <p className="text-xs text-muted-foreground">
@@ -63,7 +63,7 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
 
   return (
     <aside
-      aria-label="Insight context"
+      aria-label="Contexto del descubrimiento"
       className="flex h-full min-h-0 flex-col overflow-y-auto rounded-lg border border-border/60 bg-card/40"
     >
       <header className="border-b border-border/60 p-3">
@@ -71,14 +71,14 @@ function InsightContextPanelImpl({ insight, nodesById, relationships }: InsightC
           Context
         </h3>
         <p className="text-xs text-muted-foreground">
-          Local summary derived from the Knowledge Graph — no full graph rendered.
+          Local summary derived from the Grafo de conocimiento — no full graph rendered.
         </p>
       </header>
 
       <div className="flex flex-col gap-4 p-3">
         <section className="flex flex-col gap-1 rounded-md border border-border/60 bg-background/40 p-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Primary object
+            Principal object
           </span>
           {primaryId ? (
             <>

@@ -45,16 +45,16 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
     <section className="rounded-lg border border-primary/40 bg-primary/5 p-5">
       <div className="flex items-center gap-2">
         <Share2 className="h-4 w-4 text-primary" aria-hidden />
-        <h3 className="text-sm font-semibold text-foreground">Share experiment</h3>
+        <h3 className="text-sm font-semibold text-foreground">Compartir experimento</h3>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
-        Give this link to participants. Anyone with the link can join.
+        Comparte este enlace con las personas participantes. Cualquiera con el enlace puede unirse.
       </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
         <div className="grid gap-2">
           <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            Public link
+            Enlace público
           </label>
           <div className="flex gap-2">
             <input
@@ -66,11 +66,11 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
             <Button type="button" size="sm" onClick={copy}>
               {copied ? (
                 <>
-                  <Check className="mr-1.5 h-3.5 w-3.5" /> Copied
+                  <Check className="mr-1.5 h-3.5 w-3.5" /> Copiado
                 </>
               ) : (
                 <>
-                  <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy link
+                  <Copy className="mr-1.5 h-3.5 w-3.5" /> Copiar enlace
                 </>
               )}
             </Button>
@@ -82,7 +82,7 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
             <>
               <img
                 src={qr}
-                alt="QR code for the experiment share link"
+                alt="Código QR del enlace del experimento"
                 className="h-32 w-32 rounded-md border border-border bg-white p-1"
               />
               <a
@@ -90,7 +90,7 @@ export function SharePanel({ experimentId }: { experimentId: string }) {
                 download={`experiment-${experimentId}.png`}
                 className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
               >
-                <Download className="h-3 w-3" /> Download QR
+                <Download className="h-3 w-3" /> Descargar QR
               </a>
             </>
           ) : (
