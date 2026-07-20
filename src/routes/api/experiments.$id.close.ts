@@ -4,7 +4,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/experiments/$id/close")({
   server: {
     handlers: {
-      POST: async ({ params }) => {
+      POST: async ({ params, request }) => {
+        const { requireExperimentOwner } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireExperimentOwner(request, params.id);
+        if (guard instanceof Response) return guard;
         try {
           const { closeExperiment } = await import("@/lib/server/experiments-repo.server");
           const experiment = await closeExperiment(params.id);

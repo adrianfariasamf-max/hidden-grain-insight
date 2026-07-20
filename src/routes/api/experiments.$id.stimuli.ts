@@ -6,6 +6,9 @@ export const Route = createFileRoute("/api/experiments/$id/stimuli")({
   server: {
     handlers: {
       POST: async ({ params, request }) => {
+        const { requireExperimentOwner } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireExperimentOwner(request, params.id);
+        if (guard instanceof Response) return guard;
         let raw: unknown;
         try {
           raw = await request.json();

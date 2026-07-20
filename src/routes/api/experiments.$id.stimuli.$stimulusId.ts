@@ -6,6 +6,9 @@ export const Route = createFileRoute("/api/experiments/$id/stimuli/$stimulusId")
   server: {
     handlers: {
       PATCH: async ({ params, request }) => {
+        const { requireExperimentOwner } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireExperimentOwner(request, params.id);
+        if (guard instanceof Response) return guard;
         let raw: unknown;
         try {
           raw = await request.json();
@@ -27,7 +30,10 @@ export const Route = createFileRoute("/api/experiments/$id/stimuli/$stimulusId")
           return Response.json({ error: (err as Error).message }, { status: 422 });
         }
       },
-      DELETE: async ({ params }) => {
+      DELETE: async ({ params, request }) => {
+        const { requireExperimentOwner } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireExperimentOwner(request, params.id);
+        if (guard instanceof Response) return guard;
         try {
           const { deleteStimulus } = await import("@/lib/server/experiments-repo.server");
           const out = await deleteStimulus(params.id, params.stimulusId);

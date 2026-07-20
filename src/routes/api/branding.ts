@@ -5,13 +5,19 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/branding")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const { requireAdmin } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireAdmin(request);
+        if (guard instanceof Response) return guard;
         const { getBrandingSettingsAdmin } = await import(
           "@/lib/server/branding-repo.server"
         );
         return Response.json(await getBrandingSettingsAdmin());
       },
       PATCH: async ({ request }) => {
+        const { requireAdmin } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireAdmin(request);
+        if (guard instanceof Response) return guard;
         let raw: unknown;
         try {
           raw = await request.json();
@@ -30,7 +36,10 @@ export const Route = createFileRoute("/api/branding")({
         );
         return Response.json(await setBrandingVisibility(body.logoVisible));
       },
-      DELETE: async () => {
+      DELETE: async ({ request }) => {
+        const { requireAdmin } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireAdmin(request);
+        if (guard instanceof Response) return guard;
         const { clearBrandingLogo } = await import(
           "@/lib/server/branding-repo.server"
         );

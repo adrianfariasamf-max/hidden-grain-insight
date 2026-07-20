@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { API_BASE } from "@/lib/api/client";
+import { authFetch } from "@/lib/auth/session";
 
 export interface BrandingSettings {
   logoPath: string | null;
@@ -31,7 +32,7 @@ export const brandingAdminQuery = () =>
   queryOptions({
     queryKey: ["branding", "admin"],
     queryFn: async ({ signal }): Promise<BrandingSettings> => {
-      const res = await fetch(`${API_BASE}/branding`, { signal });
+      const res = await authFetch(`${API_BASE}/branding`, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return (await res.json()) as BrandingSettings;
     },
@@ -39,7 +40,7 @@ export const brandingAdminQuery = () =>
 
 export const brandingApi = {
   async signUpload(filename: string): Promise<{ uploadUrl: string; logoPath: string }> {
-    const res = await fetch(`${API_BASE}/branding/upload-url`, {
+    const res = await authFetch(`${API_BASE}/branding/upload-url`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ filename }),
@@ -48,7 +49,7 @@ export const brandingApi = {
     return (await res.json()) as { uploadUrl: string; logoPath: string };
   },
   async commitUpload(logoPath: string): Promise<BrandingSettings> {
-    const res = await fetch(`${API_BASE}/branding/upload-url`, {
+    const res = await authFetch(`${API_BASE}/branding/upload-url`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ commitPath: logoPath }),
@@ -57,7 +58,7 @@ export const brandingApi = {
     return (await res.json()) as BrandingSettings;
   },
   async setVisibility(logoVisible: boolean): Promise<BrandingSettings> {
-    const res = await fetch(`${API_BASE}/branding`, {
+    const res = await authFetch(`${API_BASE}/branding`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ logoVisible }),
@@ -66,7 +67,7 @@ export const brandingApi = {
     return (await res.json()) as BrandingSettings;
   },
   async remove(): Promise<BrandingSettings> {
-    const res = await fetch(`${API_BASE}/branding`, { method: "DELETE" });
+    const res = await authFetch(`${API_BASE}/branding`, { method: "DELETE" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return (await res.json()) as BrandingSettings;
   },

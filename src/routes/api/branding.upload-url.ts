@@ -7,6 +7,9 @@ export const Route = createFileRoute("/api/branding/upload-url")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const { requireAdmin } = await import("@/lib/server/auth-guard.server");
+        const guard = await requireAdmin(request);
+        if (guard instanceof Response) return guard;
         let raw: unknown;
         try {
           raw = await request.json();
