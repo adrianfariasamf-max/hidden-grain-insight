@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SystemRouteImport } from './routes/system'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as ExperimentsRouteImport } from './routes/experiments'
@@ -49,6 +50,11 @@ import { Route as ApiExperimentsIdStimuliStimulusIdRouteImport } from './routes/
 const SystemRoute = SystemRouteImport.update({
   id: '/system',
   path: '/system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GraphRoute = GraphRouteImport.update({
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/settings': typeof SettingsRoute
   '/system': typeof SystemRoute
   '/api/branding': typeof ApiBrandingRouteWithChildren
   '/api/experiments': typeof ApiExperimentsRouteWithChildren
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/discover': typeof DiscoverRoute
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/settings': typeof SettingsRoute
   '/system': typeof SystemRoute
   '/api/branding': typeof ApiBrandingRouteWithChildren
   '/api/experiments': typeof ApiExperimentsRouteWithChildren
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
+  '/settings': typeof SettingsRoute
   '/system': typeof SystemRoute
   '/api/branding': typeof ApiBrandingRouteWithChildren
   '/api/experiments': typeof ApiExperimentsRouteWithChildren
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/explorer'
     | '/graph'
+    | '/settings'
     | '/system'
     | '/api/branding'
     | '/api/experiments'
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/explorer'
     | '/graph'
+    | '/settings'
     | '/system'
     | '/api/branding'
     | '/api/experiments'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/explorer'
     | '/graph'
+    | '/settings'
     | '/system'
     | '/api/branding'
     | '/api/experiments'
@@ -467,6 +479,7 @@ export interface RootRouteChildren {
   ExperimentsRoute: typeof ExperimentsRouteWithChildren
   ExplorerRoute: typeof ExplorerRoute
   GraphRoute: typeof GraphRoute
+  SettingsRoute: typeof SettingsRoute
   SystemRoute: typeof SystemRoute
   ApiBrandingRoute: typeof ApiBrandingRouteWithChildren
   ApiExperimentsRoute: typeof ApiExperimentsRouteWithChildren
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       path: '/system'
       fullPath: '/system'
       preLoaderRoute: typeof SystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/graph': {
@@ -863,6 +883,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExperimentsRoute: ExperimentsRouteWithChildren,
   ExplorerRoute: ExplorerRoute,
   GraphRoute: GraphRoute,
+  SettingsRoute: SettingsRoute,
   SystemRoute: SystemRoute,
   ApiBrandingRoute: ApiBrandingRouteWithChildren,
   ApiExperimentsRoute: ApiExperimentsRouteWithChildren,
