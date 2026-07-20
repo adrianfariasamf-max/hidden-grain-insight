@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      experiment_stimuli: {
+        Row: {
+          alt_text: string
+          created_at: string
+          display_duration_seconds: number | null
+          experiment_id: string
+          id: string
+          image_path: string
+          image_url: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          alt_text?: string
+          created_at?: string
+          display_duration_seconds?: number | null
+          experiment_id: string
+          id?: string
+          image_path: string
+          image_url: string
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string
+          created_at?: string
+          display_duration_seconds?: number | null
+          experiment_id?: string
+          id?: string
+          image_path?: string
+          image_url?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiment_stimuli_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "perception_experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       knowledge_objects: {
         Row: {
           category: string
@@ -59,6 +103,89 @@ export type Database = {
           type?: string
           updated_at?: string
           version?: string
+        }
+        Relationships: []
+      }
+      participant_sessions: {
+        Row: {
+          completed_at: string | null
+          consent_accepted_at: string | null
+          created_at: string
+          experiment_id: string
+          id: string
+          metadata: Json
+          participant_alias: string | null
+          public_token: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          consent_accepted_at?: string | null
+          created_at?: string
+          experiment_id: string
+          id?: string
+          metadata?: Json
+          participant_alias?: string | null
+          public_token: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          consent_accepted_at?: string | null
+          created_at?: string
+          experiment_id?: string
+          id?: string
+          metadata?: Json
+          participant_alias?: string | null
+          public_token?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_sessions_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "perception_experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      perception_experiments: {
+        Row: {
+          created_at: string
+          description: string
+          hidden_target: string
+          id: string
+          instructions: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          hidden_target: string
+          id?: string
+          instructions?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          hidden_target?: string
+          id?: string
+          instructions?: string
+          status?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -112,6 +239,75 @@ export type Database = {
             columns: ["target_object_id"]
             isOneToOne: false
             referencedRelation: "knowledge_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stimulus_responses: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          discovered_hidden_element: boolean
+          discovered_text: string | null
+          feeling: string
+          first_viewed_at: string | null
+          id: string
+          interpretation: string
+          metadata: Json
+          observation: string
+          response_time_ms: number | null
+          session_id: string
+          stimulus_id: string
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          discovered_hidden_element?: boolean
+          discovered_text?: string | null
+          feeling?: string
+          first_viewed_at?: string | null
+          id?: string
+          interpretation?: string
+          metadata?: Json
+          observation?: string
+          response_time_ms?: number | null
+          session_id: string
+          stimulus_id: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          discovered_hidden_element?: boolean
+          discovered_text?: string | null
+          feeling?: string
+          first_viewed_at?: string | null
+          id?: string
+          interpretation?: string
+          metadata?: Json
+          observation?: string
+          response_time_ms?: number | null
+          session_id?: string
+          stimulus_id?: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stimulus_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "participant_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stimulus_responses_stimulus_id_fkey"
+            columns: ["stimulus_id"]
+            isOneToOne: false
+            referencedRelation: "experiment_stimuli"
             referencedColumns: ["id"]
           },
         ]
