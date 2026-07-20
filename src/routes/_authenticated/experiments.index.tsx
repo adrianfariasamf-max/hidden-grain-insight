@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { NewExperimentDialog } from "@/components/experiments/NewExperimentDialog";
 import { experimentListQuery } from "@/lib/perception/client";
 
-export const Route = createFileRoute("/experiments/")({
+export const Route = createFileRoute("/_authenticated/experiments/")({
   component: ExperimentsPage,
   head: () => ({
     meta: [

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/sessions/$token/consent")({
+export const Route = createFileRoute("/api/public/sessions/$token/consent")({
   server: {
     handlers: {
       POST: async ({ params }) => {
