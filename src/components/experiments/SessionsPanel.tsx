@@ -9,6 +9,31 @@ import {
 } from "@/lib/perception/client";
 import type { ExperimentStimulus, ParticipantSession } from "@/lib/perception/types";
 
+// RR-003 · Demographic labels shared with the participant landing.
+// Keep in sync if new ranges are added there.
+const AGE_RANGE_LABEL: Record<string, string> = {
+  under_18: "Menos de 18",
+  "18-24": "18–24",
+  "25-34": "25–34",
+  "35-44": "35–44",
+  "45-54": "45–54",
+  "55-64": "55–64",
+  "65_plus": "65+",
+};
+
+function readAgeRange(session: ParticipantSession): string {
+  const meta = session.metadata as Record<string, unknown> | undefined;
+  const demo = meta?.demographics as Record<string, unknown> | undefined;
+  const raw = typeof demo?.ageRange === "string" ? (demo.ageRange as string) : null;
+  if (!raw) return "—";
+  return AGE_RANGE_LABEL[raw] ?? raw;
+}
+
+function isTestSession(session: ParticipantSession): boolean {
+  const meta = session.metadata as Record<string, unknown> | undefined;
+  return meta?.test === true;
+}
+
 function formatDurationMs(ms: number | null): string {
   if (ms == null || !Number.isFinite(ms) || ms < 0) return "—";
   const totalSeconds = Math.round(ms / 1000);
@@ -62,7 +87,8 @@ export function SessionsPanel({ experimentId }: Props) {
         <ul className="divide-y divide-border/60">
           {items.map((it, idx) => {
             const s = it.session;
-            const label = s.participantAlias?.trim() || `Participante ${idx + 1}`;
+            const test = isTestSession(s);
+            const label = `Participante ${idx + 1}`;
             const open = openToken === s.publicToken;
             return (
               <li key={s.id} className="py-2">
@@ -73,9 +99,17 @@ export function SessionsPanel({ experimentId }: Props) {
                   aria-expanded={open}
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-foreground">{label}</p>
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {label}
+                      {test ? (
+                        <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] text-amber-400">
+                          sesión de prueba
+                        </span>
+                      ) : null}
+                    </p>
                     <p className="text-[11px] text-muted-foreground">
-                      <StatusChip status={s.status} /> · {it.responseCount} respuesta
+                      <StatusChip status={s.status} /> · Edad {readAgeRange(s)} ·{" "}
+                      {it.responseCount} respuesta
                       {it.responseCount === 1 ? "" : "s"} · iniciada{" "}
                       <SafeTimestamp value={s.startedAt ?? s.createdAt} />
                     </p>
@@ -126,44 +160,108 @@ function SessionResponses({
           const stim = byId.get(r.stimulusId);
           const durationLabel =
             r.responseTimeMs != null ? formatDurationMs(r.responseTimeMs) : "—";
+          const securityLevel = r.confidence == null ? null : Math.round(r.confidence * 5);
           return (
             <article key={r.id} className="rounded border border-border/60 bg-card p-3">
-              <header className="mb-3 flex items-start gap-3">
-                {stim?.imageUrl ? (
-                  <img
-                    src={stim.imageUrl}
-                    alt={stim.altText || `Estímulo ${stim.position}`}
-                    className="h-16 w-16 flex-shrink-0 rounded border border-border/60 bg-black object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="h-16 w-16 flex-shrink-0 rounded border border-border/60 bg-muted" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-[11px] text-muted-foreground">
+              {/* RR-004 · Ficha de observación. Prioridad visual:
+                    Imagen → Observación → Palabra → Atención → Sensación → Seguridad → Tiempo */}
+              <div className="grid gap-3 sm:grid-cols-[128px_1fr]">
+                <div className="flex flex-col gap-1">
+                  {stim?.imageUrl ? (
+                    <img
+                      src={stim.imageUrl}
+                      alt={stim.altText || `Estímulo ${stim.position}`}
+                      className="h-32 w-32 flex-shrink-0 rounded border border-border/60 bg-black object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="h-32 w-32 flex-shrink-0 rounded border border-border/60 bg-muted" />
+                  )}
+                  <p className="font-mono text-[10px] text-muted-foreground">
                     Estímulo {stim?.position ?? "?"}
                   </p>
-                  {stim?.altText ? (
-                    <p className="truncate text-xs text-foreground">{stim.altText}</p>
-                  ) : null}
                 </div>
-              </header>
-              <dl className="grid gap-1.5 text-xs">
-                <Row k="Observación" v={r.observation} />
-                <Row k="Interpretación" v={r.interpretation} />
-                <Row k="Elementos que llamaron la atención" v={r.attention} />
-                <Row k="Sensación" v={r.feeling} />
-                <Row
-                  k="Confianza"
-                  v={r.confidence == null ? "—" : `${Math.round(r.confidence * 5)}/5`}
-                />
-                <Row k="Tiempo" v={durationLabel} />
-              </dl>
+                <div className="min-w-0 space-y-3">
+                  <ObservationBlock label="Observación" value={r.observation} tone="primary" />
+                  <WordBlock
+                    label="Describe con una palabra qué te genera esta imagen"
+                    value={r.interpretation}
+                  />
+                  <QuietBlock label="¿Qué llamó primero tu atención?" value={r.attention} />
+                  <QuietBlock label="Sensación" value={r.feeling} />
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-muted-foreground">
+                    <SecurityMeter level={securityLevel} />
+                    <span>
+                      <span className="text-muted-foreground">Tiempo:</span>{" "}
+                      <span className="text-foreground">{durationLabel}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </article>
           );
         })
       )}
     </div>
+  );
+}
+
+function ObservationBlock({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string | null;
+  tone?: "primary" | "quiet";
+}) {
+  const text = value?.trim() ? value : "—";
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p
+        className={`mt-0.5 whitespace-pre-wrap break-words ${
+          tone === "primary" ? "text-sm text-foreground" : "text-xs text-foreground"
+        }`}
+      >
+        {text}
+      </p>
+    </div>
+  );
+}
+
+function WordBlock({ label, value }: { label: string; value: string | null }) {
+  const text = value?.trim() ? value.trim() : "—";
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-0.5 text-lg font-semibold text-foreground">{text}</p>
+    </div>
+  );
+}
+
+function QuietBlock({ label, value }: { label: string; value: string | null }) {
+  return <ObservationBlock label={label} value={value} tone="quiet" />;
+}
+
+function SecurityMeter({ level }: { level: number | null }) {
+  return (
+    <span className="inline-flex items-center gap-1.5" aria-label={`Seguridad ${level ?? "—"} de 5`}>
+      <span className="text-muted-foreground">Seguridad:</span>
+      <span className="inline-flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span
+            key={n}
+            className={`h-2 w-2 rounded-full border ${
+              level != null && n <= level
+                ? "border-primary bg-primary"
+                : "border-border bg-transparent"
+            }`}
+          />
+        ))}
+      </span>
+      <span className="text-foreground">{level == null ? "—" : `${level}/5`}</span>
+    </span>
   );
 }
 
@@ -174,16 +272,29 @@ function ParticipantSummary({
   session: ParticipantSession;
   totalDurationMs: number | null;
 }) {
-  const alias = session.participantAlias?.trim() || "Sin alias";
+  const age = readAgeRange(session);
+  const test = isTestSession(session);
   return (
     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 rounded border border-border/60 bg-card p-3 text-[11px] sm:grid-cols-4">
-      <SummaryItem k="Alias" v={alias} />
+      <SummaryItem k="Edad" v={age} />
       <SummaryItem
         k="Fecha"
         v={<SafeTimestamp value={session.startedAt ?? session.createdAt} />}
       />
       <SummaryItem k="Duración total" v={formatDurationMs(totalDurationMs)} />
-      <SummaryItem k="Estado" v={<StatusChip status={session.status} />} />
+      <SummaryItem
+        k="Estado"
+        v={
+          <span className="inline-flex items-center gap-1.5">
+            <StatusChip status={session.status} />
+            {test ? (
+              <span className="rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] text-amber-400">
+                prueba
+              </span>
+            ) : null}
+          </span>
+        }
+      />
     </dl>
   );
 }
