@@ -1,5 +1,5 @@
 // Global institutional branding (RR-019/020).
-// Single-row `branding_settings` table; logo lives in the private `branding`
+// Single-row `system_settings` table; logo lives in the private `branding`
 // bucket and is served via short-lived signed URLs, same pattern as
 // experiment stimuli. Investigator-managed, participant-visible only.
 
@@ -24,7 +24,7 @@ const READ_TTL_SECONDS = 60 * 60 * 2;
 
 async function readRow(): Promise<BrandingRow> {
   const { data, error } = await supabaseAdmin
-    .from("branding_settings")
+    .from("system_settings")
     .select("*")
     .eq("id", SINGLETON_ID)
     .maybeSingle();
@@ -32,7 +32,7 @@ async function readRow(): Promise<BrandingRow> {
   if (data) return data as BrandingRow;
   // Self-heal in case the seed row was ever removed.
   const insert = await supabaseAdmin
-    .from("branding_settings")
+    .from("system_settings")
     .insert({ id: SINGLETON_ID })
     .select("*")
     .single();
@@ -87,7 +87,7 @@ export async function signBrandingUpload(
 export async function commitBrandingLogo(logoPath: string): Promise<BrandingSettings> {
   const existing = await readRow();
   const { error } = await supabaseAdmin
-    .from("branding_settings")
+    .from("system_settings")
     .update({ logo_path: logoPath, logo_visible: true, updated_at: new Date().toISOString() })
     .eq("id", SINGLETON_ID);
   if (error) throw error;
@@ -100,7 +100,7 @@ export async function commitBrandingLogo(logoPath: string): Promise<BrandingSett
 
 export async function setBrandingVisibility(visible: boolean): Promise<BrandingSettings> {
   const { error } = await supabaseAdmin
-    .from("branding_settings")
+    .from("system_settings")
     .update({ logo_visible: visible, updated_at: new Date().toISOString() })
     .eq("id", SINGLETON_ID);
   if (error) throw error;
@@ -110,7 +110,7 @@ export async function setBrandingVisibility(visible: boolean): Promise<BrandingS
 export async function clearBrandingLogo(): Promise<BrandingSettings> {
   const existing = await readRow();
   const { error } = await supabaseAdmin
-    .from("branding_settings")
+    .from("system_settings")
     .update({ logo_path: null, updated_at: new Date().toISOString() })
     .eq("id", SINGLETON_ID);
   if (error) throw error;
