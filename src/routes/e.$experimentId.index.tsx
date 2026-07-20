@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 
 import { API_BASE } from "@/lib/api/client";
-import { experimentsApi } from "@/lib/perception/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
