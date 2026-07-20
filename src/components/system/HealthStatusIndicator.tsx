@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HEALTH_DOT_CLASSES, HEALTH_TONE_CLASSES, classifyStatus } from "@/lib/health/status";
+import { HEALTH_DOT_CLASSES, HEALTH_TONE_CLASSES, classifyHealth } from "@/lib/health/status";
 
 interface HealthStatusIndicatorProps {
   status: string;
@@ -11,7 +11,7 @@ interface HealthStatusIndicatorProps {
  * unknown values collapse to a neutral tone rather than being invented.
  */
 export function HealthStatusIndicator({ status, className }: HealthStatusIndicatorProps) {
-  const tone = classifyStatus(status);
+  const tone = classifyHealth(status);
   return (
     <span
       className={cn(
