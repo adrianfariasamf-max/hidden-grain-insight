@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   experimentKeys,
   experimentsApi,
-  sessionRespuestasQuery,
+  sessionResponsesQuery,
   sessionSnapshotQuery,
 } from "@/lib/perception/client";
 import type {
@@ -34,7 +34,7 @@ function ParticipantSession() {
   const { experimentId, token } = Route.useParams();
   const qc = useQueryClient();
   const snapshot = useQuery(sessionSnapshotQuery(token));
-  const responsesQ = useQuery(sessionRespuestasQuery(token));
+  const responsesQ = useQuery(sessionResponsesQuery(token));
 
   const [stage, setStage] = useState<"instructions" | "stimulus" | "complete">(
     "instructions",
@@ -90,7 +90,7 @@ function ParticipantSession() {
       index={currentIndex}
       total={stimuliSorted.length}
       onSubmitted={async (last) => {
-        await qc.invalidateQueries({ queryKey: experimentKeys.sessionRespuestas(token) });
+        await qc.invalidateQueries({ queryKey: experimentKeys.sessionResponses(token) });
         if (last) {
           try {
             await experimentsApi.completeSession(token);

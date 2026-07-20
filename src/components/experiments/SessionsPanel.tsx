@@ -5,7 +5,7 @@ import { SafeTimestamp } from "@/components/shared/SafeTimestamp";
 import {
   experimentSessionsQuery,
   experimentDetailQuery,
-  sessionRespuestasQuery,
+  sessionResponsesQuery,
 } from "@/lib/perception/client";
 import type { ParticipantSession, StimulusResponse } from "@/lib/perception/types";
 
@@ -63,7 +63,7 @@ export function SessionsPanel({ experimentId }: Props) {
                   </span>
                 </button>
                 {open ? (
-                  <SessionRespuestas
+                  <SessionResponses
                     token={s.publicToken}
                     session={s}
                     stimuli={detailQ.data?.stimuli ?? []}
@@ -78,7 +78,7 @@ export function SessionsPanel({ experimentId }: Props) {
   );
 }
 
-function SessionRespuestas({
+function SessionResponses({
   token,
   session,
   stimuli,
@@ -87,7 +87,7 @@ function SessionRespuestas({
   session: ParticipantSession;
   stimuli: { id: string; position: number; altText: string }[];
 }) {
-  const rq = useQuery(sessionRespuestasQuery(token));
+  const rq = useQuery(sessionResponsesQuery(token));
   const responses = rq.data?.items ?? [];
   const byId = new Map(stimuli.map((s) => [s.id, s]));
 
