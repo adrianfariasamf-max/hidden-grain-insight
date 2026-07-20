@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Circle, Copy, EyeOff, Lock, Rocket } from "lucide-react";
+import { CheckCircle2, Circle, Copy, Eye, EyeOff, Lock, Rocket } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -103,6 +103,16 @@ function ExperimentEditor({
             <Copy className="mr-1.5 h-3.5 w-3.5" />
             {duplicate.isPending ? "Duplicando…" : "Duplicar"}
           </Button>
+          <a
+            href={`/e/${experimentId}/?preview=1`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-8 items-center rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+            title="Abre el flujo del participante sin crear datos"
+          >
+            <Eye className="mr-1.5 h-3.5 w-3.5" />
+            Vista previa del participante
+          </a>
         </div>
       </div>
       {duplicate.error ? (
