@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SystemRouteImport } from './routes/system'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExplorerRouteImport } from './routes/explorer'
+import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObjectsNewRouteImport } from './routes/objects.new'
 import { Route as ObjectsIdRouteImport } from './routes/objects.$id'
+import { Route as ExperimentsIdRouteImport } from './routes/experiments.$id'
 import { Route as ApiRelationshipsRouteImport } from './routes/api/relationships'
 import { Route as ApiObjectsRouteImport } from './routes/api/objects'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
@@ -47,6 +49,11 @@ const ExplorerRoute = ExplorerRouteImport.update({
   path: '/explorer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExperimentsRoute = ExperimentsRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
@@ -66,6 +73,11 @@ const ObjectsIdRoute = ObjectsIdRouteImport.update({
   id: '/objects/$id',
   path: '/objects/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsIdRoute = ExperimentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ExperimentsRoute,
 } as any)
 const ApiRelationshipsRoute = ApiRelationshipsRouteImport.update({
   id: '/api/relationships',
@@ -149,6 +161,7 @@ const ApiExperimentsIdPublishRoute = ApiExperimentsIdPublishRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -157,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
@@ -173,6 +187,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -181,6 +196,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
@@ -198,6 +214,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/experiments': typeof ExperimentsRouteWithChildren
   '/explorer': typeof ExplorerRoute
   '/graph': typeof GraphRoute
   '/system': typeof SystemRoute
@@ -206,6 +223,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
+  '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
   '/api/experiments/$id': typeof ApiExperimentsIdRouteWithChildren
@@ -224,6 +242,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/discover'
+    | '/experiments'
     | '/explorer'
     | '/graph'
     | '/system'
@@ -232,6 +251,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
     | '/api/experiments/$id'
@@ -248,6 +268,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/discover'
+    | '/experiments'
     | '/explorer'
     | '/graph'
     | '/system'
@@ -256,6 +277,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
     | '/api/experiments/$id'
@@ -272,6 +294,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/discover'
+    | '/experiments'
     | '/explorer'
     | '/graph'
     | '/system'
@@ -280,6 +303,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/objects'
     | '/api/relationships'
+    | '/experiments/$id'
     | '/objects/$id'
     | '/objects/new'
     | '/api/experiments/$id'
@@ -297,6 +321,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiscoverRoute: typeof DiscoverRoute
+  ExperimentsRoute: typeof ExperimentsRouteWithChildren
   ExplorerRoute: typeof ExplorerRoute
   GraphRoute: typeof GraphRoute
   SystemRoute: typeof SystemRoute
@@ -333,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/experiments': {
+      id: '/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof ExperimentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discover': {
       id: '/discover'
       path: '/discover'
@@ -360,6 +392,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/objects/$id'
       preLoaderRoute: typeof ObjectsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/experiments/$id': {
+      id: '/experiments/$id'
+      path: '/$id'
+      fullPath: '/experiments/$id'
+      preLoaderRoute: typeof ExperimentsIdRouteImport
+      parentRoute: typeof ExperimentsRoute
     }
     '/api/relationships': {
       id: '/api/relationships'
@@ -469,6 +508,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ExperimentsRouteChildren {
+  ExperimentsIdRoute: typeof ExperimentsIdRoute
+}
+
+const ExperimentsRouteChildren: ExperimentsRouteChildren = {
+  ExperimentsIdRoute: ExperimentsIdRoute,
+}
+
+const ExperimentsRouteWithChildren = ExperimentsRoute._addFileChildren(
+  ExperimentsRouteChildren,
+)
+
 interface ApiExperimentsIdRouteChildren {
   ApiExperimentsIdPublishRoute: typeof ApiExperimentsIdPublishRoute
   ApiExperimentsIdResultsRoute: typeof ApiExperimentsIdResultsRoute
@@ -528,6 +579,7 @@ const ApiSessionsTokenRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiscoverRoute: DiscoverRoute,
+  ExperimentsRoute: ExperimentsRouteWithChildren,
   ExplorerRoute: ExplorerRoute,
   GraphRoute: GraphRoute,
   SystemRoute: SystemRoute,
