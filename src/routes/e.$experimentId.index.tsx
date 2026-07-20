@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 
 import { API_BASE } from "@/lib/api/client";
-import { experimentsApi } from "@/lib/perception/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
@@ -79,14 +78,36 @@ function ParticipantLanding() {
 
   const start = useMutation({
     mutationFn: async () => {
-      const session = await experimentsApi.createSession(experimentId, {
+      // RR-016 · El participante nace al visualizar correctamente el
+      // primer estímulo. Persistimos la sesión con `keepalive` para que la
+      // petición llegue al servidor aunque el participante cierre la
+      // pestaña inmediatamente después de cargar la imagen. La aceptación
+      // de consentimiento también viaja con keepalive; si algo falla, la
+      // sesión ya existe y quedará clasificada como ABANDONADA.
+      const body = {
         participantAlias: null,
         metadata: {
           demographics: { ageRange },
           ...(isTestSession ? { test: true, testSource: "url_or_webdriver" } : {}),
         },
+      };
+      const res = await fetch(`${API_BASE}/experiments/${experimentId}/sessions`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        keepalive: true,
       });
-      await experimentsApi.acceptConsent(session.publicToken);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const session = (await res.json()) as { publicToken: string };
+      // Consent acceptance is best-effort; the session row already exists.
+      try {
+        await fetch(`${API_BASE}/sessions/${session.publicToken}/consent`, {
+          method: "POST",
+          keepalive: true,
+        });
+      } catch {
+        // Non-blocking.
+      }
       return session;
     },
     onSuccess: (session) => {
