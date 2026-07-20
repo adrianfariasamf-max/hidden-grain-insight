@@ -308,16 +308,6 @@ function SummaryItem({ k, v }: { k: string; v: React.ReactNode }) {
   );
 }
 
-function Row({ k, v }: { k: string; v: string | number | null }) {
-  const value = v == null || v === "" ? "—" : String(v);
-  return (
-    <div className="grid grid-cols-[110px_1fr] items-baseline gap-2">
-      <dt className="text-muted-foreground">{k}</dt>
-      <dd className="whitespace-pre-wrap break-words text-foreground">{value}</dd>
-    </div>
-  );
-}
-
 function StatusChip({ status }: { status: string }) {
   const tone: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
