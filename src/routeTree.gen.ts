@@ -27,6 +27,7 @@ import { Route as ApiExperimentsRouteImport } from './routes/api/experiments'
 import { Route as ApiSessionsTokenRouteImport } from './routes/api/sessions.$token'
 import { Route as ApiObjectsIdRouteImport } from './routes/api/objects.$id'
 import { Route as ApiExperimentsIdRouteImport } from './routes/api/experiments.$id'
+import { Route as EExperimentIdSTokenRouteImport } from './routes/e.$experimentId.s.$token'
 import { Route as ApiSessionsTokenResponsesRouteImport } from './routes/api/sessions.$token.responses'
 import { Route as ApiSessionsTokenConsentRouteImport } from './routes/api/sessions.$token.consent'
 import { Route as ApiSessionsTokenCompleteRouteImport } from './routes/api/sessions.$token.complete'
@@ -128,6 +129,11 @@ const ApiExperimentsIdRoute = ApiExperimentsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiExperimentsRoute,
 } as any)
+const EExperimentIdSTokenRoute = EExperimentIdSTokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
+  getParentRoute: () => EExperimentIdRoute,
+} as any)
 const ApiSessionsTokenResponsesRoute =
   ApiSessionsTokenResponsesRouteImport.update({
     id: '/responses',
@@ -196,7 +202,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
-  '/e/$experimentId': typeof EExperimentIdRoute
+  '/e/$experimentId': typeof EExperimentIdRouteWithChildren
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/e/$experimentId/s/$token': typeof EExperimentIdSTokenRoute
   '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
   '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
@@ -226,7 +233,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
-  '/e/$experimentId': typeof EExperimentIdRoute
+  '/e/$experimentId': typeof EExperimentIdRouteWithChildren
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/e/$experimentId/s/$token': typeof EExperimentIdSTokenRoute
   '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
   '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
@@ -257,7 +265,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/objects': typeof ApiObjectsRouteWithChildren
   '/api/relationships': typeof ApiRelationshipsRoute
-  '/e/$experimentId': typeof EExperimentIdRoute
+  '/e/$experimentId': typeof EExperimentIdRouteWithChildren
   '/experiments/$id': typeof ExperimentsIdRoute
   '/objects/$id': typeof ObjectsIdRoute
   '/objects/new': typeof ObjectsNewRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/api/sessions/$token/complete': typeof ApiSessionsTokenCompleteRoute
   '/api/sessions/$token/consent': typeof ApiSessionsTokenConsentRoute
   '/api/sessions/$token/responses': typeof ApiSessionsTokenResponsesRoute
+  '/e/$experimentId/s/$token': typeof EExperimentIdSTokenRoute
   '/api/experiments/$id/stimuli/$stimulusId': typeof ApiExperimentsIdStimuliStimulusIdRoute
   '/api/experiments/$id/stimuli/upload-url': typeof ApiExperimentsIdStimuliUploadUrlRoute
 }
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/e/$experimentId/s/$token'
     | '/api/experiments/$id/stimuli/$stimulusId'
     | '/api/experiments/$id/stimuli/upload-url'
   fileRoutesByTo: FileRoutesByTo
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/e/$experimentId/s/$token'
     | '/api/experiments/$id/stimuli/$stimulusId'
     | '/api/experiments/$id/stimuli/upload-url'
   id:
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/api/sessions/$token/complete'
     | '/api/sessions/$token/consent'
     | '/api/sessions/$token/responses'
+    | '/e/$experimentId/s/$token'
     | '/api/experiments/$id/stimuli/$stimulusId'
     | '/api/experiments/$id/stimuli/upload-url'
   fileRoutesById: FileRoutesById
@@ -380,7 +392,7 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiObjectsRoute: typeof ApiObjectsRouteWithChildren
   ApiRelationshipsRoute: typeof ApiRelationshipsRoute
-  EExperimentIdRoute: typeof EExperimentIdRoute
+  EExperimentIdRoute: typeof EExperimentIdRouteWithChildren
   ObjectsIdRoute: typeof ObjectsIdRoute
   ObjectsNewRoute: typeof ObjectsNewRoute
   ApiSessionsTokenRoute: typeof ApiSessionsTokenRouteWithChildren
@@ -514,6 +526,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/experiments/$id'
       preLoaderRoute: typeof ApiExperimentsIdRouteImport
       parentRoute: typeof ApiExperimentsRoute
+    }
+    '/e/$experimentId/s/$token': {
+      id: '/e/$experimentId/s/$token'
+      path: '/s/$token'
+      fullPath: '/e/$experimentId/s/$token'
+      preLoaderRoute: typeof EExperimentIdSTokenRouteImport
+      parentRoute: typeof EExperimentIdRoute
     }
     '/api/sessions/$token/responses': {
       id: '/api/sessions/$token/responses'
@@ -659,6 +678,18 @@ const ApiObjectsRouteWithChildren = ApiObjectsRoute._addFileChildren(
   ApiObjectsRouteChildren,
 )
 
+interface EExperimentIdRouteChildren {
+  EExperimentIdSTokenRoute: typeof EExperimentIdSTokenRoute
+}
+
+const EExperimentIdRouteChildren: EExperimentIdRouteChildren = {
+  EExperimentIdSTokenRoute: EExperimentIdSTokenRoute,
+}
+
+const EExperimentIdRouteWithChildren = EExperimentIdRoute._addFileChildren(
+  EExperimentIdRouteChildren,
+)
+
 interface ApiSessionsTokenRouteChildren {
   ApiSessionsTokenCompleteRoute: typeof ApiSessionsTokenCompleteRoute
   ApiSessionsTokenConsentRoute: typeof ApiSessionsTokenConsentRoute
@@ -686,7 +717,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiObjectsRoute: ApiObjectsRouteWithChildren,
   ApiRelationshipsRoute: ApiRelationshipsRoute,
-  EExperimentIdRoute: EExperimentIdRoute,
+  EExperimentIdRoute: EExperimentIdRouteWithChildren,
   ObjectsIdRoute: ObjectsIdRoute,
   ObjectsNewRoute: ObjectsNewRoute,
   ApiSessionsTokenRoute: ApiSessionsTokenRouteWithChildren,
