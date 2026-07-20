@@ -196,8 +196,10 @@ function ParticipantLanding() {
     <>
     <PreviewBanner active={preview} />
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <BrandingLogo />
-      <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
+      <div className="mb-2 flex items-center justify-between gap-6">
+        <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
+        <BrandingLogo className="flex shrink-0 items-center" size="lg" />
+      </div>
       {exp.description ? (
         <p className="mt-2 text-sm text-muted-foreground">{exp.description}</p>
       ) : null}
@@ -318,8 +320,10 @@ function InstructionsStage({
 }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <BrandingLogo />
-      <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{title}</h1>
+      <div className="mb-1 flex items-center justify-between gap-6">
+        <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{title}</h1>
+        <BrandingLogo className="flex shrink-0 items-center" size="lg" />
+      </div>
       <p className="mt-1 text-xs text-muted-foreground">
         Verás {total} imagen{total === 1 ? "" : "es"} en secuencia.
       </p>
