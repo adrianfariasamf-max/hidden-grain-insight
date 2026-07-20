@@ -6,7 +6,6 @@ import { queryOptions } from "@tanstack/react-query";
 import { API_BASE } from "@/lib/api/client";
 import { experimentsApi } from "@/lib/perception/client";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
 import { LoadingState } from "@/components/state/LoadingState";
