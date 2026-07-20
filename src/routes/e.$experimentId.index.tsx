@@ -7,6 +7,8 @@ import { API_BASE } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ExperimentStimulus, PublicExperiment } from "@/lib/perception/types";
+import { experimentDetailQuery } from "@/lib/perception/client";
+import { PreviewBanner, usePreviewMode } from "@/components/experiments/PreviewBanner";
 import { LoadingState } from "@/components/state/LoadingState";
 import { ErrorState } from "@/components/state/ErrorState";
 import { EmptyState } from "@/components/state/EmptyState";
@@ -53,7 +55,23 @@ export const Route = createFileRoute("/e/$experimentId/")({
 function ParticipantLanding() {
   const { experimentId } = Route.useParams();
   const navigate = useNavigate();
-  const { data, isLoading, error, refetch } = useQuery(publicExperimentQuery(experimentId));
+  const preview = usePreviewMode();
+  // In preview mode the investigator can iterate on drafts too, so we hit
+  // the internal detail endpoint (which returns stimuli + full experiment).
+  // hiddenTarget is never rendered by this UI.
+  const publicQ = useQuery({ ...publicExperimentQuery(experimentId), enabled: !preview });
+  const previewQ = useQuery({
+    ...experimentDetailQuery(experimentId),
+    enabled: preview,
+  });
+  const isLoading = preview ? previewQ.isLoading : publicQ.isLoading;
+  const error = preview ? previewQ.error : publicQ.error;
+  const refetch = preview ? previewQ.refetch : publicQ.refetch;
+  const data = preview
+    ? previewQ.data
+      ? { experiment: previewQ.data.experiment, stimuli: previewQ.data.stimuli }
+      : null
+    : publicQ.data;
   const [ageRange, setAgeRange] = useState<AgeRange | null>(null);
   const [consent, setConsent] = useState(false);
   // RR-006 · Session lifecycle:
@@ -78,6 +96,10 @@ function ParticipantLanding() {
 
   const start = useMutation({
     mutationFn: async () => {
+      // Preview mode: no server writes, no session row, no responses.
+      if (preview) {
+        return { publicToken: "preview" } as const;
+      }
       // RR-016 · El participante nace al visualizar correctamente el
       // primer estímulo. Persistimos la sesión con `keepalive` para que la
       // petición llegue al servidor aunque el participante cierre la
@@ -114,6 +136,7 @@ function ParticipantLanding() {
       navigate({
         to: "/e/$experimentId/s/$token",
         params: { experimentId, token: session.publicToken },
+        search: preview ? { preview: 1 } : undefined,
       });
     },
     onError: (err) => setPreloadError((err as Error).message),
@@ -124,12 +147,15 @@ function ParticipantLanding() {
   if (!data) return <EmptyState title="Experimento no disponible" />;
 
   const exp = data.experiment;
-  const isOpen = exp.status === "published";
+  // In preview mode the investigator sees the flow regardless of status.
+  const isOpen = preview || exp.status === "published";
   const isClosed = exp.status === "closed";
   const firstStimulus = [...(data.stimuli ?? [])].sort((a, b) => a.position - b.position)[0];
 
   if (isOpen && stage === "instructions") {
     return (
+      <>
+      <PreviewBanner active={preview} />
       <InstructionsStage
         title={exp.title}
         instructions={exp.instructions}
@@ -140,11 +166,14 @@ function ParticipantLanding() {
         }}
         onBack={() => setStage("form")}
       />
+      </>
     );
   }
 
   if (isOpen && stage === "preloading") {
     return (
+      <>
+      <PreviewBanner active={preview} />
       <PreloadingStage
         stimulus={firstStimulus}
         error={preloadError}
@@ -158,10 +187,13 @@ function ParticipantLanding() {
           setPreloadError(null);
         }}
       />
+      </>
     );
   }
 
   return (
+    <>
+    <PreviewBanner active={preview} />
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="text-2xl font-semibold text-foreground">{exp.title}</h1>
       {exp.description ? (
@@ -264,6 +296,7 @@ function ParticipantLanding() {
         </form>
       )}
     </div>
+    </>
   );
 }
 
